@@ -5,13 +5,14 @@
 #include <Wire.h>
 
 #define ADDRESS 0xE0
+#define M_2PI 2.0*M_PI
 
 void initCompass_Serial2();
-void readCompass_Serial2();
+float readCompass_Serial2();
 void calibrateCompass_Serial2();
 
-void readCompass_I2C();
+float readCompass_I2C();
     
-extern float yawCompass;
+extern float yawCompass;		//in rad
      
 #endif
