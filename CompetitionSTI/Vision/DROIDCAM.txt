@@ -1,0 +1,2 @@
+connect droidcam:
+droidcam-cli <ip> <port>
