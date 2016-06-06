@@ -1,7 +1,7 @@
 #include "Compass.h"
 
-float yawCompass;					//yaw measurement
-float yawCompass0 = 0;				//Initial yaw measurement
+float yawCompass;					//yaw measurement in rad
+float yawCompass0 = 0;				//Initial yaw measurement in rad
 char values[8];
 
 //Initialize communication and initial yaw
@@ -20,7 +20,7 @@ void initCompass_Serial2()
 
 //--------- Serial 2 ----------
 //Read compass
-void readCompass_Serial2()
+float readCompass_Serial2()
 {
   Serial2.write(0x31);
 
@@ -32,7 +32,17 @@ void readCompass_Serial2()
     }
   }
   yawCompass = (values[2] & 0x0F) * 100 + (values[3] & 0x0F) * 10 + (values[4] & 0x0F) + (values[6] & 0x0F) * 0.1;
+  yawCompass *= -1;		//minus as positive angle is clockwise
   yawCompass -= yawCompass0;
+  
+  // Keep orientation within -pi, pi
+    if (yawCompass > 180)
+		yawCompass -= 360;
+    if (yawCompass <= -180)
+		yawCompass += 360;  
+
+  yawCompass = yawCompass * M_PI / 180;
+  return yawCompass;
 }
 
 
@@ -64,7 +74,7 @@ void calibrateCompass_Serial2()
 
 
 //--------- I2C ----------
-void readCompass_I2C()
+float readCompass_I2C()
 {
   Wire.beginTransmission(ADDRESS);
   // Wire.write(0x00);// first byte of "Get Data" command
@@ -80,5 +90,6 @@ void readCompass_I2C()
     Serial.print(values[0]);
   }
 
-  yawCompass = (values[2] & 0x0f) * 100 + (values[3] & 0x0f) * 10 + (values[4] & 0x0f) + (values[6] & 0x0f) * 0.1;
+
+  return yawCompass;
 }

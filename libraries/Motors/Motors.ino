@@ -5,11 +5,12 @@
 
 void setup()
 {
-    Serial.begin(9600);
+  Serial.begin(9600);
   initMotors_I2C();
+  initCompass_Serial2();
   initOdometry();
   
-  setSpeeds_I2C(200,-250);
+  setSpeeds_I2C(200,250);
 }
 
 void loop()

@@ -10,7 +10,8 @@
 #include "Odometry.h"
 
 float robotPosition [3];  // x, y, theta
-
+float theta = 0;			//Theta from the odometry calculation
+float thetaCompass = 0;		//Theta from the compass
 volatile int leftEncTicks = 0;
 volatile int rightEncTicks = 0;
 //unsigned int prevLeftTicks = 0;
@@ -42,11 +43,11 @@ void doEncoderLeft()
 	//If (channel A != channel B) => B late => clockwise => forward => increment counter.
 	if (digitalRead(leftEncA) == digitalRead(leftEncB))
 	{
-		leftEncTicks--;
+		leftEncTicks++;
 	}
 	else
 	{
-		leftEncTicks++;
+		leftEncTicks--;
 	}
 }
 
@@ -56,11 +57,11 @@ void doEncoderRight()
   //If (channel A != channel B) => B late => clockwise => reverse => decrement counter.
 	if (digitalRead(rightEncA) == digitalRead(rightEncB))
 	{
-		rightEncTicks++;
+		rightEncTicks--;
 	}
 	else
 	{
-		rightEncTicks--;
+		rightEncTicks++;
 	}
 }
 
@@ -91,24 +92,38 @@ void calcOdometry()
   	leftEncTicks = 0;
   	rightEncTicks = 0;
     
-    /*Serial.print("left:   ");
+    Serial.print("left:   ");
     Serial.println(leftTicks);
     Serial.print("right:   ");
-    Serial.println(rightTicks);*/
+    Serial.println(rightTicks);
   
     //calculate movement of each wheel in meters
     float dist_right = rightTicks/TICKS_PER_M;
     float dist_left = leftTicks/TICKS_PER_M;
-  
+
     float du = (dist_right + dist_left)/2.0;
     //float dtheta = (dist_right - dist_left)/WHEEL_BASE;
-    robotPosition[2] += (dist_left - dist_right)/WHEEL_BASE;
+	
+   theta += (dist_left - dist_right)/WHEEL_BASE;
+	
+    // Keep orientation within -pi, pi
+    if (theta > M_PI)
+		theta -= M_2PI;
+    if (theta < -M_PI)
+		theta += M_2PI;
   
-    // Keep orientation within 0, 2pi
-    if (robotPosition[2] > M_2PI) robotPosition[2] -= M_2PI;
-    if (robotPosition[2] < 0) robotPosition[2] += M_2PI;
-  
-    //update robotPosition
+	thetaCompass = readCompass_Serial2();	// Read orientation from compass
+	
+	robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;
+	
+	Serial.print("theta:   ");
+    Serial.println(theta);
+    Serial.print("thetaCompass:   ");
+    Serial.println(thetaCompass);
+	Serial.print("final theta:   ");
+    Serial.println(robotPosition[2]);
+	
+    //update robotPosition in mm
     robotPosition[0] += 1000*du*sin(robotPosition[2]);
     robotPosition[1] += 1000*du*cos(robotPosition[2]);
 }

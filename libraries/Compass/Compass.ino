@@ -14,8 +14,7 @@ void setup() {
 void loop()
 {
     //readCompass_I2C();
-    readCompass_Serial2();
-    Serial.println(yawCompass, 1);
+    Serial.println(readCompass_Serial2(), 3);
   delay(300);
 }
 

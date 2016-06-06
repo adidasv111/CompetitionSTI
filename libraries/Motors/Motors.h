@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <mapping.h>
+#include <Wire.h>
 
 #define motorControllerBrate 115200
 
