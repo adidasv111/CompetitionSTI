@@ -1,0 +1,5 @@
+initDynamixels	KEYWORD2
+DymxPusher_Reset KEYWORD2
+DymxPusher_checkReset	KEYWORD2
+DymxPusher_EmptyBottles	KEYWORD2
+startTimer2_Pusher	KEYWORD2

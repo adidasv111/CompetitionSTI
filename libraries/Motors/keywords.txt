@@ -1,0 +1,4 @@
+initMotors	KEYWORD2
+setSpeeds	KEYWORD2
+compute_wheel_speeds	KEYWORD2
+compute_wheel_speeds_coord	KEYWORD2

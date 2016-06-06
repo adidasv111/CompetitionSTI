@@ -1,4 +1,6 @@
 #include <Motors.h>
+#include <IMU.h>
+#include <Pusher.h>
 #include <Odometry.h>
 #include <mapping.h>
 #include <braitenberg.h>
@@ -11,12 +13,11 @@
 
 //Global Varibles
 int state = 0;
-IRSensor IR1(A1);
-USSensor US_test(30, 31);
 
 //Ultrasound sensor to detect bottles that enter the robot
-USSensor US_detection(32, 33);
+USSensor US_detection(52, 53);
 
+//USSensor US6(38, 39), US7(36,37);
 //Coordinates for the current destination of the robot
 coord destination;
 //Current coordinates of the robot
@@ -24,36 +25,65 @@ coord robotPos;
 int left_speed = 0, right_speed = 0;
 char capacity = 0;
 
-Scheduler runner;
+//Callback method prototypes
 void tOdometry();
+
+//Tasks
 Task OdometryTsk(100, TASK_FOREVER, &tOdometry); //Create task that is called every 100ms and last forever to call function tOdometry
 
+Scheduler runner;
+
+void tOdometry()
+{
+  
+  if(OdometryTsk.isFirstIteration())
+  {
+    initOdometry();
+  }
+  else
+  {
+    calcOdometry();
+    //TESTING
+    /*long dist = US6.calc_distanceUS();
+    Serial.print(dist);
+    Serial.print(" ");
+      Serial.println(" ");*/
+      left_speed = 140;
+    right_speed = 140;
+    //obstacle_avoidance(&left_speed, &right_speed);
+    setSpeeds(left_speed, right_speed);
+    Serial.print(left_speed);
+    Serial.print(" ");
+      Serial.println(" ");
+      Serial.print(right_speed);
+    Serial.print(" ");
+      Serial.println(" ");
+    //setSpeeds(0,0);
+  }
+  
+}
+
+/*****************************SETUP*************************/
 void setup() {
   //put your setup code here, to run once:
   // declare the ledPin as an OUTPUT:
   
   Serial.begin(9600);
-  init_map();
-  initOdometry();
+  //init_map();
   initMotors();
+  //initOdometry();
   //map_array[1][1] = 0;
   runner.init();
   runner.addTask(OdometryTsk);
   OdometryTsk.enable();
+  
+  
 }
+
+/*****************************LOOP*************************/
 
 void loop() {
   // put your main code here, to run repeatedly:
-  long USdist;
-  USdist = US_test.calc_distanceUS();
-  /*Serial.print(USdist);
-    Serial.print("   ");
-      //Serial.println(" ");*/
-  float dist;
-  dist = IR1.calc_distanceIR();
-  Serial.print(dist);
-    Serial.print("   ");
-      Serial.println(" ");
 
   runner.execute();
   //calcOdometry(); //Update robot position
@@ -66,11 +96,19 @@ void loop() {
     set_map_value_from_pos(pet_bottle, PET);
   
   planning();
-  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
-  obstacle_avoidance(&left_speed, &right_speed);
-  setSpeeds(left_speed, right_speed);
+//  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
+  
+  //obstacle_avoidance(&left_speed, &right_speed);
+ /* Serial.print(left_speed);
+      Serial.print("   ");
+  Serial.print(right_speed);
+      Serial.print("   ");
+        Serial.println(" ");*/
+  //setSpeeds(left_speed, right_speed);
   set_map_value_from_pos(robotPos, ROBOT);
+  
 }
+
 
 
 void planning()
@@ -126,15 +164,6 @@ bool Full()
     return false;
 }
 
-void tOdometry()
-{
-  if(OdometryTsk.isFirstIteration())
-  {
-    initOdometry();
-  }
-  else
-  {
-    calcOdometry();
-  }
-}
+
+
 

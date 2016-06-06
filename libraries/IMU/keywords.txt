@@ -1,0 +1,8 @@
+IMUAngles	KEYWORD1
+readMeasurements	KEYWORD2
+calcAngles	KEYWORD2
+calibrateAccelGyro	KEYWORD2
+calibrateMagnetometer	KEYWORD2
+initIMU	KEYWORD2
+calcIMU	KEYWORD2
+printReadings	KEYWORD2
