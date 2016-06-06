@@ -8,8 +8,8 @@
 #define RCright             1  // Digital input 1
 
 #define LED_Battery         9  // LED for battery charged
-#define LED_Serial          10 // Led for serial communication
-#define LED_Right           12 // 
+#define LED_Com             10 // LED for communication
+#define LED_mode            12 // LED for communication mode: Low id serial, high for I2C
 
 #define Battery             0  // Analog input 00
 #define RmotorC             6  // Analog input 06

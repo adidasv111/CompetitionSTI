@@ -1,6 +1,6 @@
 //=================================== MODE OF COMMUNICATIONS ========================================================================
 
-#define Cmode                1     // Sets communication mode: 0=RC    1=Serial    2=I2C
+#define Cmode                2     // Sets communication mode: 0=RC    1=Serial    2=I2C
 #define Brate           115200     // Baud rate for serial communications
 
 //=================================== RC MODE OPTIONS ===============================================================================

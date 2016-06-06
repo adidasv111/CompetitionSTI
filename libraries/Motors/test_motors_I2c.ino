@@ -6,10 +6,10 @@
 void setup()
 {
     Serial.begin(9600);
-  initMotors();
+  initMotors_I2C();
   initOdometry();
   
-  setSpeeds(-105,100);
+  setSpeeds_I2C(200,-250);
 }
 
 void loop()
