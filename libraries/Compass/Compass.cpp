@@ -13,6 +13,8 @@ void initCompass_Serial2()
   readCompass_Serial2();
   delay(500);
   readCompass_Serial2();
+  delay(200);
+  readCompass_Serial2();
   yawCompass0 = yawCompass;		//Initilize yawCompass0 to the first measurement
   Serial.print("yawCompass0: ");
   Serial.println(yawCompass0);
@@ -76,12 +78,12 @@ void calibrateCompass_Serial2()
 //--------- I2C ----------
 float readCompass_I2C()
 {
-  Wire.beginTransmission(ADDRESS);
+  Wire.beginTransmission(ADDRESS_COMPASS);
   // Wire.write(0x00);// first byte of "Get Data" command
   Wire.write(0x31);              // sends one byte
   Wire.endTransmission();    // stop transmitting
 
-  Wire.requestFrom(ADDRESS, 1);
+  Wire.requestFrom(ADDRESS_COMPASS, 1);
 
   if (Wire.available())
   {

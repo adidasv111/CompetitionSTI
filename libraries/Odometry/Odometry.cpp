@@ -32,8 +32,8 @@ void initOdometry()
   attachInterrupt(0, doEncoderLeft, RISING);  // encoder pin on interrupt 0 - pin 2
   attachInterrupt(1, doEncoderRight, RISING);   // encoder pin on interrupt 1 - pin 3
   
-  robotPosition[0] = 0;
-  robotPosition[1] = 0;
+  robotPosition[0] = 0.5;
+  robotPosition[1] = 0.5;
   robotPosition[2] = 0;
 }
 
@@ -65,10 +65,7 @@ void doEncoderRight()
 	}
 }
 
-/** Calculates the odometry and updates the robot position
-	
-	@return void
-*/
+
 void calcOdometry()
 {
 /*

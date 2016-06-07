@@ -35,49 +35,46 @@ Scheduler runner;
 
 void tOdometry()
 {
-  
-  if(OdometryTsk.isFirstIteration())
+
+  if (OdometryTsk.isFirstIteration())
   {
-    initOdometry();
   }
   else
   {
     calcOdometry();
     //TESTING
     /*long dist = US6.calc_distanceUS();
-    Serial.print(dist);
-    Serial.print(" ");
+      Serial.print(dist);
+      Serial.print(" ");
       Serial.println(" ");*/
-      left_speed = 140;
-    right_speed = 140;
+    left_speed = 170;
+    right_speed = 170;
     //obstacle_avoidance(&left_speed, &right_speed);
-    setSpeeds(left_speed, right_speed);
-    Serial.print(left_speed);
-    Serial.print(" ");
-      Serial.println(" ");
-      Serial.print(right_speed);
-    Serial.print(" ");
-      Serial.println(" ");
-    //setSpeeds(0,0);
+    setSpeeds_I2C(left_speed, right_speed);
   }
-  
 }
 
 /*****************************SETUP*************************/
 void setup() {
   //put your setup code here, to run once:
   // declare the ledPin as an OUTPUT:
-  
+
   Serial.begin(9600);
   //init_map();
-  initMotors();
-  //initOdometry();
+  initCompass_Serial2();
+  initOdometry();
+  initOdometry();
+  init_map();
+  initMotors_I2C();
+  //initIMU(0);
+  initDynamixels();       //Already includes DymxPusher_Reset();
+
   //map_array[1][1] = 0;
   runner.init();
   runner.addTask(OdometryTsk);
   OdometryTsk.enable();
-  
-  
+
+
 }
 
 /*****************************LOOP*************************/
@@ -92,28 +89,28 @@ void loop() {
   coord pet_bottle;
 
   //careful about the pi values that are returned (to review)
-  if(get_info_from_pi(&pet_bottle.x, &pet_bottle.y))
+  if (get_info_from_pi(&pet_bottle.x, &pet_bottle.y))
     set_map_value_from_pos(pet_bottle, PET);
-  
+
   planning();
-//  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
-  
+  //  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
+
   //obstacle_avoidance(&left_speed, &right_speed);
- /* Serial.print(left_speed);
-      Serial.print("   ");
-  Serial.print(right_speed);
-      Serial.print("   ");
-        Serial.println(" ");*/
+  /* Serial.print(left_speed);
+       Serial.print("   ");
+    Serial.print(right_speed);
+       Serial.print("   ");
+         Serial.println(" ");*/
   //setSpeeds(left_speed, right_speed);
   set_map_value_from_pos(robotPos, ROBOT);
-  
+
 }
 
 
 
 void planning()
 {
-  if(Full()) //Container is full, begin deposition process
+  if (Full()) //Container is full, begin deposition process
   {
     //state= GO_BACK;
     destination.x = RECYCLE_ZONE_X;
@@ -121,9 +118,9 @@ void planning()
   }
   else
   {
-    if(check_target() == false) //Is target already present
+    if (check_target() == false) //Is target already present
     {
-      if(find_number_bottles() != 0) //Target not present, does map contain bottles
+      if (find_number_bottles() != 0) //Target not present, does map contain bottles
       {
         //Bottle has been found, set as new target and destination
         destination = find_closest_bottle(robotPos);
@@ -142,7 +139,7 @@ void planning()
       //state = GO_TO_BOTTLE;
       //target = true;
     }
-      
+
   }
 }
 
@@ -155,10 +152,10 @@ bool get_info_from_pi(float *bottle_x, float *bottle_y)
 bool Full()
 {
   int detector_dist = US_detection.calc_distanceUS();
-  if(detector_dist < 15)
+  if (detector_dist < 15)
     capacity++;
 
-  if(capacity >= 3)
+  if (capacity >= 3)
     return true;
   else
     return false;

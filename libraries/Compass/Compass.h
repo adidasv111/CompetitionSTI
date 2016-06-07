@@ -4,8 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define ADDRESS 0xE0
-#define M_2PI 2.0*M_PI
+#define ADDRESS_COMPASS 0xE0
 
 void initCompass_Serial2();
 float readCompass_Serial2();

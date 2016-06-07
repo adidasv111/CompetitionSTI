@@ -100,7 +100,6 @@ void setSpeeds_I2C(int speedLeft, int speedRight)
 */
 void compute_wheel_speeds(float target_range, float target_bearing, int *msl, int *msr)
 {
-	
 	// Define constants
 	float Ku = 2.0;
 	float Kw = 10.0;
@@ -136,7 +135,7 @@ void compute_wheel_speeds(float target_range, float target_bearing, int *msl, in
 */
 void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 {
-	
+	//target is coordinate relative to the current robot position
 	// Define constants
 	float Ku = 2.0;
 	float Kw = 10.0;

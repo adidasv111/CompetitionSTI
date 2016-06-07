@@ -6,7 +6,7 @@ void setup()
   Serial.begin(9600);
   initDynamixels();
 
-  DymxPusher_Reset();
+  //DymxPusher_Reset();
 
   DymxPusher_EmptyBottles();
 }

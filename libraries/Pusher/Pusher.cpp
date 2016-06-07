@@ -8,6 +8,9 @@ void initDynamixels()
 {
     Serial.println("---- Initializing Dynamixels communication ----");
     Dynamixel.begin(1000000,2);  // Initialize the servo at 1Mbps and Pin Control 2
+    delay(100);
+
+    DymxPusher_Reset();
 }
 
 //Reset Pusher position and set to Endless
