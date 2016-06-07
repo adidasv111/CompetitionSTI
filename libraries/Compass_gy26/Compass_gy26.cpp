@@ -34,16 +34,17 @@ float readCompass_Serial2()
     }
   }
   yawCompass = (values[2] & 0x0F) * 100 + (values[3] & 0x0F) * 10 + (values[4] & 0x0F) + (values[6] & 0x0F) * 0.1;
+  yawCompass = yawCompass * M_PI / 180;
   yawCompass *= -1;
   yawCompass -= yawCompass0;
   
   // Keep orientation within -pi, pi
-    if (yawCompass > 180)
-		yawCompass -= 360;
-    if (yawCompass <= -180)
-		yawCompass += 360;  
+    if (yawCompass > M_PI)
+		yawCompass -= M_2PI;
+    if (yawCompass <= -M_PI)
+		yawCompass += M_2PI;  
 
-  yawCompass = yawCompass * M_PI / 180;
+
   return yawCompass;
 }
 
@@ -74,7 +75,7 @@ void calibrateCompass_Serial2()
   Finally again ground the CAL pin and release it. That's it. Now your GY-26 compass module is fully calibrated.
 */
 
-
+/*
 //--------- I2C ----------
 float readCompass_I2C()
 {
@@ -104,3 +105,4 @@ float readCompass_I2C()
   yawCompass = yawCompass * M_PI / 180;
   return yawCompass;
 }
+*/

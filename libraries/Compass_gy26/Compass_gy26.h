@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <constant.h>
 
 #define ADDRESS_COMPASS 0xE0
 

@@ -68,12 +68,13 @@ void setup() {
   //initIMU(0);
   initDynamixels();       //Already includes DymxPusher_Reset() and DymxDoor_Reset()
 
+  //calibrateCompass_Serial2();
+
   //map_array[1][1] = 0;
   runner.init();
   runner.addTask(OdometryTask);
   OdometryTask.enable();
   runner.addTask(DoorTask);
-  DoorTask.enable();
   runner.addTask(PusherResetTask);
   PusherResetTask.enable();
 }
@@ -101,8 +102,21 @@ void loop() {
     Serial.print(right_speed);
        Serial.print("   ");
          Serial.println(" ");*/
-  //setSpeeds(left_speed, right_speed);
+ if(robotPos.y < 3000)
+ {
+    left_speed = 200;
+  right_speed = 200;
+ }
+ else
+ {
+    left_speed = 0;
+  right_speed = 0;
+ }
+  obstacle_avoidance(&left_speed, &right_speed);
+  
+  setSpeeds_I2C(left_speed, right_speed);
   set_map_value_from_pos(robotPos, ROBOT);
+  delay(500);
 }
 
 
@@ -121,10 +135,15 @@ void planning()
     {
       goingHome = false;
       isDeposition = true;
+      DoorTask.disable();
+      DymxDoor_close();
     }
   }
   else if (isDeposition)
   {
+    DoorTask.disable();
+    DymxDoor_moveToInit();
+
     deposition(&left_speed, &right_speed);
   }
   else
@@ -138,9 +157,12 @@ void planning()
         //state = GO_TO_BOTTLE;
         //target=true;
         set_target(destination);
+        DoorTask.enable();
       }
       else
       {
+        DoorTask.disable();
+        DymxDoor_close();
         grid_search(&destination.x, &destination.y); //No target, No bottles, continue grid search
         set_target(destination);
       }

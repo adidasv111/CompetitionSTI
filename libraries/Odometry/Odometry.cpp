@@ -39,6 +39,7 @@ void initOdometry()
 
 void doEncoderLeft()
 {
+  Serial.println("left encoder");
 	//If (channel A == channel B) => B lead => counter-clockwise => reverse => decrement counter.
 	//If (channel A != channel B) => B late => clockwise => forward => increment counter.
 	if (digitalRead(leftEncA) == digitalRead(leftEncB))
@@ -53,6 +54,7 @@ void doEncoderLeft()
 
 void doEncoderRight()
 {
+  Serial.println("right encoder");
   //If (channel A == channel B) => B lead => counter-clockwise => forward => increment counter.  ***Different from left motor! ***
   //If (channel A != channel B) => B late => clockwise => reverse => decrement counter.
 	if (digitalRead(rightEncA) == digitalRead(rightEncB))
@@ -111,15 +113,22 @@ void calcOdometry()
 	thetaCompass = readCompass_Serial2();	// Read orientation from compass
 	
 	robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;	//Combine orientation from compass and odometry
-	
+	/*
 	Serial.print("theta:   ");
     Serial.println(theta);
     Serial.print("thetaCompass:   ");
     Serial.println(thetaCompass);
 	Serial.print("final theta:   ");
     Serial.println(robotPosition[2]);
-	
+	*/
     //update robotPosition in mm
     robotPosition[0] += 1000*du*sin(robotPosition[2]);
     robotPosition[1] += 1000*du*cos(robotPosition[2]);
+
+      Serial.print("x:   ");
+    Serial.println(robotPosition[0]);
+    Serial.print("y:   ");
+    Serial.println(robotPosition[1]);
+  Serial.print(" theta:   ");
+    Serial.println(robotPosition[2]);
 }

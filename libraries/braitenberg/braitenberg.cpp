@@ -15,8 +15,8 @@
 //double l_weight[N_SENSORS] = {0, 0, 0, 0, 20, 50, -50, -20};
 //double r_weight[N_SENSORS] = {0, 0, 0, 0, -20, -50, 50, 20};
 
-double l_weight[N_SENSORS] = {0, 0, 0, 0, 20, 50, -50, -20};
-double r_weight[N_SENSORS] = {0, 0, 0, 0, -20, -50, 50, 20};
+double l_weight[N_SENSORS] = {0, 0, 0, 0, 50, 100, -100, -50};
+double r_weight[N_SENSORS] = {0, 0, 0, 0, -50, -100, 100, 50};
 
 int us_value[N_SENSORS];
 
@@ -56,7 +56,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
   {
 	  Serial.print(us_value[i]);
 			Serial.print(" ");
-	  if(us_value[i] < 50)
+	  if(us_value[i] < 30)
 	  {
 		*left_speed += (l_weight[i])*((50 - us_value[i])/50.0f);
 		*right_speed += (r_weight[i])*((50 - us_value[i])/50.0f);

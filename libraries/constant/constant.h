@@ -24,7 +24,7 @@
 //Door
 #define DOOR_INIT_POS	75
 #define DOOR_END_POS	250
-#define DOOR_CLOSE_POS	500
+#define DOOR_CLOSE_POS	400
 #define DOOR_SPEED		300
 #define DOOR_HALF_PERIOD 500				//in ms
 
