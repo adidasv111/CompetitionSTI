@@ -10,7 +10,6 @@
 #include <Arduino.h>
 #include <constant.h>
 #include <TaskScheduler.h>
-
 //Global Varibles
 int state = 0;
 
@@ -30,17 +29,11 @@ void tOdometry();
 
 //Tasks
 Task OdometryTsk(100, TASK_FOREVER, &tOdometry); //Create task that is called every 100ms and last forever to call function tOdometry
-
+Task DoorTask(750, TASK_FOREVER, &tDoor); //Create task that is called every 100ms and last forever to call function tOdometry
 Scheduler runner;
 
 void tOdometry()
 {
-
-  if (OdometryTsk.isFirstIteration())
-  {
-  }
-  else
-  {
     calcOdometry();
     //TESTING
     /*long dist = US6.calc_distanceUS();
@@ -51,7 +44,6 @@ void tOdometry()
     right_speed = 170;
     //obstacle_avoidance(&left_speed, &right_speed);
     setSpeeds_I2C(left_speed, right_speed);
-  }
 }
 
 /*****************************SETUP*************************/
@@ -63,7 +55,6 @@ void setup() {
   //init_map();
   initCompass_Serial2();
   initOdometry();
-  initOdometry();
   init_map();
   initMotors_I2C();
   //initIMU(0);
@@ -71,9 +62,10 @@ void setup() {
 
   //map_array[1][1] = 0;
   runner.init();
-  runner.addTask(OdometryTsk);
-  OdometryTsk.enable();
-
+  //runner.addTask(OdometryTsk);
+  runner.addTask(DoorTask);
+  //OdometryTsk.enable();
+  DoorTask.enable();
 
 }
 

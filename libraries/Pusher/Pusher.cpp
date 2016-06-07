@@ -1,7 +1,8 @@
 #include "Pusher.h"
 
-unsigned int Pusher_count = 0;                             //used to keep count of how many interrupts were fired
+unsigned int Pusher_count = 0;                      //used to keep count of how many interrupts were fired
 bool resetPusher = false;                           //if true the pusher needs to be reset
+bool doorState = false;                             //State for door task
 
 //Initialize Dynamixel connection
 void initDynamixels()
@@ -84,20 +85,37 @@ ISR(TIMER2_OVF_vect)
 //Reset Door position and set to position mode
 void DymxDoor_Reset()
 {
-    Serial.println("---- Initialize Door ----");
+    Serial.println("---- Reset Door ----");
     Dynamixel.setEndless(DYMX_PUSHER_ID, OFF);          //Set to position mode
     delay(20);
     Dynamixel.move(DYMX_DOOR_ID, DOOR_INIT_POS);        //Move to initial position
     delay(500);
+    doorState = false;
     Serial.println("---- End Reset Door ----");
 }
 
 void DymxDoor_moveToInit()                             //move door to init position
 {
     Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_INIT_POS, DOOR_SPEED);
+    doorState = true;
 }
 
 void DymxDoor_moveToEnd()                              //move door to end position
 {
     Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_END_POS, DOOR_SPEED);
+    doorState = false;
+}
+
+void DymxDoor_close()                              //move door to end position
+{
+    Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_CLOSE_POS, DOOR_SPEED);
+}
+
+
+void tDoor()
+{
+    if (doorState == false)
+        DymxDoor_moveToInit();
+    else if (doorState == true)
+        DymxDoor_moveToEnd();
 }
