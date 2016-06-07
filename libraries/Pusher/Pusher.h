@@ -26,10 +26,10 @@
 
     void DymxPusher_Reset();                //Reset Pusher position and set to Endless
     void DymxPusher_checkReset();           //Check if Pusher must be reset
-    void DymxPusher_EmptyBottles();         //Start emptying manoeuvre
     void startTimer2_Pusher();              //Initialize timer2 and start it
     ISR(TIMER2_OVF_vect);                   //Timer2 Overflow Interrupt Vector, 
-
+    void DymxPusher_EmptyBottles();         //Start emptying manoeuvre
+    
     void DymxDoor_Reset();					//Reset Door position and set to position mode
     void DymxDoor_moveToInit();				//Move door to initial position
     void DymxDoor_moveToEnd();				//Move door to end position

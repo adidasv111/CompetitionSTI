@@ -1,9 +1,9 @@
-map_array	KEYWORD1
-coord	KEYWORD1
-init_map	KEYWORD2
+map_array		KEYWORD1
+coord		KEYWORD1
+init_map		KEYWORD2
 set_map_value_from_pos	KEYWORD2
 get_map_value_from_pos	KEYWORD2
 find_number_bottles	KEYWORD2
-check_target	KEYWORD2
+check_target		KEYWORD2
 find_closest_bottle	KEYWORD2
-void set_target	KEYWORD2
+set_target		KEYWORD2

@@ -24,9 +24,12 @@ int left_speed = 0, right_speed = 0;
 coord pet_bottle;
 bool pi_com;
 
+bool goingHome = false;
+bool isDeposition = false;
+
 void pi_communication()
 {
-    get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
+  get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
 }
 
 //Tasks
@@ -56,9 +59,6 @@ Scheduler runner;
   /
   /*****************************SETUP*************************/
 void setup() {
-  //put your setup code here, to run once:
-  // declare the ledPin as an OUTPUT:
-
   Serial.begin(9600);
   //init_map();
   initCompass_Serial2();
@@ -70,8 +70,8 @@ void setup() {
 
   //map_array[1][1] = 0;
   runner.init();
-  //runner.addTask(OdometryTask);
-  //OdometryTsk.enable();
+  runner.addTask(OdometryTask);
+  OdometryTask.enable();
   runner.addTask(DoorTask);
   DoorTask.enable();
   runner.addTask(PusherResetTask);
@@ -79,7 +79,6 @@ void setup() {
 }
 
 /*****************************LOOP*************************/
-
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -87,7 +86,7 @@ void loop() {
   //calcOdometry(); //Update robot position
   robotPos.x = robotPosition[0];
   robotPos.y = robotPosition[1];
-  
+
   //careful about the pi values that are returned (to review)
   get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
   if (pi_com)
@@ -104,18 +103,29 @@ void loop() {
          Serial.println(" ");*/
   //setSpeeds(left_speed, right_speed);
   set_map_value_from_pos(robotPos, ROBOT);
-
 }
-
 
 
 void planning()
 {
   if (isFull) //Container is full, begin deposition process
   {
-    //state= GO_BACK;
+    //state= GO_HOME;
     destination.x = RECYCLE_ZONE_X;
     destination.y = RECYCLE_ZONE_Y;
+    goingHome = true;
+  }
+  if (goingHome)
+  {
+    if (abs(robotPos.x - RECYCLE_ZONE_X) < 0.5 && abs(robotPos.y - RECYCLE_ZONE_Y) < 0.5)
+    {
+      goingHome = false;
+      isDeposition = true;
+    }
+  }
+  else if (isDeposition)
+  {
+    deposition(&left_speed, &right_speed);
   }
   else
   {
@@ -140,13 +150,5 @@ void planning()
       //state = GO_TO_BOTTLE;
       //target = true;
     }
-
   }
 }
-
-
-
-
-
-
-

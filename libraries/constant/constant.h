@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #define M_2PI 2.0*M_PI
 
-#define RECYCLE_ZONE_X  0
-#define RECYCLE_ZONE_Y  0
+#define RECYCLE_ZONE_X  0.5
+#define RECYCLE_ZONE_Y  0.5
 
 #define SPEED_UNIT_RADS	255
 
