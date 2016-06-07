@@ -11,8 +11,10 @@ void initDynamixels()
     delay(100);
 
     DymxPusher_Reset();
+    DymxDoor_Reset();
 }
 
+//----- Pusher functions -----
 //Reset Pusher position and set to Endless
 void DymxPusher_Reset()
 {
@@ -21,9 +23,9 @@ void DymxPusher_Reset()
     delay(20);
     Dynamixel.setEndless(DYMX_PUSHER_ID, OFF);          //Set to position mode
     delay(20);
-    Dynamixel.move(DYMX_PUSHER_ID, INIT_POS);           //Move to initial position
+    Dynamixel.move(DYMX_PUSHER_ID, PUSHER_INIT_POS);           //Move to initial position
     delay(1000);
-    Dynamixel.setEndless(DYMX_PUSHER_ID, ON);           //Set to speed mode
+    //Dynamixel.setEndless(DYMX_PUSHER_ID, ON);           //Set to speed mode
     Serial.println("---- End Reset Pusher ----");
 }
 
@@ -36,13 +38,13 @@ void DymxPusher_checkReset()           //Check if Pusher must be reset
     }
 
 }
-    
+
 //Start emptying manoeuvre
 void DymxPusher_EmptyBottles()
 {
-    Serial.println("---- Pusher start ----");
-    Dynamixel.setEndless(DYMX_PUSHER_ID, ON);           //Set to speed mode
-    Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, 1000);     //Move forward to empty bottles
+    //Serial.println("---- Pusher start ----");
+    Dynamixel.setEndless(DYMX_PUSHER_ID, ON);                   //Set to speed mode
+    Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);     //Move forward to empty bottles
     startTimer2_Pusher();
 }
 
@@ -72,9 +74,30 @@ ISR(TIMER2_OVF_vect)
     }
     else if(Pusher_count == PUSHER_TIME)
     {
-      Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, 1000);    //Change direction
-    }
-    
+      Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);    //Change direction
+  }
     TCNT2 = 0;           //Reset Timer to 0 out of 255
     TIFR2 = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
 };
+
+//----- Door functions -----
+//Reset Door position and set to position mode
+void DymxDoor_Reset()
+{
+    Serial.println("---- Initialize Door ----");
+    Dynamixel.setEndless(DYMX_PUSHER_ID, OFF);          //Set to position mode
+    delay(20);
+    Dynamixel.move(DYMX_DOOR_ID, DOOR_INIT_POS);        //Move to initial position
+    delay(500);
+    Serial.println("---- End Reset Door ----");
+}
+
+void DymxDoor_moveToInit()                             //move door to init position
+{
+    Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_INIT_POS, DOOR_SPEED);
+}
+
+void DymxDoor_moveToEnd()                              //move door to end position
+{
+    Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_END_POS, DOOR_SPEED);
+}

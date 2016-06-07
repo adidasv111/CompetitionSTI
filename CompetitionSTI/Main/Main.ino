@@ -67,7 +67,7 @@ void setup() {
   init_map();
   initMotors_I2C();
   //initIMU(0);
-  initDynamixels();       //Already includes DymxPusher_Reset();
+  initDynamixels();       //Already includes DymxPusher_Reset() and DymxDoor_Reset()
 
   //map_array[1][1] = 0;
   runner.init();
