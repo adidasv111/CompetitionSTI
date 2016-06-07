@@ -10,7 +10,7 @@ void setup()
   initCompass_Serial2();
   initOdometry();
   
-  setSpeeds_I2C(200,250);
+  setSpeeds_I2C(-175,175);
 }
 
 void loop()

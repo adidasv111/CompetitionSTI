@@ -32,7 +32,7 @@ float readCompass_Serial2()
     }
   }
   yawCompass = (values[2] & 0x0F) * 100 + (values[3] & 0x0F) * 10 + (values[4] & 0x0F) + (values[6] & 0x0F) * 0.1;
-  yawCompass *= -1;		//minus as positive angle is clockwise
+  yawCompass *= -1;
   yawCompass -= yawCompass0;
   
   // Keep orientation within -pi, pi
@@ -90,6 +90,15 @@ float readCompass_I2C()
     Serial.print(values[0]);
   }
 
+  yawCompass = (values[2] & 0x0F) * 100 + (values[3] & 0x0F) * 10 + (values[4] & 0x0F) + (values[6] & 0x0F) * 0.1;
+  yawCompass -= yawCompass0;
+  
+  // Keep orientation within -pi, pi
+    if (yawCompass > 180)
+		yawCompass -= 360;
+    if (yawCompass <= -180)
+		yawCompass += 360;  
 
+  yawCompass = yawCompass * M_PI / 180;
   return yawCompass;
 }

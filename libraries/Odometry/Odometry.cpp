@@ -102,9 +102,8 @@ void calcOdometry()
     float dist_left = leftTicks/TICKS_PER_M;
 
     float du = (dist_right + dist_left)/2.0;
-    //float dtheta = (dist_right - dist_left)/WHEEL_BASE;
 	
-   theta += (dist_left - dist_right)/WHEEL_BASE;
+   	theta += (dist_right - dist_left)/WHEEL_BASE;
 	
     // Keep orientation within -pi, pi
     if (theta > M_PI)
@@ -114,7 +113,7 @@ void calcOdometry()
   
 	thetaCompass = readCompass_Serial2();	// Read orientation from compass
 	
-	robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;
+	robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;	//Combine orientation from compass and odometry
 	
 	Serial.print("theta:   ");
     Serial.println(theta);
