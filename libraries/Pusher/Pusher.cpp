@@ -81,6 +81,7 @@ ISR(TIMER2_OVF_vect)
     TIFR2 = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
 };
 
+
 //----- Door functions -----
 //Reset Door position and set to position mode
 void DymxDoor_Reset()
@@ -94,24 +95,27 @@ void DymxDoor_Reset()
     Serial.println("---- End Reset Door ----");
 }
 
+//Move door to initial position
 void DymxDoor_moveToInit()                             //move door to init position
 {
     Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_INIT_POS, DOOR_SPEED);
     doorState = true;
 }
 
+//Move door to end position
 void DymxDoor_moveToEnd()                              //move door to end position
 {
     Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_END_POS, DOOR_SPEED);
     doorState = false;
 }
 
+//Close door
 void DymxDoor_close()                              //move door to end position
 {
     Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_CLOSE_POS, DOOR_SPEED);
 }
 
-
+//Task function for door
 void tDoor()
 {
     if (doorState == false)

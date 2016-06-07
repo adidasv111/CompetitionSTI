@@ -5,7 +5,7 @@
 #define ODOMETRY_H
 
 #include <Arduino.h>
-#include <Compass.h>
+#include <Compass_gy26.h>
 #include <Kalman_Filter.h>
 #include <constant.h>
 

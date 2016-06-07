@@ -1,3 +1,4 @@
+#include <constant.h>
 #include <Motors.h>
 #include <IMU.h>
 #include <Pusher.h>
@@ -8,13 +9,10 @@
 #include <IR_Sensor.h>
 #include <gridSearch.h>
 #include <Arduino.h>
-#include <constant.h>
+#include <Misc.h>
 #include <TaskScheduler.h>
 //Global Varibles
 int state = 0;
-
-//Ultrasound sensor to detect bottles that enter the robot
-USSensor US_detection(52, 53);
 
 //USSensor US6(38, 39), US7(36,37);
 //Coordinates for the current destination of the robot
@@ -22,31 +20,41 @@ coord destination;
 //Current coordinates of the robot
 coord robotPos;
 int left_speed = 0, right_speed = 0;
-char capacity = 0;
 
-//Callback method prototypes
-void tOdometry();
+coord pet_bottle;
+bool pi_com;
+
+void pi_communication()
+{
+    get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
+}
 
 //Tasks
-Task OdometryTsk(100, TASK_FOREVER, &tOdometry); //Create task that is called every 100ms and last forever to call function tOdometry
-Task DoorTask(750, TASK_FOREVER, &tDoor); //Create task that is called every 100ms and last forever to call function tOdometry
+Task DoorTask(750, TASK_FOREVER, &tDoor);                           //Create task that moves the door back and forth
+Task PusherResetTask (20000, TASK_FOREVER, &DymxPusher_checkReset); //Create task that checks if pusher is reseted
+Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                //Create task that is called every 100ms and last forever to calculate odometry
+//Task MotorsTask(100, TASK_FOREVER, &tMotors);                     //Create task that  set the motors
+Task FullTask(2000, TASK_FOREVER, &checkFull);                      //Create task that check if full
+Task PiComTask(2000, TASK_FOREVER, &pi_communication);              //Create task that communicate with the PI
 Scheduler runner;
 
-void tOdometry()
-{
+/*
+  void tMotors()
+  {
     calcOdometry();
     //TESTING
     /*long dist = US6.calc_distanceUS();
       Serial.print(dist);
       Serial.print(" ");
       Serial.println(" ");*/
-    left_speed = 170;
-    right_speed = 170;
-    //obstacle_avoidance(&left_speed, &right_speed);
-    setSpeeds_I2C(left_speed, right_speed);
-}
+/*left_speed = 170;
+  right_speed = 170;
 
-/*****************************SETUP*************************/
+  //obstacle_avoidance(&left_speed, &right_speed);
+  setSpeeds_I2C(left_speed, right_speed);
+  }
+  /
+  /*****************************SETUP*************************/
 void setup() {
   //put your setup code here, to run once:
   // declare the ledPin as an OUTPUT:
@@ -62,11 +70,12 @@ void setup() {
 
   //map_array[1][1] = 0;
   runner.init();
-  //runner.addTask(OdometryTsk);
-  runner.addTask(DoorTask);
+  //runner.addTask(OdometryTask);
   //OdometryTsk.enable();
+  runner.addTask(DoorTask);
   DoorTask.enable();
-
+  runner.addTask(PusherResetTask);
+  PusherResetTask.enable();
 }
 
 /*****************************LOOP*************************/
@@ -78,10 +87,10 @@ void loop() {
   //calcOdometry(); //Update robot position
   robotPos.x = robotPosition[0];
   robotPos.y = robotPosition[1];
-  coord pet_bottle;
-
+  
   //careful about the pi values that are returned (to review)
-  if (get_info_from_pi(&pet_bottle.x, &pet_bottle.y))
+  get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
+  if (pi_com)
     set_map_value_from_pos(pet_bottle, PET);
 
   planning();
@@ -102,7 +111,7 @@ void loop() {
 
 void planning()
 {
-  if (Full()) //Container is full, begin deposition process
+  if (isFull) //Container is full, begin deposition process
   {
     //state= GO_BACK;
     destination.x = RECYCLE_ZONE_X;
@@ -136,22 +145,7 @@ void planning()
 }
 
 
-bool get_info_from_pi(float *bottle_x, float *bottle_y)
-{
-  return true;
-}
 
-bool Full()
-{
-  int detector_dist = US_detection.calc_distanceUS();
-  if (detector_dist < 15)
-    capacity++;
-
-  if (capacity >= 3)
-    return true;
-  else
-    return false;
-}
 
 
 

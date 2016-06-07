@@ -1,5 +1,10 @@
-initDynamixels	KEYWORD2
-DymxPusher_Reset KEYWORD2
+initDynamixels		KEYWORD2
+DymxPusher_Reset 	KEYWORD2
 DymxPusher_checkReset	KEYWORD2
 DymxPusher_EmptyBottles	KEYWORD2
 startTimer2_Pusher	KEYWORD2
+DymxDoor_Reset		KEYWORD2
+DymxDoor_moveToInit	KEYWORD2
+DymxDoor_moveToEnd	KEYWORD2
+DymxDoor_close		KEYWORD2
+tDoor			KEYWORD2

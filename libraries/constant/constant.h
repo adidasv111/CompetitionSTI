@@ -1,6 +1,6 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
- 
+
 #include <Arduino.h>
 #define M_2PI 2.0*M_PI
 
@@ -17,10 +17,11 @@
 #define TICKS_PER_M   TICKS_PER_REV/(M_2PI*WHEEL_RADIUS)  // Wheel radius (meters)
 
 //--- Dynamixels ---
+//Pusher
 #define PUSHER_TIME     600                 //4.896 sec
 #define PUSHER_INIT_POS 800
 #define PUSHER_SPEED	1000
-
+//Door
 #define DOOR_INIT_POS	75
 #define DOOR_END_POS	250
 #define DOOR_CLOSE_POS	500
@@ -28,10 +29,12 @@
 #define DOOR_HALF_PERIOD 500				//in ms
 
 
+#define FULL_THRESHOLD	5			//number of times it is full to be considered full
+
 #define EMPTY 0
 #define ROBOT 1
 #define PET 2
 #define TARGET 3
 
- 
+
 #endif

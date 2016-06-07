@@ -1,4 +1,4 @@
-#include "Compass.h"
+#include "Compass_gy26.h"
 
 float yawCompass;					//yaw measurement in rad
 float yawCompass0 = 0;				//Initial yaw measurement in rad

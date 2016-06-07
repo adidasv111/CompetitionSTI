@@ -31,9 +31,9 @@
     ISR(TIMER2_OVF_vect);                   //Timer2 Overflow Interrupt Vector, 
 
     void DymxDoor_Reset();					//Reset Door position and set to position mode
-    void DymxDoor_moveToInit();				//move door to init position
-    void DymxDoor_moveToEnd();				//move door to end position
-	void DymxDoor_close();					//close door
+    void DymxDoor_moveToInit();				//Move door to initial position
+    void DymxDoor_moveToEnd();				//Move door to end position
+	void DymxDoor_close();					//Close door
 
     void tDoor();							//Task function for door
 #endif
