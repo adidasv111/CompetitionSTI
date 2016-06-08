@@ -138,9 +138,9 @@ void loop() {
  }*/
  left_speed = 200;
  right_speed = 200;
-destination.x = 1000;
+destination.x = -1500;
 destination.y = -1500;
-compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed);
+compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed);
 if (gotGoal)
 {
     left_speed = 0;
