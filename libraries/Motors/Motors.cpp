@@ -146,11 +146,12 @@ void compute_wheel_speeds(float target_range, float target_bearing, int *msl, in
 	@param msr Speed of the right motors
 	@return void
 */
+	/*
 void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 {
 	//target is coordinate relative to the current robot position
 	// Define constants
-	float Ku = 2.0;
+	float Ku = 50.0;
 	float Kw = 10.0;
 	float Kb = 1.0;
 
@@ -164,12 +165,49 @@ void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 	float bearing = atan2(target.y, target.x);    // This is the wanted position (bearing)
 
 	// Compute forward control (proportional to the projected forward distance to the leader
-	float u = Ku * range * cosf(bearing);
+	float u = (Ku * range * cosf(bearing))/1000;
 	// Compute rotional control
-	float w = Kw * range * sinf(bearing);// + Kb * leader_orientation;
-	// Of course, we can do a lot better by accounting for the speed of the leader (rather than just the position)
+	float w = (Kw * range * sinf(bearing))/1000;// + Kb * leader_orientation;
 
 	// Convert to wheel speeds!
 	*msl = (int)((u - WHEEL_BASE*w/2.0) / (SPEED_UNIT_RADS * WHEEL_RADIUS));
 	*msr = (int)((u + WHEEL_BASE*w/2.0) / (SPEED_UNIT_RADS * WHEEL_RADIUS));
+}
+*/
+void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr)
+{
+	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+	
+	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
+	if (Ebearing > M_PI)
+		  Ebearing -= M_2PI;
+    if (Ebearing < -M_PI)
+		  Ebearing += M_2PI;
+	Ebearing -= position[2];
+	Serial.print("Ebearing:		");
+	Serial.println(Ebearing);
+	if (Ebearing > 0 && Ebearing < M_PI2)
+	{
+		*msl -= Kmotors_minus*abs(Ebearing);
+		*msr += Kmotors_plus*abs(Ebearing);
+	}
+	else if (Ebearing < 0 && Ebearing > -M_PI2)
+	{
+		*msl += Kmotors_plus*abs(Ebearing);
+		*msr -= Kmotors_minus*abs(Ebearing);
+	}	
+	else if (Ebearing > M_PI2)
+	{
+		*msl = -255;
+		*msr = 255;
+	}
+	else if (Ebearing < -M_PI2)
+	{
+		*msl = 255;
+		*msr = -255;
+	}
+	          Serial.print("left:   ");
+    Serial.print(*msl);
+    Serial.print("      right:   ");
+    Serial.println(*msr);
 }

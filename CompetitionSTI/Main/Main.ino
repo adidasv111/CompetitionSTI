@@ -33,8 +33,16 @@ void deposition();
 void planning();
 void tprint()
 {
-    Serial.print("thtea");
+      Serial.print("x:   ");
+    Serial.println(robotPosition[0]);
+    Serial.print("y:   ");
+    Serial.println(robotPosition[1]);
+  Serial.print(" theta:   ");
     Serial.println(robotPosition[2]);
+          Serial.print("left:   ");
+    Serial.print(left_speed);
+    Serial.print("      right:   ");
+    Serial.println(right_speed);
 }
 
 //Tasks
@@ -128,23 +136,16 @@ void loop() {
     left_speed = 0;
   right_speed = 0;
  }*/
-
-
+ left_speed = 200;
+ right_speed = 200;
+destination.x = 1500;
+destination.y = 1500;
+compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed);
+    setSpeeds_I2C(left_speed,right_speed);
  //TESTING
  
  // obstacle_avoidance(&left_speed, &right_speed);
- left_speed = 200;
- right_speed = 200;
-
-  if(robotPosition[2] > -M_PI/2)
-  {
-    setSpeeds_I2C(left_speed, right_speed);
-  }
-  else
-  {
-    setSpeeds_I2C(0,0);
-  }
-  set_map_value_from_pos(robotPos, ROBOT);
+  //set_map_value_from_pos(robotPos, ROBOT);
 }
 
 void planning()
