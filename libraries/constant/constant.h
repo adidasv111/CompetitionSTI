@@ -10,9 +10,11 @@
 
 
 //--- Motors and odometry ---
-#define SPEED_UNIT_RADS	0.0137
 #define Kmotors_plus	35.0
-#define Kmotors_minus	9*Kmotors_plus
+#define Kmotors_minus	10*Kmotors_plus
+#define DIST_GOAL_THRESH	0.15
+#define SPEED_UNIT_RADS	0.0137
+
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
 #define WHEEL_BASE    0.45 		// Distance between wheels of robot (m)
 #define WHEEL_RADIUS  0.062  	// Wheel radius (meters)

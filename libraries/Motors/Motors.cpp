@@ -8,11 +8,10 @@
 */
 
 #include "Motors.h"
-
 // mode: 0=reverse, 1=brake, 2=forward
 // PWM: PWM value for right motor speed / brake
 
-
+bool gotGoal = false;
 /** Initialize the motors and set wheel speeds to 0
 	
 	@return void
@@ -176,16 +175,13 @@ void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 */
 void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr)
 {
-	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-	
 	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
 	if (Ebearing > M_PI)
 		  Ebearing -= M_2PI;
     if (Ebearing < -M_PI)
 		  Ebearing += M_2PI;
 	Ebearing -= position[2];
-	Serial.print("Ebearing:		");
-	Serial.println(Ebearing);
+
 	if (Ebearing > 0 && Ebearing < M_PI2)
 	{
 		*msl -= Kmotors_minus*abs(Ebearing);
@@ -206,8 +202,11 @@ void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *ms
 		*msl = 255;
 		*msr = -255;
 	}
-	          Serial.print("left:   ");
-    Serial.print(*msl);
-    Serial.print("      right:   ");
-    Serial.println(*msr);
+
+	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+	if (Erange < DIST_GOAL_THRESH)
+	{
+		gotGoal = false;
+	}
+
 }
