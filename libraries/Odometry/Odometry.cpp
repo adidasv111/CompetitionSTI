@@ -124,7 +124,7 @@ void calcOdometry()
     Serial.println(robotPosition[2]);
 	*/
     //update robotPosition in mm
-    robotPosition[0] += 1000*du*sin(robotPosition[2]);
+    robotPosition[0] += -1000*du*sin(robotPosition[2]);
     robotPosition[1] += 1000*du*cos(robotPosition[2]);
 /*
       Serial.print("x:   ");
