@@ -46,7 +46,7 @@
 #define PET 2
 #define TARGET 3
 #define WAYPOINT 4
-#define NB_WAYPOINTS 27
+#define NB_WAYPOINTS 26
 
 #define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
 
