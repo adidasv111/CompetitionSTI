@@ -51,3 +51,5 @@ void kalman_update(kalman_state* state, double measurement)
   state->x = state->x + state->k * (measurement - state->x);
   state->p = (1 - state->k) * state->p;
 }
+
+

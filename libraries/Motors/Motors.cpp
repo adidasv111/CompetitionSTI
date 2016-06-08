@@ -210,3 +210,32 @@ void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *ms
 	}
 
 }
+
+
+void compute_turn_speeds_coord(float* position, coord target, int *msl, int *msr)
+{
+	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+	
+	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
+	if (Ebearing > M_PI)
+		  Ebearing -= M_2PI;
+    if (Ebearing < -M_PI)
+		  Ebearing += M_2PI;
+	Ebearing -= position[2];
+	//Serial.print("Ebearing:		");
+	//Serial.println(Ebearing);
+	if (Ebearing > 0.15)
+	{
+		*msr += Kmotors_plus*abs(Ebearing);
+		*msl = -1*(*msr);
+	}
+	else if (Ebearing < -0.15)
+	{
+		*msl += Kmotors_plus*abs(Ebearing);
+		*msr = -1*(*msl);
+	}
+	else
+	{
+		
+	}
+}
