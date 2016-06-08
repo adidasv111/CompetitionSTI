@@ -1,3 +1,5 @@
 initCompass_Serial2	KEYWORD2
 readCompass_Serial2	KEYWORD2
 calibrateCompass_Serial2	KEYWORD2
+readCompass_I2C	KEYWORD2
+yawCompass	KEYWORD1

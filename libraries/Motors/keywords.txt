@@ -1,3 +1,4 @@
+gotGoal	KEYWORD1
 initMotors	KEYWORD2
 setSpeeds	KEYWORD2
 initMotors_I2C	KEYWORD2
