@@ -18,5 +18,6 @@ bool check_target();
 coord find_closest_bottle(coord robot);
 void set_target(coord new_target);
 
+extern coord waypoints[NB_WAYPOINTS];
 extern char map_array[64][64];
 #endif
