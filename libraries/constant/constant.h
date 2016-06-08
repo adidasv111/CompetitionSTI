@@ -13,7 +13,7 @@
 #define Kmotors_plus	35.0
 #define Kmotors_minus	10*Kmotors_plus
 #define DIST_GOAL_THRESH	150
-#define BEARING_GOAL_TRESH	0.15
+#define BEARING_GOAL_TRESH	0.3
 #define SPEED_UNIT_RADS	0.0137
 
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
@@ -40,10 +40,13 @@
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 
+//Mapping
 #define EMPTY 0
 #define ROBOT 1
 #define PET 2
 #define TARGET 3
+#define WAYPOINT 4
+#define NB_WAYPONTS 28
 
 #define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
 
