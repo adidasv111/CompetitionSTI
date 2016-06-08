@@ -10,6 +10,8 @@ typedef struct coordinate{
 	float y;
 } coord;
 
+
+
 void init_map();
 void set_map_value_from_pos(coord pos, char value);
 char get_map_value_from_pos(coord pos);
