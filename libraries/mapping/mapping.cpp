@@ -2,6 +2,62 @@
 char map_array[64][64];
 coord waypoints[NB_WAYPOINTS];
 
+void init_waypoint()
+{
+	waypoints[0].x = 4;
+	waypoints[0].y = 0.5;
+	waypoints[1].x = 7.5;
+	waypoints[1].y = 0.5;
+	waypoints[2].x = 7.5;
+	waypoints[2].y = 1.5;
+	waypoints[3].x = 4;
+	waypoints[3].y = 1.5;
+	waypoints[4].x = 0.5;
+	waypoints[4].y = 1.5;
+	waypoints[5].x = 0.5;
+	waypoints[5].y = 2.5;
+	waypoints[6].x = 4;
+	waypoints[6].y = 2.5;
+	waypoints[7].x = 7.5;
+	waypoints[7].y = 2.5;
+	waypoints[8].x = 7.5;
+	waypoints[8].y = 3.5;
+	waypoints[9].x = 4;
+	waypoints[9].y = 3.5;
+	waypoints[10].x = 0.5;
+	waypoints[10].y = 3.5;
+	waypoints[11].x = 0.5;
+	waypoints[11].y = 4.5;
+	waypoints[12].x = 4;
+	waypoints[12].y = 4.5;
+	waypoints[13].x = 7.5;
+	waypoints[13].y = 4.5;
+	waypoints[14].x = 7.5;
+	waypoints[14].y = 5.5;
+	waypoints[15].x = 4;
+	waypoints[15].y = 5.5;
+	waypoints[16].x = 4.5;
+	waypoints[16].y = 6.5;
+	waypoints[17].x = 4.5;
+	waypoints[17].y = 7.5;
+	waypoints[18].x = 3;
+	waypoints[18].y = 7.5;
+	waypoints[19].x = 3;
+	waypoints[19].y = 4.5;
+	waypoints[20].x = 0.5;
+	waypoints[20].y = 0.5;
+	waypoints[21].x = 0.5;
+	waypoints[21].y = 4.5;
+	waypoints[22].x = 0.5;
+	waypoints[22].y = 7.5;
+	waypoints[23].x = 1.5;
+	waypoints[23].y = 7.5;
+	waypoints[24].x = 1.5;
+	waypoints[24].y = 4;
+	waypoints[25].x = 0.5;
+	waypoints[25].y = 0.5;
+}
+
 void init_map()
 {
   int i = 0, j = 0;
