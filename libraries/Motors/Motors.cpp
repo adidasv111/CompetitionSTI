@@ -68,6 +68,11 @@ void initMotors_I2C()
 
 void setSpeeds_I2C(int speedLeft, int speedRight)
 {
+	if (speedLeft != 0)
+	{
+		speedLeft -= MS_OFFSET;
+	}
+	
 	if (speedLeft >= 255)
 		speedLeft = 255;
 	else if (speedLeft <= -255)

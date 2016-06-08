@@ -27,19 +27,31 @@ bool pi_com;
 bool goingHome = false;
 bool isDeposition = false;
 
-void pi_communication()
+//Headers for functions
+void pi_communication();
+void deposition();
+void planning();
+void tprint()
 {
-  get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
+    Serial.print("thtea");
+    Serial.println(robotPosition[2]);
 }
 
 //Tasks
+Task PlanningTask(100,TASK_FOREVER,&planning);
+Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                //Create task that is called every 100ms and last forever to calculate odometry
+Task PiComTask(1000, TASK_FOREVER, &pi_communication);              //Create task that communicate with the PI
+
 Task DoorTask(750, TASK_FOREVER, &tDoor);                           //Create task that moves the door back and forth
 Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);                //Create task that moves the pusher back and forth once
 Task PusherResetTask (PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset); //Create task that checks if pusher is reseted
-Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                //Create task that is called every 100ms and last forever to calculate odometry
+
 //Task MotorsTask(100, TASK_FOREVER, &tMotors);                     //Create task that  set the motors
 Task FullTask(2000, TASK_FOREVER, &checkFull);                      //Create task that check if full
-Task PiComTask(2000, TASK_FOREVER, &pi_communication);              //Create task that communicate with the PI
+
+Task DepositionTask(500,TASK_FOREVER, &deposition);
+Task PrintTask(1000, TASK_FOREVER, &tprint);
+
 Scheduler runner;
 
 /*
@@ -77,11 +89,16 @@ void setup() {
   runner.addTask(DoorTask);
   runner.addTask(PusherTask);
   runner.addTask(PusherResetTask);
-    
+  runner.addTask(DepositionTask);
+  runner.addTask(PlanningTask);
+  runner.addTask(PrintTask);
+  
+  //PlanningTask.enable();
   OdometryTask.enable();
   //DoorTask.enable();
   //PusherTask.enable();
-  PusherResetTask.enable();
+  //PusherResetTask.enable();
+  PrintTask.enable();
 }
 
 /*****************************LOOP*************************/
@@ -93,12 +110,6 @@ void loop() {
   robotPos.x = robotPosition[0];
   robotPos.y = robotPosition[1];
 
-  //careful about the pi values that are returned (to review)
-  get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
-  if (pi_com)
-    set_map_value_from_pos(pet_bottle, PET);
-
-  planning();
   //  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
 
   //obstacle_avoidance(&left_speed, &right_speed);
@@ -107,7 +118,7 @@ void loop() {
     Serial.print(right_speed);
        Serial.print("   ");
          Serial.println(" ");*/
- if(robotPos.y < 3000)
+ /*if(robotPos.y < 3000)
  {
     //left_speed = 200;
   //right_speed = 200;
@@ -116,18 +127,29 @@ void loop() {
  {
     left_speed = 0;
   right_speed = 0;
- }
-  obstacle_avoidance(&left_speed, &right_speed);
-  
-  setSpeeds_I2C(left_speed, right_speed);
-  set_map_value_from_pos(robotPos, ROBOT);
-  delay(500);
-}
+ }*/
 
+
+ //TESTING
+ 
+ // obstacle_avoidance(&left_speed, &right_speed);
+ left_speed = 200;
+ right_speed = 200;
+
+  if(robotPosition[2] > -M_PI/2)
+  {
+    setSpeeds_I2C(left_speed, right_speed);
+  }
+  else
+  {
+    setSpeeds_I2C(0,0);
+  }
+  set_map_value_from_pos(robotPos, ROBOT);
+}
 
 void planning()
 {
-  if (isFull) //Container is full, begin deposition process
+  if (isFull & !goingHome) //Container is full, begin deposition manoeuvre
   {
     //state= GO_HOME;
     destination.x = RECYCLE_ZONE_X;
@@ -140,42 +162,19 @@ void planning()
     doorState = 1;
     }
   }
-  if (goingHome)
+  else if (goingHome)
   {
     if (abs(robotPos.x - RECYCLE_ZONE_X) < 0.5 && abs(robotPos.y - RECYCLE_ZONE_Y) < 0.5)
     {
       goingHome = false;
+      isFull = false;
       isDeposition = true;
+      DepositionTask.enable();
     }
   }
   else if (isDeposition)
   {
-    if (doorState != 0)
-    {
-    DoorTask.disable();
-    DymxDoor_moveToInit();
-    doorState = 0;
-    }
-    if (depositionState == 0)
-    {
-        left_speed = 0;
-        right_speed = 0;
-        setSpeeds_I2C(left_speed, right_speed);
-        PusherTask.enable();
-        depositionState = 1;
-    }
-    else if (depositionState == 2)
-    {
-        left_speed = -200;
-        right_speed = -200;
-        setSpeeds_I2C(left_speed, right_speed);
-        delay(500);
-        left_speed = 0;
-        right_speed = 0;
-        setSpeeds_I2C(left_speed, right_speed);
-        depositionState = 0;
-        isDeposition = false;
-    }
+    
   }
   else
   {
@@ -213,4 +212,51 @@ void planning()
     }
     }
   }
+}
+
+
+void pi_communication()
+{
+  get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
+  if (pi_com)
+  {
+    set_map_value_from_pos(pet_bottle, PET);
+  }
+  pi_com = false;
+}
+
+void deposition()
+{
+    if (doorState != 0)
+    {
+    DoorTask.disable();
+    DymxDoor_moveToInit();
+    doorState = 0;
+    }
+    
+    if (depositionState == 0)
+    {
+        left_speed = 0;
+        right_speed = 0;
+        setSpeeds_I2C(left_speed, right_speed);    //************************
+        PusherTask.enable();
+        depositionState = 1;
+    }
+    else if (depositionState == 2)
+    {
+        left_speed = -255;
+        right_speed = -255;
+        setSpeeds_I2C(left_speed, right_speed);    //************************
+        depositionState = 3;
+    }
+        else if (depositionState == 3)
+    {
+        left_speed = 0;
+        right_speed = 0;
+        setSpeeds_I2C(left_speed, right_speed);     //************************
+        depositionState = 0;
+        isDeposition = false;
+        isFull = false;
+        DepositionTask.disable();
+    }
 }

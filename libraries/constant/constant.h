@@ -11,9 +11,10 @@
 
 //--- Motors and odometry ---
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
-#define WHEEL_BASE    0.41 		// Distance between wheels of robot (m)
-#define WHEEL_RADIUS  0.065  	// Wheel radius (meters)
+#define WHEEL_BASE    0.45 		// Distance between wheels of robot (m)
+#define WHEEL_RADIUS  0.062  	// Wheel radius (meters)
 #define TICKS_PER_REV 3591.84/4 // Wheel radius (meters) (4 since using only rising edge on channel A)
+//#define TICKS_PER_REV 8245.92/4 // Wheel radius (meters) (4 since using only rising edge on channel A)
 #define TICKS_PER_M   TICKS_PER_REV/(M_2PI*WHEEL_RADIUS)  // Wheel radius (meters)
 
 //--- Dynamixels ---
@@ -37,6 +38,8 @@
 #define ROBOT 1
 #define PET 2
 #define TARGET 3
+
+#define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
 
 
 #endif

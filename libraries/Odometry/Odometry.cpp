@@ -29,17 +29,19 @@ void initOdometry()
   //digitalWrite(encoder0PinB, HIGH);       // turn on pullup resistor
   pinMode(rightEncA, INPUT); 
   pinMode(rightEncB, INPUT); 
-  attachInterrupt(0, doEncoderLeft, RISING);  // encoder pin on interrupt 0 - pin 2
-  attachInterrupt(1, doEncoderRight, RISING);   // encoder pin on interrupt 1 - pin 3
+  pinMode(2, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(2), doEncoderLeft, RISING);  // encoder pin on interrupt 0 - pin 2
+  attachInterrupt(digitalPinToInterrupt(3), doEncoderRight, RISING);   // encoder pin on interrupt 1 - pin 3
   
-  robotPosition[0] = 0.5;
-  robotPosition[1] = 0.5;
-  robotPosition[2] = 0;
+  robotPosition[0] = 500;
+  robotPosition[1] = 500;
+  robotPosition[2] = 0; 
 }
 
 void doEncoderLeft()
 {
-  Serial.println("left encoder");
+  //Serial.println("left encoder");
 	//If (channel A == channel B) => B lead => counter-clockwise => reverse => decrement counter.
 	//If (channel A != channel B) => B late => clockwise => forward => increment counter.
 	if (digitalRead(leftEncA) == digitalRead(leftEncB))
@@ -54,7 +56,7 @@ void doEncoderLeft()
 
 void doEncoderRight()
 {
-  Serial.println("right encoder");
+  //Serial.println("right encoder");
   //If (channel A == channel B) => B lead => counter-clockwise => forward => increment counter.  ***Different from left motor! ***
   //If (channel A != channel B) => B late => clockwise => reverse => decrement counter.
 	if (digitalRead(rightEncA) == digitalRead(rightEncB))
@@ -90,12 +92,12 @@ void calcOdometry()
   	//initalize encoders counters so they are differential
   	leftEncTicks = 0;
   	rightEncTicks = 0;
-    
+    /*
     Serial.print("left:   ");
     Serial.println(leftTicks);
     Serial.print("right:   ");
     Serial.println(rightTicks);
-  
+  */
     //calculate movement of each wheel in meters
     float dist_right = rightTicks/TICKS_PER_M;
     float dist_left = leftTicks/TICKS_PER_M;
@@ -106,13 +108,13 @@ void calcOdometry()
 	
     // Keep orientation within -pi, pi
     if (theta > M_PI)
-		theta -= M_2PI;
+		  theta -= M_2PI;
     if (theta < -M_PI)
-		theta += M_2PI;
+		  theta += M_2PI;
   
 	thetaCompass = readCompass_Serial2();	// Read orientation from compass
-	
-	robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;	//Combine orientation from compass and odometry
+	robotPosition[2] = theta;
+	//robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;	//Combine orientation from compass and odometry
 	/*
 	Serial.print("theta:   ");
     Serial.println(theta);
@@ -124,11 +126,12 @@ void calcOdometry()
     //update robotPosition in mm
     robotPosition[0] += 1000*du*sin(robotPosition[2]);
     robotPosition[1] += 1000*du*cos(robotPosition[2]);
-
+/*
       Serial.print("x:   ");
     Serial.println(robotPosition[0]);
     Serial.print("y:   ");
     Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
     Serial.println(robotPosition[2]);
+    */
 }

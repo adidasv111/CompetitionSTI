@@ -11,7 +11,8 @@ char doorState = 0;                                 //0 - open, 1 - close, 2 - m
 void initDynamixels()
 {
     Serial.println("---- Initializing Dynamixels communication ----");
-    Dynamixel.begin(1000000,2);  // Initialize the servo at 1Mbps and Pin Control 2
+
+    Dynamixel.begin(1000000,7);  // Initialize the servo at 1Mbps and Pin Control 2
     delay(100);
 
     DymxPusher_Reset();
@@ -19,6 +20,7 @@ void initDynamixels()
 }
 
 //----- Pusher functions -----
+/*
 //Initialize timer2 and start it
 void startTimer2_Pusher()
 {
@@ -50,7 +52,7 @@ ISR(TIMER2_OVF_vect)
     TCNT2 = 0;           //Reset Timer to 0 out of 255
     TIFR2 = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
 };
-
+*/
 //Reset Pusher position and set to Endless
 void DymxPusher_Reset()
 {
@@ -61,9 +63,8 @@ void DymxPusher_Reset()
     delay(20);
     Dynamixel.move(DYMX_PUSHER_ID, PUSHER_INIT_POS);           //Move to initial position
     delay(1000);
-    //Dynamixel.setEndless(DYMX_PUSHER_ID, ON);                 //Set to speed mode
     if (depositionState == 1)
-        depositionState =2;
+        depositionState = 2;
     Serial.println("---- End Reset Pusher ----");
 }
 
@@ -75,9 +76,8 @@ void DymxPusher_checkReset()
         DymxPusher_Reset();
         resetPusher = false;
     }
-
 }
-
+/*
 //Start emptying manoeuvre using timer2
 void DymxPusher_EmptyBottles_Timer()
 {
@@ -86,7 +86,7 @@ void DymxPusher_EmptyBottles_Timer()
     Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);     //Move forward to empty bottles
     startTimer2_Pusher();
 }
-
+*/
 //Start emptying manoeuvre using task scheduler
 void DymxPusher_EmptyBottles_Task()
 {
