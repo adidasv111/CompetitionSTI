@@ -8,7 +8,6 @@
 
 void checkFull();			//check if container is full
 void get_info_from_pi(float *bottle_x, float *bottle_y, bool *communicate);
-void deposition(int* left_speed, int* right_speed);
 
 extern bool isFull;
 

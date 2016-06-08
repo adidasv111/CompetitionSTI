@@ -26,9 +26,9 @@
 
     void DymxPusher_Reset();                //Reset Pusher position and set to Endless
     void DymxPusher_checkReset();           //Check if Pusher must be reset
-    void startTimer2_Pusher();              //Initialize timer2 and start it
-    ISR(TIMER2_OVF_vect);                   //Timer2 Overflow Interrupt Vector, 
-    void DymxPusher_EmptyBottles();         //Start emptying manoeuvre
+    void DymxPusher_startTask();
+    void DymxPusher_EmptyBottles_Timer();   //Start emptying manoeuvre using timer2
+    void DymxPusher_EmptyBottles_Task();    //Start emptying manoeuvre using task scheduler
     
     void DymxDoor_Reset();					//Reset Door position and set to position mode
     void DymxDoor_moveToInit();				//Move door to initial position
@@ -36,4 +36,7 @@
 	void DymxDoor_close();					//Close door
 
     void tDoor();							//Task function for door
+
+    extern char doorState;                  //State for door task
+    extern char depositionState;            //State for the deposition manoeuvre: 0 - not in deposition, 1 - during deposition, 2 - deposition ended
 #endif

@@ -29,10 +29,3 @@ void get_info_from_pi(float *bottle_x, float *bottle_y, bool *communicate)
 {
 
 }
-
-void deposition(int* left_speed, int* right_speed)
-{
-  DymxPusher_EmptyBottles();
-  *left_speed = 255;
-  *right_speed = -255;
-}

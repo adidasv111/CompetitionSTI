@@ -34,7 +34,8 @@ void pi_communication()
 
 //Tasks
 Task DoorTask(750, TASK_FOREVER, &tDoor);                           //Create task that moves the door back and forth
-Task PusherResetTask (20000, TASK_FOREVER, &DymxPusher_checkReset); //Create task that checks if pusher is reseted
+Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);                //Create task that moves the pusher back and forth once
+Task PusherResetTask (PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset); //Create task that checks if pusher is reseted
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                //Create task that is called every 100ms and last forever to calculate odometry
 //Task MotorsTask(100, TASK_FOREVER, &tMotors);                     //Create task that  set the motors
 Task FullTask(2000, TASK_FOREVER, &checkFull);                      //Create task that check if full
@@ -73,9 +74,13 @@ void setup() {
   //map_array[1][1] = 0;
   runner.init();
   runner.addTask(OdometryTask);
-  OdometryTask.enable();
   runner.addTask(DoorTask);
+  runner.addTask(PusherTask);
   runner.addTask(PusherResetTask);
+    
+  OdometryTask.enable();
+  //DoorTask.enable();
+  //PusherTask.enable();
   PusherResetTask.enable();
 }
 
@@ -104,8 +109,8 @@ void loop() {
          Serial.println(" ");*/
  if(robotPos.y < 3000)
  {
-    left_speed = 200;
-  right_speed = 200;
+    //left_speed = 200;
+  //right_speed = 200;
  }
  else
  {
@@ -128,6 +133,12 @@ void planning()
     destination.x = RECYCLE_ZONE_X;
     destination.y = RECYCLE_ZONE_Y;
     goingHome = true;
+    if (doorState != 1)
+    {
+    DoorTask.disable();
+    DymxDoor_close();
+    doorState = 1;
+    }
   }
   if (goingHome)
   {
@@ -135,20 +146,40 @@ void planning()
     {
       goingHome = false;
       isDeposition = true;
-      DoorTask.disable();
-      DymxDoor_close();
     }
   }
   else if (isDeposition)
   {
+    if (doorState != 0)
+    {
     DoorTask.disable();
     DymxDoor_moveToInit();
-
-    deposition(&left_speed, &right_speed);
+    doorState = 0;
+    }
+    if (depositionState == 0)
+    {
+        left_speed = 0;
+        right_speed = 0;
+        setSpeeds_I2C(left_speed, right_speed);
+        PusherTask.enable();
+        depositionState = 1;
+    }
+    else if (depositionState == 2)
+    {
+        left_speed = -200;
+        right_speed = -200;
+        setSpeeds_I2C(left_speed, right_speed);
+        delay(500);
+        left_speed = 0;
+        right_speed = 0;
+        setSpeeds_I2C(left_speed, right_speed);
+        depositionState = 0;
+        isDeposition = false;
+    }
   }
   else
   {
-    if (check_target() == false) //Is target already present
+    if (check_target() == false) //If target isn't present
     {
       if (find_number_bottles() != 0) //Target not present, does map contain bottles
       {
@@ -156,13 +187,17 @@ void planning()
         destination = find_closest_bottle(robotPos);
         //state = GO_TO_BOTTLE;
         //target=true;
+
         set_target(destination);
-        DoorTask.enable();
       }
       else
       {
+                    if (doorState != 1)
+    {
         DoorTask.disable();
         DymxDoor_close();
+        doorState = 1;
+    }
         grid_search(&destination.x, &destination.y); //No target, No bottles, continue grid search
         set_target(destination);
       }
@@ -171,6 +206,11 @@ void planning()
     {
       //state = GO_TO_BOTTLE;
       //target = true;
+           if (doorState != 2)
+    {
+        DoorTask.enable();
+        doorState = 2;
+    }
     }
   }
 }

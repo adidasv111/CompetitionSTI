@@ -18,9 +18,11 @@
 
 //--- Dynamixels ---
 //Pusher
-#define PUSHER_TIME     600                 //4.896 sec
+#define PUSHER_TIME     600
 #define PUSHER_INIT_POS 800
 #define PUSHER_SPEED	1000
+#define PUSHER_HALF_PERIOD 10000				//in ms
+#define PUSHER_RESET_PERIOD	25000
 //Door
 #define DOOR_INIT_POS	75
 #define DOOR_END_POS	250
