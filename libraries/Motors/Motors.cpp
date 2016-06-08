@@ -218,7 +218,7 @@ Serial.print("Ebearing:		");
 }
 
 
-void compute_turn_speeds_coord(float* position, coord target, int *msl, int *msr)
+void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr)
 {
 	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
 	
@@ -228,18 +228,19 @@ void compute_turn_speeds_coord(float* position, coord target, int *msl, int *msr
     if (Ebearing < -M_PI)
 		  Ebearing += M_2PI;
 	Ebearing -= position[2];
-	if (Ebearing > 0.15)
+
+	if (Ebearing > BEARING_GOAL_TRESH)
 	{
 		*msr += Kmotors_plus*abs(Ebearing);
 		*msl = -1*(*msr);
 	}
-	else if (Ebearing < -0.15)
+	else if (Ebearing < -BEARING_GOAL_TRESH)
 	{
 		*msl += Kmotors_plus*abs(Ebearing);
 		*msr = -1*(*msl);
 	}
 	else
 	{
-		
+		compute_wheel_speeds_coord(position, target, msl, msr);
 	}
 }
