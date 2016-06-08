@@ -4,3 +4,4 @@ initMotors_I2C	KEYWORD2
 setSpeeds_I2C	KEYWORD2
 compute_wheel_speeds	KEYWORD2
 compute_wheel_speeds_coord	KEYWORD2
+compute_waypoint_speeds_coord	KEYWORD2
