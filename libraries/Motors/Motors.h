@@ -15,5 +15,5 @@
 	void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr);
 	void compute_wheel_speeds(float target_range, float target_bearing, int *msl, int *msr);
 	void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr);
-	extern bool gotGoal;
+	extern bool gotBottle;
 #endif

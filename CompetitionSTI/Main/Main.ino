@@ -23,6 +23,7 @@ int left_speed = 0, right_speed = 0;
 
 coord pet_bottle;
 bool pi_com;
+bool isCapuring = false;
 
 bool goingHome = false;
 bool isDeposition = false;
@@ -31,6 +32,10 @@ bool isDeposition = false;
 void pi_communication();
 void deposition();
 void planning();
+void tCaptureBottle()
+{
+    gotBottle = false;
+}
 void tprint()
 {
   Serial.print("x:   ");
@@ -56,7 +61,7 @@ Task PusherResetTask (PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset)
 
 //Task MotorsTask(100, TASK_FOREVER, &tMotors);                     //Create task that  set the motors
 Task FullTask(2000, TASK_FOREVER, &checkFull);                      //Create task that check if full
-
+Task CaptureBottleTask(1000, 1, &tCaptureBottle);
 Task DepositionTask(500, TASK_FOREVER, &deposition);
 Task PrintTask(1000, TASK_FOREVER, &tprint);
 
@@ -119,7 +124,7 @@ void loop() {
   robotPos.y = robotPosition[1];
 
   //  compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
-
+  //TESTING
   //obstacle_avoidance(&left_speed, &right_speed);
   /* Serial.print(left_speed);
        Serial.print("   ");
@@ -136,21 +141,21 @@ void loop() {
      left_speed = 0;
     right_speed = 0;
     }*/
-  left_speed = 200;
+/*  left_speed = 200;
   right_speed = 200;
   destination.x = -1500;
   destination.y = -1500;
   compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed);
-  if (gotGoal)
+  if (gotBottle)
   {
     left_speed = 0;
     right_speed = 0;
   }
   setSpeeds_I2C(left_speed, right_speed);
-  //TESTING
+
 
   // obstacle_avoidance(&left_speed, &right_speed);
-  //set_map_value_from_pos(robotPos, ROBOT);
+  //set_map_value_from_pos(robotPos, ROBOT);*/
 }
 
 void planning()
@@ -182,28 +187,34 @@ void planning()
   {
 
   }
+  else if (gotBottle)
+  {
+    left_speed = 255;
+    right_speed = 255;
+  }
   else
   {
-    if (check_target() == false) //If target isn't present
+    if (check_target() == false)        //If target isn't present
     {
-      if (find_number_bottles() != 0) //Target not present, does map contain bottles
+      if (find_number_bottles() != 0)   //Target not present, does map contain bottles?
       {
-        //Bottle has been found, set as new target and destination
+        //Bottle has been found, set closest bottle as new target and destination
         destination = find_closest_bottle(robotPos);
         //state = GO_TO_BOTTLE;
         //target=true;
-        compute_wheel_speeds_coord(destination, &left_speed, &right_speed);
-        set_target(destination);
+        set_target(destination);        //set target in map
+        compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed);  //compute speeds to go to bottle
       }
-      else
+      else                          // no target, go to next waypoint
       {
-        if (doorState != 1)
+        if (doorState != 1)         //close the door
         {
           DoorTask.disable();
           DymxDoor_close();
           doorState = 1;
         }
-        grid_search(&destination.x, &destination.y); //No target, No bottles, continue grid search
+        destination.x = waypoints[currentWaypoint].x;
+        destination.y = waypoints[currentWaypoint].y;
         set_target(destination);
       }
     }
@@ -216,6 +227,7 @@ void planning()
         DoorTask.enable();
         doorState = 2;
       }
+     // compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed);  //compute speeds to go to bottle
     }
   }
 }

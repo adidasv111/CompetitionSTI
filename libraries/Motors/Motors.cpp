@@ -11,7 +11,7 @@
 // mode: 0=reverse, 1=brake, 2=forward
 // PWM: PWM value for right motor speed / brake
 
-bool gotGoal = false;
+bool gotBottle = false;
 /** Initialize the motors and set wheel speeds to 0
 	
 	@return void
@@ -214,7 +214,14 @@ void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *ms
 	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
 	if (Erange < DIST_GOAL_THRESH)
 	{
-		gotGoal = true;
+		if(check_target())		//just captured a bottle
+		{
+			gotBottle = true;
+		}
+		else
+		{
+			currentWaypoint++;
+		}
 	}
 
 }

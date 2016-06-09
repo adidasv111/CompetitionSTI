@@ -1,6 +1,7 @@
 #include "mapping.h"
 char map_array[64][64];
 coord waypoints[NB_WAYPOINTS];
+char currentWaypoint;
 
 void init_waypoint()
 {
