@@ -11,16 +11,17 @@
 // mode: 0=reverse, 1=brake, 2=forward
 // PWM: PWM value for right motor speed / brake
 
-bool gotBottle = false;
+    bool gotBottle = false;
+    bool gotHome = false;
 /** Initialize the motors and set wheel speeds to 0
 	
 	@return void
 */
-void initMotors()
-{
-  Serial3.begin(motorControllerBrate);
-  setSpeeds(0, 0);
-}
+	void initMotors()
+	{
+		Serial3.begin(motorControllerBrate);
+		setSpeeds(0, 0);
+	}
 
 /** Set the values of the wheel speeds
 	
@@ -28,17 +29,17 @@ void initMotors()
 	@param right_speed Speed of the right wheels
 	@return void
 */
-void setSpeeds(int speedLeft, int speedRight)
-{
-	if(speedLeft > 255)
-		speedLeft = 255;
-	else if(speedLeft < -255)
-		speedLeft = -255;
+	void setSpeeds(int speedLeft, int speedRight)
+	{
+		if(speedLeft > 255)
+			speedLeft = 255;
+		else if(speedLeft < -255)
+			speedLeft = -255;
 		
-	if(speedRight > 255)
-		speedRight = 255;
-	else if(speedRight < -255)
-		speedRight = -255;
+		if(speedRight > 255)
+			speedRight = 255;
+		else if(speedRight < -255)
+			speedRight = -255;
   // Serial3.write("HB");
   unsigned int LeftMode = (speedLeft > 0) - (speedLeft < 0) + 1;	//returns positive->2, zero->1, negative->0
   unsigned int LeftPWM = abs(speedLeft);
@@ -47,9 +48,9 @@ void setSpeeds(int speedLeft, int speedRight)
   unsigned int RightPWM = abs(speedRight);
 
   if (speedLeft == 0)
-    LeftPWM = 255;
+  	LeftPWM = 255;
   if (speedRight == 0)
-    RightPWM = 255;
+  	RightPWM = 255;
 
   Serial3.write(LeftMode);
   Serial3.write(LeftPWM);
@@ -60,8 +61,8 @@ void setSpeeds(int speedLeft, int speedRight)
 
 void initMotors_I2C()
 {
-  Wire.begin();
-  setSpeeds(0, 0);
+	Wire.begin();
+	setSpeeds(0, 0);
 }
 
 
@@ -88,10 +89,10 @@ void setSpeeds_I2C(int speedLeft, int speedRight)
   unsigned int RightPWM = abs(speedRight);
 
   if (speedLeft == 0)
-    LeftPWM = 255;
+  	LeftPWM = 255;
   if (speedRight == 0)
-    RightPWM = 255;
-    
+  	RightPWM = 255;
+
   Wire.beginTransmission(1);
   Wire.write(LeftMode);
   Wire.write(LeftPWM);
@@ -100,6 +101,91 @@ void setSpeeds_I2C(int speedLeft, int speedRight)
   Wire.endTransmission();
 }
 
+
+void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
+{
+	if ((target.x >= 0 && target.x <= 8000) && (target.y >= 0 && target.y <= 8000))
+	{
+		float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
+		if (Ebearing > M_PI)
+			Ebearing -= M_2PI;
+		if (Ebearing < -M_PI)
+			Ebearing += M_2PI;
+
+		Ebearing -= position[2];
+
+		if (Ebearing > M_PI)
+			Ebearing -= M_2PI;
+		if (Ebearing < -M_PI)
+			Ebearing += M_2PI;
+
+		if (Ebearing > 0 && Ebearing < M_PI2)
+		{
+			*msl -= Kmotors_minus*abs(Ebearing);
+			*msr += Kmotors_plus*abs(Ebearing);
+		}
+		else if (Ebearing < 0 && Ebearing > -M_PI2)
+		{
+			*msl += Kmotors_plus*abs(Ebearing);
+			*msr -= Kmotors_minus*abs(Ebearing);
+		}	
+		else if (Ebearing > M_PI2)
+		{
+			*msl = -255;
+			*msr = 255;
+		}
+		else if (Ebearing < -M_PI2)
+		{
+			*msl = 255;
+			*msr = -255;
+		}
+
+		float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+		if (Erange < DIST_GOAL_THRESH)
+		{
+			if(robotState == GOING_TO_BOTTLE)		//just captured a bottle
+			{
+				gotBottle = true;
+			}
+			else if (robotState == GOING_HOME)
+			{
+				gotHome = true;
+			}
+			else if (robotState == GOING_TO_WAYPOINT)
+			{
+				currentWaypoint++;
+			}
+		}
+	}
+}
+
+
+void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
+{
+	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+	
+	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
+	if (Ebearing > M_PI)
+		Ebearing -= M_2PI;
+	if (Ebearing < -M_PI)
+		Ebearing += M_2PI;
+	Ebearing -= position[2];
+
+	if (Ebearing > BEARING_GOAL_TRESH)
+	{
+		*msr += Kmotors_plus*abs(Ebearing);
+		*msl = -1*(*msr);
+	}
+	else if (Ebearing < -BEARING_GOAL_TRESH)
+	{
+		*msl += Kmotors_plus*abs(Ebearing);
+		*msr = -1*(*msl);
+	}
+	else
+	{
+			(position, target, msl, msr, robotState);
+	}
+}
 
 /** Adjust wheel speeds to follow target based on target 
 	range and bearing
@@ -110,6 +196,7 @@ void setSpeeds_I2C(int speedLeft, int speedRight)
 	@param msr Speed of the right motors
 	@return void
 */
+/*
 void compute_wheel_speeds(float target_range, float target_bearing, int *msl, int *msr)
 {
 	// Define constants
@@ -136,7 +223,7 @@ void compute_wheel_speeds(float target_range, float target_bearing, int *msl, in
 	*msl = (int)((u - WHEEL_BASE*w/2.0) / (SPEED_UNIT_RADS * WHEEL_RADIUS));
 	*msr = (int)((u + WHEEL_BASE*w/2.0) / (SPEED_UNIT_RADS * WHEEL_RADIUS));
 }
-
+*/
 /** Adjust wheel speeds to follow target based on target 
 	coordinates
 	
@@ -145,7 +232,7 @@ void compute_wheel_speeds(float target_range, float target_bearing, int *msl, in
 	@param msr Speed of the right motors
 	@return void
 */
-	/*
+/*
 void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 {
 	//target is coordinate relative to the current robot position
@@ -173,83 +260,3 @@ void compute_wheel_speeds_coord(coord target, int *msl, int *msr)
 	*msr = (int)((u + WHEEL_BASE*w/2.0) / (SPEED_UNIT_RADS * WHEEL_RADIUS));
 }
 */
-void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr)
-{
-	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
-	if (Ebearing > M_PI)
-		  Ebearing -= M_2PI;
-    if (Ebearing < -M_PI)
-		  Ebearing += M_2PI;
-
-	Ebearing -= position[2];
-
-	if (Ebearing > M_PI)
-		  Ebearing -= M_2PI;
-    if (Ebearing < -M_PI)
-		  Ebearing += M_2PI;
-//Serial.print("Ebearing:		");
-//	Serial.println(Ebearing);
-	
-	if (Ebearing > 0 && Ebearing < M_PI2)
-	{
-		*msl -= Kmotors_minus*abs(Ebearing);
-		*msr += Kmotors_plus*abs(Ebearing);
-	}
-	else if (Ebearing < 0 && Ebearing > -M_PI2)
-	{
-		*msl += Kmotors_plus*abs(Ebearing);
-		*msr -= Kmotors_minus*abs(Ebearing);
-	}	
-	else if (Ebearing > M_PI2)
-	{
-		*msl = -255;
-		*msr = 255;
-	}
-	else if (Ebearing < -M_PI2)
-	{
-		*msl = 255;
-		*msr = -255;
-	}
-
-	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-	if (Erange < DIST_GOAL_THRESH)
-	{
-		if(check_target())		//just captured a bottle
-		{
-			gotBottle = true;
-		}
-		else
-		{
-			currentWaypoint++;
-		}
-	}
-
-}
-
-
-void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr)
-{
-	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-	
-	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
-	if (Ebearing > M_PI)
-		  Ebearing -= M_2PI;
-    if (Ebearing < -M_PI)
-		  Ebearing += M_2PI;
-	Ebearing -= position[2];
-
-	if (Ebearing > BEARING_GOAL_TRESH)
-	{
-		*msr += Kmotors_plus*abs(Ebearing);
-		*msl = -1*(*msr);
-	}
-	else if (Ebearing < -BEARING_GOAL_TRESH)
-	{
-		*msl += Kmotors_plus*abs(Ebearing);
-		*msr = -1*(*msl);
-	}
-	else
-	{
-		compute_wheel_speeds_coord(position, target, msl, msr);
-	}
-}

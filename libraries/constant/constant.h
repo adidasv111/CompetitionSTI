@@ -5,17 +5,27 @@
 #define M_2PI			2.0*M_PI
 #define M_PI2			0.5*M_PI
 
-#define RECYCLE_ZONE_X  0.5
-#define RECYCLE_ZONE_Y  0.5
+#define ERROR 			-1
 
+// States for machine state
+#define GOING_TO_WAYPOINT 		0
+#define GOING_TO_BOTTLE			1
+#define GOING_HOME		2
+#define DEPOSITION		3
 
-//--- Motors and odometry ---
+//--- Motors ---
+#define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
+
 #define Kmotors_plus	35.0
 #define Kmotors_minus	10*Kmotors_plus
 #define DIST_GOAL_THRESH	150
 #define BEARING_GOAL_TRESH	0.3
 #define SPEED_UNIT_RADS	0.0137
 
+//--- Odometry ---
+#define INIT_X			500
+#define INIT_Y			500
+#define INIT_THETA			0
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
 #define WHEEL_BASE    0.45 		// Distance between wheels of robot (m)
 #define WHEEL_RADIUS  0.062  	// Wheel radius (meters)
@@ -35,8 +45,11 @@
 #define DOOR_END_POS	250
 #define DOOR_CLOSE_POS	400
 #define DOOR_SPEED		300
-#define DOOR_HALF_PERIOD 500				//in ms
+#define DOOR_HALF_PERIOD 750				//in ms
 
+#define DOOR_OPEN		0
+#define DOOR_CLOSE		1
+#define DOOR_MOVE		2
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 
@@ -48,7 +61,7 @@
 #define WAYPOINT 4
 #define NB_WAYPOINTS 26
 
-#define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
-
+#define RECYCLE_ZONE_X  0.3
+#define RECYCLE_ZONE_Y  0.3
 
 #endif

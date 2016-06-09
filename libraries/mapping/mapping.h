@@ -1,6 +1,6 @@
 #ifndef MAPPING_H
 #define MAPPING_H
- 
+
 #include <Arduino.h>
 #include <constant.h>
 
@@ -20,7 +20,11 @@ bool check_target();
 coord find_closest_bottle(coord robot);
 void set_target(coord new_target);
 
+extern char map_array[64][64];
+
 extern coord waypoints[NB_WAYPOINTS];
 extern char currentWaypoint;
-extern char map_array[64][64];
+
+//extern std::vector<coord> bottles;
+
 #endif

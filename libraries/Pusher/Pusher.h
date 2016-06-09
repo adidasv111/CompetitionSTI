@@ -2,8 +2,8 @@
 #define PUSHER_H
 
 #include <Arduino.h>
-#include <DynamixelSerial.h>
 #include <constant.h>
+#include <DynamixelSerial.h>
 
 #define DYMX_PUSHER_ID  11
 #define DYMX_DOOR_ID	5

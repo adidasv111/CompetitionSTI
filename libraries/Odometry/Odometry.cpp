@@ -21,22 +21,22 @@ volatile int rightEncTicks = 0;
 	
 	@return void
 */
-void initOdometry()
-{
-  pinMode(leftEncA, INPUT); 
+  void initOdometry()
+  {
+    pinMode(leftEncA, INPUT); 
   //digitalWrite(encoder0PinA, HIGH);       // turn on pullup resistor
-  pinMode(leftEncB, INPUT); 
+    pinMode(leftEncB, INPUT); 
   //digitalWrite(encoder0PinB, HIGH);       // turn on pullup resistor
-  pinMode(rightEncA, INPUT); 
-  pinMode(rightEncB, INPUT); 
-  pinMode(2, INPUT_PULLUP);
-  pinMode(3, INPUT_PULLUP);
+    pinMode(rightEncA, INPUT); 
+    pinMode(rightEncB, INPUT); 
+    pinMode(2, INPUT_PULLUP);
+    pinMode(3, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(2), doEncoderLeft, RISING);  // encoder pin on interrupt 0 - pin 2
   attachInterrupt(digitalPinToInterrupt(3), doEncoderRight, RISING);   // encoder pin on interrupt 1 - pin 3
   
-  robotPosition[0] = 500;
-  robotPosition[1] = 500;
-  robotPosition[2] = 0; 
+  robotPosition[0] = INIT_X;
+  robotPosition[1] = INIT_Y;
+  robotPosition[2] = INIT_THETA; 
 }
 
 void doEncoderLeft()
@@ -103,15 +103,15 @@ void calcOdometry()
     float dist_left = leftTicks/TICKS_PER_M;
 
     float du = (dist_right + dist_left)/2.0;
-	
-   	theta += (dist_right - dist_left)/WHEEL_BASE;
-	
+    
+    theta += (dist_right - dist_left)/WHEEL_BASE;
+    
     // Keep orientation within -pi, pi
     if (theta > M_PI)
-		  theta -= M_2PI;
+      theta -= M_2PI;
     if (theta < -M_PI)
-		  theta += M_2PI;
-  
+      theta += M_2PI;
+    
 	thetaCompass = readCompass_Serial2();	// Read orientation from compass
 	robotPosition[2] = theta;
 	//robotPosition[2] = COMPASS_WEIGHT*thetaCompass + (1-COMPASS_WEIGHT)*theta;	//Combine orientation from compass and odometry
@@ -134,4 +134,4 @@ void calcOdometry()
   Serial.print(" theta:   ");
     Serial.println(robotPosition[2]);
     */
-}
+  }
