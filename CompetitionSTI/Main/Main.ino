@@ -46,14 +46,16 @@ void tprint()
   Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
   Serial.println(robotPosition[2]);
-  /*Serial.print("left:   ");
-    Serial.print(left_speed);
-    Serial.print("      right:   ");
-    Serial.println(right_speed);*/
+  Serial.print("left:   ");
+  Serial.print(left_speed);
+  Serial.print("      right:   ");
+  Serial.println(right_speed);
   Serial.print("current target:   ");
   Serial.print(destination.x);
   Serial.print(" , ");
   Serial.println(destination.y);
+  Serial.print("state:   ");
+  Serial.println((int)robotState);
 }
 
 //Tasks
@@ -63,7 +65,7 @@ Task CaptureBottleTask(1000, 1, &tCaptureBottle);                               
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
-Task DepositionTask(500, TASK_FOREVER, &deposition);                                //Deposition manoeuvre
+Task DepositionTask(100, TASK_FOREVER, &deposition);                                //Deposition manoeuvre
 Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);              //Create task that moves the pusher back and forth once
 Task PusherResetTask (PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);   //Create task that checks if pusher is reseted
 
@@ -73,7 +75,8 @@ Task PrintTask(1000, TASK_FOREVER, &tprint);
 Scheduler runner;
 
 //*****************************SETUP*************************/
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   initCompass_Serial2();
   initOdometry();
@@ -123,36 +126,38 @@ void planning()
 {
   left_speed = 200;
   right_speed = 200;
-  /*  if (isFull && robotState != GOING_HOME) //Container is full, start going home
-    {
-      robotState = GOING_HOME;              //state = GOING_HOME;
-    }
-    if (robotState == GOING_HOME)         //going home
-    {
-      destination.x = RECYCLE_ZONE_X;
-      destination.y = RECYCLE_ZONE_Y;
-      compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-      DymxDoor_setState(DOOR_CLOSE);          //close the door when going home
+  if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+  {
+    robotState = GOING_HOME;              //state = GOING_HOME;
+  }
+  if (robotState == GOING_HOME)         //going home
+  {
+    destination.x = HOME_X;
+    destination.y = HOME_Y;
+    compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
+    DymxDoor_setState(DOOR_CLOSE);          //close the door when going home
 
-      if (gotHome)                            //if got home
-      {
-        robotState = DEPOSITION;
-        DepositionTask.enable();
-      }
-    }
-    else if (robotState == DEPOSITION)
+    if (gotHome)                            //if got home
     {
-      //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
+      robotState = DEPOSITION;
+      //DepositionTask.enable();
     }
-    else if (gotBottle)
-    {
-      CaptureBottleTask.enableIfNot();
-      left_speed = 255;
-      right_speed = 255;
-    }
-    else
-    {
-      if (check_target() == false)        //If target isn't present
+  }
+  else if (robotState == DEPOSITION)
+  {
+    destination.x = HOME_X;
+    destination.y = HOME_Y;
+    deposition();//DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
+  }
+  else if (gotBottle)
+  {
+    CaptureBottleTask.enableIfNot();
+    left_speed = 255;
+    right_speed = 255;
+  }
+  else
+  {
+    /*  if (check_target() == false)        //If target isn't present
       {
         if (find_number_bottles() != 0)   //Target not present, does map contain bottles?
         {
@@ -179,17 +184,25 @@ void planning()
         DymxDoor_setState(DOOR_MOVE);
 
         // compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-      }
-    }
-  */
-  destination.x = waypoints[currentWaypoint].x;
-  destination.y = waypoints[currentWaypoint].y;
-  Serial.print("current target:   ");
-  Serial.print(destination.x);
-  Serial.print(" , ");
-  Serial.println(destination.y);
-  compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-  // obstacle_avoidance(&left_speed, &right_speed);
+      }*/
+     // Serial.println("else");
+    destination.x = waypoints[currentWaypoint].x;
+    destination.y = waypoints[currentWaypoint].y;
+    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+  }
+
+
+  if (currentWaypoint == 5)
+  {
+    isFull = true;
+  }
+/*
+  if (gotHome)
+  {
+    left_speed = 0;
+    right_speed = 0;
+  }
+  */// obstacle_avoidance(&left_speed, &right_speed);
   setSpeeds_I2C(left_speed, right_speed);
 }
 
@@ -208,12 +221,14 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 1)
   {
+        left_speed = 0;
+    right_speed = 0;
     //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
   }
   else if (depositionState == 2)
   {
-    left_speed = -255;
-    right_speed = -255;
+    left_speed = -240;
+    right_speed = -240;
     //setSpeeds_I2C(left_speed, right_speed);    //************************
     depositionState = 3;
   }

@@ -13,6 +13,17 @@
 #define GOING_HOME		2
 #define DEPOSITION		3
 
+//Mapping
+#define EMPTY 0
+#define ROBOT 1
+#define PET 2
+#define TARGET 3
+#define WAYPOINT 4
+#define NB_WAYPOINTS 26
+
+#define HOME_X  500
+#define HOME_Y  500
+
 //--- Motors ---
 #define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
 
@@ -53,15 +64,5 @@
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 
-//Mapping
-#define EMPTY 0
-#define ROBOT 1
-#define PET 2
-#define TARGET 3
-#define WAYPOINT 4
-#define NB_WAYPOINTS 26
-
-#define RECYCLE_ZONE_X  0.3
-#define RECYCLE_ZONE_Y  0.3
 
 #endif

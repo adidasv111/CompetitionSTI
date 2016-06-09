@@ -10,14 +10,22 @@ void init_waypoints()
 {
 	waypoints[0].x = 4000;
 	waypoints[0].y = 500;
-	waypoints[1].x = 7500;
+	waypoints[1].x = 4000;
+	waypoints[1].y = 1500;
+	waypoints[2].x = 4000;
+	waypoints[2].y = 3000;
+	waypoints[3].x = 500;
+	waypoints[3].y = 3000;
+	waypoints[4].x = 500;
+	waypoints[4].y = 1500;
+	/*waypoints[1].x = 7500;
 	waypoints[1].y = 500;
 	waypoints[2].x = 7500;
 	waypoints[2].y = 1500;
 	waypoints[3].x = 4000;
 	waypoints[3].y = 1500;
 	waypoints[4].x = 500;
-	waypoints[4].y = 1500;
+	waypoints[4].y = 1500;*/
 	waypoints[5].x = 500;
 	waypoints[5].y = 2500;
 	waypoints[6].x = 4000;
