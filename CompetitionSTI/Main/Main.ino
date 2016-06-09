@@ -31,7 +31,7 @@ bool isCapuring = false;
 bool goingHome = false;
 bool isDeposition = false;
 
-//Headers for functions
+//----- Headers for functions -----
 void pi_communication();
 void deposition();
 void DymxDoor_setState(int state);
@@ -56,6 +56,7 @@ void tprint()
   Serial.println(destination.y);
   Serial.print("state:   ");
   Serial.println((int)robotState);
+  Serial.println(isFull);
 }
 
 //Tasks
@@ -65,7 +66,7 @@ Task CaptureBottleTask(1000, 1, &tCaptureBottle);                               
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
-Task DepositionTask(100, TASK_FOREVER, &deposition);                                //Deposition manoeuvre
+//Task DepositionTask(100, TASK_FOREVER, &deposition);                                //Deposition manoeuvre
 Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);              //Create task that moves the pusher back and forth once
 Task PusherResetTask (PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);   //Create task that checks if pusher is reseted
 
@@ -78,16 +79,15 @@ Scheduler runner;
 void setup()
 {
   Serial.begin(9600);
-  initCompass_Serial2();
+  //initCompass_Serial2();
   initOdometry();
-  init_map();
   init_waypoints();
+  init_bottlesArray();
   initMotors_I2C();
   initDynamixels();             //Already includes DymxPusher_Reset() and DymxDoor_Reset()
   //initIMU(0);
   //calibrateCompass_Serial2();
 
-  //map_array[1][1] = 0;
   destination.x = INIT_X;
   destination.y = INIT_Y;
 
@@ -98,7 +98,7 @@ void setup()
 
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
-  runner.addTask(DepositionTask);
+  //runner.addTask(DepositionTask);
   runner.addTask(PusherTask);
   runner.addTask(PusherResetTask);
 
@@ -132,10 +132,10 @@ void planning()
   }
   if (robotState == GOING_HOME)         //going home
   {
+    DymxDoor_setState(DOOR_CLOSE);          //close the door when going home
     destination.x = HOME_X;
     destination.y = HOME_Y;
-    compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-    DymxDoor_setState(DOOR_CLOSE);          //close the door when going home
+    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
 
     if (gotHome)                            //if got home
     {
@@ -149,61 +149,48 @@ void planning()
     destination.y = HOME_Y;
     deposition();//DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
   }
-  else if (gotBottle)
+  else if (robotState == GOING_TO_WAYPOINT)
   {
-    CaptureBottleTask.enableIfNot();
-    left_speed = 255;
-    right_speed = 255;
+    destination = findClosestBottle(robotPosition);
+    if (destination.x != -1)    //new target found
+    {
+      robotState == GOING_TO_BOTTLE;
+    }
+    else        // no new target found
+    {
+      DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      destination.x = waypoints[currentWaypoint].x;
+      destination.y = waypoints[currentWaypoint].y;
+      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+    }
   }
-  else
+  else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
   {
-    /*  if (check_target() == false)        //If target isn't present
-      {
-        if (find_number_bottles() != 0)   //Target not present, does map contain bottles?
-        {
-          //Bottle has been found, set closest bottle as new target and destination
-          destination = find_closest_bottle(robotPos);
-          robotState = GOING_TO_BOTTLE;       //state = GO_TO_BOTTLE;
-          //target=true;
-          set_target(destination);        //set target in map
-          compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-          DymxDoor_setState(DOOR_OPEN);          //open the door when going to bottle
-        }
-        else                              // no target, go to next waypoint
-        {
-          destination.x = waypoints[currentWaypoint].x;
-          destination.y = waypoints[currentWaypoint].y;
-          compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-          DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
-        }
-      }
-      else //Target already present, robot must continue tragectory towards target
-      {
-        //state = GO_TO_BOTTLE;
-        //target = true;
-        DymxDoor_setState(DOOR_MOVE);
+    DymxDoor_setState(DOOR_MOVE);   //start moving door
+    //destination is already set to target
+    compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
 
-        // compute_wheel_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-      }*/
-     // Serial.println("else");
-    destination.x = waypoints[currentWaypoint].x;
-    destination.y = waypoints[currentWaypoint].y;
-    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+    if (gotBottle)
+    {
+      CaptureBottleTask.enableIfNot();
+      left_speed = 255;
+      right_speed = 255;
+    }
   }
+if (currentWaypoint == 5)
+{
+  isFull = true;
+}
 
-
-  if (currentWaypoint == 5)
-  {
-    isFull = true;
-  }
 /*
   if (gotHome)
   {
     left_speed = 0;
     right_speed = 0;
   }
-  */// obstacle_avoidance(&left_speed, &right_speed);
-  setSpeeds_I2C(left_speed, right_speed);
+*/
+// obstacle_avoidance(&left_speed, &right_speed);
+setSpeeds_I2C(left_speed, right_speed);
 }
 
 void deposition()                   //Deposition manoeuvre
@@ -221,7 +208,7 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 1)
   {
-        left_speed = 0;
+    left_speed = 0;
     right_speed = 0;
     //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
   }
@@ -234,7 +221,7 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 3)
   {
-    DepositionTask.disable();
+    //DepositionTask.disable();
     left_speed = 0;
     right_speed = 0;
     //setSpeeds_I2C(left_speed, right_speed);     //************************
@@ -280,7 +267,7 @@ void pi_communication()
   get_info_from_pi(&pet_bottle.x, &pet_bottle.y, &pi_com);
   if (pi_com)
   {
-    set_map_value_from_pos(pet_bottle, PET);
+    //    set_map_value_from_pos(pet_bottle, PET);
   }
   pi_com = false;
 }
@@ -289,4 +276,5 @@ void tCaptureBottle()
 {
   gotBottle = false;
   CaptureBottleTask.disable();
+  robotState == GOING_TO_WAYPOINT;
 }

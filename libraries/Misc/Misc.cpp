@@ -21,6 +21,8 @@ void checkFull()
   {
     isFull = false;
   }
+
+  isFull = false; //*******
 }
 
 

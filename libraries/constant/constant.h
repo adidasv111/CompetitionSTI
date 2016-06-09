@@ -14,15 +14,17 @@
 #define DEPOSITION		3
 
 //Mapping
-#define EMPTY 0
-#define ROBOT 1
-#define PET 2
-#define TARGET 3
-#define WAYPOINT 4
-#define NB_WAYPOINTS 26
-
 #define HOME_X  500
 #define HOME_Y  500
+
+#define EMPTY 0
+#define BOTTLE 1
+#define TARGET 2
+//#define TARGET 3
+//#define WAYPOINT 4
+
+#define NB_WAYPOINTS 26
+#define NB_BOTTLES_ARRAY	30
 
 //--- Motors ---
 #define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers
@@ -30,7 +32,7 @@
 #define Kmotors_plus	35.0
 #define Kmotors_minus	10*Kmotors_plus
 #define DIST_GOAL_THRESH	150
-#define BEARING_GOAL_TRESH	0.3
+#define BEARING_GOAL_TRESH	0.15
 #define SPEED_UNIT_RADS	0.0137
 
 //--- Odometry ---

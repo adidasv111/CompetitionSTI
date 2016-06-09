@@ -102,7 +102,7 @@ void setSpeeds_I2C(int speedLeft, int speedRight)
 }
 
 
-void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
+void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
 {
 	if ((target.x >= 0 && target.x <= 8000) && (target.y >= 0 && target.y <= 8000))
 	{
@@ -146,6 +146,7 @@ void compute_wheel_speeds_coord(float* position, coord target, int *msl, int *ms
 			if(robotState == GOING_TO_BOTTLE)		//just captured a bottle
 			{
 				gotBottle = true;
+				removeTarget();
 			}
 			else if (robotState == GOING_HOME)
 			{
@@ -183,7 +184,7 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	}
 	else
 	{
-			(position, target, msl, msr, robotState);
+		compute_bottle_speeds_coord(position, target, msl, msr, robotState);
 	}
 }
 

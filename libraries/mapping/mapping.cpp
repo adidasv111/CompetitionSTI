@@ -4,73 +4,136 @@ char map_array[64][64];
 coord waypoints[NB_WAYPOINTS];
 char currentWaypoint;
 
-//std::vector<coord> bottles;	
+bottle bottlesArray[NB_BOTTLES_ARRAY];
 
+//initiliaze waypoints array
 void init_waypoints()
 {
-	waypoints[0].x = 4000;
-	waypoints[0].y = 500;
-	waypoints[1].x = 4000;
-	waypoints[1].y = 1500;
-	waypoints[2].x = 4000;
-	waypoints[2].y = 3000;
-	waypoints[3].x = 500;
-	waypoints[3].y = 3000;
-	waypoints[4].x = 500;
-	waypoints[4].y = 1500;
-	/*waypoints[1].x = 7500;
-	waypoints[1].y = 500;
-	waypoints[2].x = 7500;
-	waypoints[2].y = 1500;
-	waypoints[3].x = 4000;
-	waypoints[3].y = 1500;
-	waypoints[4].x = 500;
-	waypoints[4].y = 1500;*/
-	waypoints[5].x = 500;
-	waypoints[5].y = 2500;
-	waypoints[6].x = 4000;
-	waypoints[6].y = 2500;
-	waypoints[7].x = 7500;
-	waypoints[7].y = 2500;
-	waypoints[8].x = 7500;
-	waypoints[8].y = 3500;
-	waypoints[9].x = 4000;
-	waypoints[9].y = 3500;
-	waypoints[10].x = 500;
-	waypoints[10].y = 3500;
-	waypoints[11].x = 500;
-	waypoints[11].y = 4500;
-	waypoints[12].x = 4000;
-	waypoints[12].y = 4500;
-	waypoints[13].x = 7500;
-	waypoints[13].y = 4500;
-	waypoints[14].x = 7500;
-	waypoints[14].y = 5500;
-	waypoints[15].x = 4000;
-	waypoints[15].y = 5500;
-	waypoints[16].x = 4500;
-	waypoints[16].y = 6500;
-	waypoints[17].x = 4500;
-	waypoints[17].y = 7500;
-	waypoints[18].x = 3000;
-	waypoints[18].y = 7500;
-	waypoints[19].x = 3000;
-	waypoints[19].y = 4500;
-	waypoints[20].x = 500;
-	waypoints[20].y = 500;
-	waypoints[21].x = 500;
-	waypoints[21].y = 4500;
-	waypoints[22].x = 500;
-	waypoints[22].y = 7500;
-	waypoints[23].x = 1500;
-	waypoints[23].y = 7500;
-	waypoints[24].x = 1500;
-	waypoints[24].y = 4000;
-	waypoints[25].x = 500;
-	waypoints[25].y = 500;
+	waypoints[0].x = 4000;		waypoints[0].y = 700;
+	//--------------
+	/*waypoints[1].x = 4000;		waypoints[1].y = 1500;
+	waypoints[2].x = 4000;		waypoints[2].y = 3000;
+	waypoints[3].x = 500;		waypoints[3].y = 3000;
+	waypoints[4].x = 500;		waypoints[4].y = 1500;
+*/
+	waypoints[1].x = 7500;		waypoints[1].y = 500;
+	waypoints[2].x = 7500;		waypoints[2].y = 1500;
+	waypoints[3].x = 4000;		waypoints[3].y = 1500;
+	waypoints[4].x = 500;		waypoints[4].y = 1500;
+
+	waypoints[5].x = 500;		waypoints[5].y = 2500;
+	waypoints[6].x = 4000;		waypoints[6].y = 2500;
+	waypoints[7].x = 7500;		waypoints[7].y = 2500;
+	waypoints[8].x = 7500;		waypoints[8].y = 3500;
+	waypoints[9].x = 4000;		waypoints[9].y = 3500;
+	waypoints[10].x = 500;		waypoints[10].y = 3500;
+	waypoints[11].x = 500;		waypoints[11].y = 4500;
+	waypoints[12].x = 4000;		waypoints[12].y = 4500;
+	waypoints[13].x = 7500;		waypoints[13].y = 4500;
+	waypoints[14].x = 7500;		waypoints[14].y = 5500;
+	waypoints[15].x = 4000;		waypoints[15].y = 5500;
+	waypoints[16].x = 4500;		waypoints[16].y = 6500;
+	waypoints[17].x = 4500;		waypoints[17].y = 7500;
+	waypoints[18].x = 3000;		waypoints[18].y = 7500;
+	waypoints[19].x = 3000;		waypoints[19].y = 4500;
+	waypoints[20].x = 500;		waypoints[20].y = 500;
+	waypoints[21].x = 500;		waypoints[21].y = 4500;
+	waypoints[22].x = 500;		waypoints[22].y = 7500;
+	waypoints[23].x = 1500;		waypoints[23].y = 7500;
+	waypoints[24].x = 1500;		waypoints[24].y = 4000;
+	waypoints[25].x = 500;		waypoints[25].y = 500;
 }
 
+//initiliaze bottles array
+void init_bottlesArray()
+{
+	for (int i = 0; i < NB_BOTTLES_ARRAY; i++)
+	{
+		bottlesArray[i].type = EMPTY;
+		bottlesArray[i].location.x = -1;
+		bottlesArray[i].location.y = -1;
+	}
+}
+
+//insert newly found bottle to array
+bool insertBottle(coord newBottlePos)
+{
+	for (int i = 0; i < NB_BOTTLES_ARRAY; i++)
+	{
+		if (bottlesArray[i].type == EMPTY)
+		{
+			bottlesArray[i].type = BOTTLE;
+			bottlesArray[i].location.x = newBottlePos.x;
+			bottlesArray[i].location.y = newBottlePos.y;
+			return true;
+		}
+	}
+	Serial.println("Error: Could not add bottle to bottleArray");
+	return false;
+}
+
+//check if target exist
+//	Returns true if a target is present
+bool checkTargetExist()	
+{
+	for (int i = 0; i < NB_BOTTLES_ARRAY; i++)
+	{
+		if (bottlesArray[i].type == TARGET)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+//remove current target from array, set cell to empty
+bool removeTarget()
+{
+	for (int i = 0; i < NB_BOTTLES_ARRAY; i++)
+	{
+		if (bottlesArray[i].type == TARGET)
+		{
+			bottlesArray[i].type = EMPTY;
+			bottlesArray[i].location.x = -1;
+			bottlesArray[i].location.y = -1;
+			return true;
+		}
+	}
+	Serial.println("Error: No target present");
+	return false;
+}
+
+//find closest bottle and set it as target
+coord findClosestBottle(float *robotPosition)
+{
+	float closestDistance = 9999999999999;
+	float currentDistance;
+	coord closestBottleCoord;
+	char closestIndex = 0;
+	for (int i = 0; i < NB_BOTTLES_ARRAY; i++)
+	{
+		currentDistance = (robotPosition[0] - bottlesArray[i].location.x)*(robotPosition[0] - bottlesArray[i].location.x) + 
+							(robotPosition[1] - bottlesArray[i].location.y)*(robotPosition[1] - bottlesArray[i].location.x);
+		if(currentDistance < closestDistance)
+		{
+			closestDistance = currentDistance;
+			closestBottleCoord = bottlesArray[i].location;
+			closestIndex = i;
+		}
+	}
+	if (closestDistance == 9999999999999)
+	{
+		closestBottleCoord.x = -1;
+		closestBottleCoord.y = -1;
+	}
+	else
+	{
+		bottlesArray[closestIndex].type = TARGET;
+	}
+	return closestBottleCoord;
+}
 /*******Linked List**********/
+/*
 //Default constructor creates the head node
 gridMap::gridMap()
 {
@@ -194,101 +257,95 @@ coord gridMap::findClosestBottle(float *robotPosition)
 	return closestBottle;
 }
 
-
-
+*/
+/*
 void init_map()
+{
+int i = 0, j = 0;
+for(i = 0; i++; i<64)
+	for(j = 0; j++; j < 64)
+		map_array[i][j] = 0;
+}
+
+void set_map_value_from_pos(coord pos, char value)
+{
+ //Convert 8m arena into 64 parts, each part is 125mm wide
+	int x = pos.x/125;
+	int y = pos.y/125;
+	map_array[x][y] = value;
+}
+
+char get_map_value_from_pos(coord pos)
+{
+	int x = pos.x/125;
+	int y = pos.y/125;
+	return map_array[x][y];
+}
+
+int find_number_bottles()
+{
+	int i = 0, j = 0, count = 0;
+	for(i = 0; i++; i<64)
+	{
+		for(j = 0; j++; j < 64)
+		{
+			if(map_array[i][j] == PET)
+				count++;
+		}
+	}
+	return count;
+}
+
+bool check_target()
 {
 	int i = 0, j = 0;
 	for(i = 0; i++; i<64)
+	{
 		for(j = 0; j++; j < 64)
-			map_array[i][j] = 0;
-	}
-
-	void set_map_value_from_pos(coord pos, char value)
-	{
-  //Convert 8m arena into 64 parts, each part is 125mm wide
-		int x = pos.x/125;
-		int y = pos.y/125;
-		map_array[x][y] = value;
-	}
-
-	char get_map_value_from_pos(coord pos)
-	{
-		int x = pos.x/125;
-		int y = pos.y/125;
-		return map_array[x][y];
-	}
-
-	int find_number_bottles()
-	{
-		int i = 0, j = 0, count = 0;
-		for(i = 0; i++; i<64)
 		{
-			for(j = 0; j++; j < 64)
-			{
-				if(map_array[i][j] == PET)
-					count++;
-			}
+			if(map_array[i][j] == TARGET)
+				return true;
 		}
-		return count;
 	}
+	return false;
+}
 
-	bool check_target()
+void set_target(coord new_target)
+{
+	int i = 0, j = 0;
+	for(i = 0; i++; i<64)
 	{
-		int i = 0, j = 0;
-		for(i = 0; i++; i<64)
+		for(j = 0; j++; j < 64)
 		{
-			for(j = 0; j++; j < 64)
-			{
-				if(map_array[i][j] == TARGET)
-					return true;
-			}
+			if(map_array[i][j] == TARGET)
+				map_array[i][j] = EMPTY;
 		}
-		return false;
 	}
+	
+	set_map_value_from_pos(new_target, TARGET);
+}
 
-	void set_target(coord new_target)
+coord find_closest_bottle(coord robot)
+{
+	int i, j, closest_bottle = -1, current_dist;
+	float robot_x = robot.x/125, robot_y = robot.y/125;
+	coord closest_pos;
+	for(i = 0; i++; i < 64)
 	{
-		int i = 0, j = 0;
-		for(i = 0; i++; i<64)
+		for(j = 0; j++; j < 64)
 		{
-			for(j = 0; j++; j < 64)
+			if(map_array[i][j] == PET)
 			{
-				if(map_array[i][j] == TARGET)
-					map_array[i][j] = EMPTY;
-			}
-		}
-		
-		set_map_value_from_pos(new_target, TARGET);
-		
-	}
-
-	coord find_closest_bottle(coord robot)
-	{
-		int i, j, closest_bottle = -1, current_dist;
-		float robot_x = robot.x/125, robot_y = robot.y/125;
-		coord closest_pos;
-		for(i = 0; i++; i < 64)
-		{
-			for(j = 0; j++; j < 64)
-			{
-				if(map_array[i][j] == PET)
+				current_dist = (robot_x-i)*(robot_x-i) + (robot_y-j)*(robot_y-j);
+				if(closest_bottle == -1 || current_dist < closest_bottle)
 				{
-					current_dist = (robot_x-i)*(robot_x-i) + (robot_y-j)*(robot_y-j);
-					if(closest_bottle == -1 || current_dist < closest_bottle)
-					{
-						closest_bottle = current_dist;
-						closest_pos.x = i;
-						closest_pos.y = j;
-					}
+					closest_bottle = current_dist;
+					closest_pos.x = i;
+					closest_pos.y = j;
 				}
 			}
 		}
-		
-		return closest_pos;
 	}
-
-
-
-
-
+return closest_pos;
+}
+*/
