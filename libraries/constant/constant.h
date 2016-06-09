@@ -66,5 +66,6 @@
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 
+#define N_SENSORS 7
 
 #endif
