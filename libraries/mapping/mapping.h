@@ -54,7 +54,7 @@ public:
 };
 
 
-
+void init_waypoints();
 void init_map();
 void set_map_value_from_pos(coord pos, char value);
 char get_map_value_from_pos(coord pos);
