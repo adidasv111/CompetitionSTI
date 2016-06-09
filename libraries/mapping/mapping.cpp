@@ -59,6 +59,132 @@ void init_waypoint()
 	waypoints[25].y = 0.5;
 }
 
+/*******Linked List**********/
+//Default constructor creates the head node
+gridMap::gridMap()
+{
+	//head -> type = 0;
+	head -> location.x = 0;
+	head -> location.y = 0;
+	head -> next = NULL;
+	listLength = 0;
+}
+
+bool gridMap::insertBottle(bottle * newBottle, int position, coord argLocation)
+{
+	//newBottle -> type = argType;
+	newBottle -> location 	 = argLocation;
+	if((position <= 0) || (position > listLength + 1))
+	{
+		return false;
+	}
+	if(head -> next == NULL)
+	{
+		head -> next = newBottle;
+		listLength++;
+		return true;
+	}
+	
+	int count = 0;
+	bottle *p = head;
+	bottle * q = head;
+	while(q)
+	{
+		if(count == position)
+		{
+			p -> next = newBottle;
+			newBottle -> next = q;
+			listLength++;
+			return true;
+		}
+		p = q;
+		q = p -> next;
+		count++;
+	}
+	if(count == position)
+	{
+		p -> next = newBottle;
+		newBottle -> next = q;
+		listLength++;
+		return true;
+	}
+	return false;
+}
+
+bool gridMap::removeBottle(int position)
+{
+	if ((position <= 0) || (position > listLength + 1))
+    {
+        return false;
+    }
+    if (head -> next == NULL)
+    {
+       return false;
+    }
+    int count = 0;
+    bottle * p = head;
+    bottle * q = head;
+    while (q) 
+    {
+        if (count == position)
+        {
+            p -> next = q -> next;
+            delete q;
+            listLength--;
+            return true;
+        }
+        p = q;
+        q = p -> next;
+        count++;
+    }
+    return false;
+}
+
+// Destructor de-allocates memory used by the list.
+gridMap::~gridMap() 
+{
+    bottle * p = head;
+    bottle * q = head;
+    while (q)
+    {
+        p = q;
+        q = p -> next;
+        if (q) delete p;
+    }
+}
+
+int gridMap::getListLength()
+{
+	return listLength;
+}
+
+coord gridMap::findClosestBottle(float *robotPosition)
+{
+	bottle *current = head;
+	float closestDistance = -1, currentDistance;
+	coord closestBottle;
+	if(listLength == 0)
+	{
+		closestBottle.x = -1;
+		closestBottle.y = -1;
+	}
+	else
+	{
+		while(current)
+		{
+			currentDistance = (robotPosition[0] - current->location.x)*(robotPosition[0] - current->location.x) + (robotPosition[1] - current->location.y)*(robotPosition[1] - current->location.y);
+			if(closestDistance == -1 || currentDistance < closestDistance)
+			{
+				closestDistance = currentDistance;
+				closestBottle = current->location;
+			}
+		}
+	}
+	return closestBottle;
+}
+
+
+
 void init_map()
 {
   int i = 0, j = 0;

@@ -7,3 +7,10 @@ find_number_bottles	KEYWORD2
 check_target		KEYWORD2
 find_closest_bottle	KEYWORD2
 set_target		KEYWORD2
+bottle	KEYWORD1
+gridMap	KEYWORD1
+gridMap	KEYWORD2
+getListLength	KEYWORD2
+insertBottle	KEYWORD2
+removeBottle	KEYWORD2
+findClosestBottle	KEYWORD2
