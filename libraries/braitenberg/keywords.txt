@@ -1,1 +1,2 @@
+updateIRSensors	KEYWORD2
 obstacle_avoidance	KEYWORD2

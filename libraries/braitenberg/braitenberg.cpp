@@ -19,8 +19,8 @@
 //double l_weight[N_SENSORS] = {0, 0, 0, 0, 20, 50, -50, -20};
 //double r_weight[N_SENSORS] = {0, 0, 0, 0, -20, -50, 50, 20};
 
-double l_weight[N_SENSORS] = {0, 0, 0, 0, 50, 100, -100, -50};
-double r_weight[N_SENSORS] = {0, 0, 0, 0, -50, -100, 100, 50};
+//double l_weight[N_SENSORS] = {0, 0, 0, 0, 50, 100, -100, -50};
+//double r_weight[N_SENSORS] = {0, 0, 0, 0, -50, -100, 100, 50};
 
 int IRValue[N_SENSORS];
 
@@ -39,13 +39,21 @@ IRSensor IR_FR(A0), IR_FL(A1), IR_F(A3), IR_L1(A4), IR_L2(A5), IR_R1(A6), IR_R2(
 
 void updateIRSensors()
 {
-	IRValue[0] = IR_FR.calc_distanceIR();
-	IRValue[1] = IR_FL.calc_distanceIR();
-	IRValue[2] = IR_F.calc_distanceIR();
-	IRValue[3] = IR_L1.calc_distanceIR();
-	IRValue[4] = IR_L2.calc_distanceIR();
-	IRValue[5] = IR_R1.calc_distanceIR();
-	IRValue[6] = IR_R2.calc_distanceIR();
+	IRValue[0] = IR_FRR.calc_distanceIR();
+	IRValue[1] = IR_FR.calc_distanceIR();
+	IRValue[2] = IR_FLL.calc_distanceIR();
+	IRValue[3] = IR_FL.calc_distanceIR();
+	IRValue[4] = IR_L1.calc_distanceIR();
+	IRValue[5] = IR_L2.calc_distanceIR();
+	IRValue[6] = IR_R1.calc_distanceIR();
+	IRValue[7] = IR_R2.calc_distanceIR();
+	
+		/*Serial.print("IR Right");
+			Serial.print(IRValue[0]);
+			Serial.println(" ");
+			Serial.print("IR Left");
+			Serial.print(IRValue[1]);
+			Serial.println(" ");*/
 }
 
 
@@ -59,33 +67,44 @@ void updateIRSensors()
 
 void obstacle_avoidance(int* left_speed, int* right_speed)
 {
-	if(IRValue[0] < 50)
+	
+	if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH)
 	{
+		if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH)
+		{
+			*right_speed += (KplusIR/2.0f)*(80 - IRValue[0])/80.0f;
+			*left_speed = -1*(*right_speed);
+		}
+		else
+		{
 		*right_speed += KplusIR*(80 - IRValue[0])/80.0f;
-		*left_speed -= KminusIR*(80 - IRValue[0])/80.0f;
+		*left_speed -= 5*KminusIR*(80 - IRValue[0])/80.0f;
+		}
 	}
-	else if(IRValue[1] < 50)
+	else if(IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
 	{
-		*right_speed -= KminusIR*(80 - IRValue[1])/80.0f;
-		*left_speed += KplusIR*(80 - IRValue[1])/80.0f;
-	}
-	else if(IRValue[2] < 20)
-	{
-		*right_speed += 30;
-		*left_speed = -right_speed;
+		if(IRValue[2] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
+		{
+			*left_speed += (KplusIR/2.2f)*(80 - IRValue[1])/80.0f;
+			*right_speed = -1*(*left_speed);
+		}
+		else
+		{
+			*right_speed -= 5*KminusIR*(80 - IRValue[1])/80.0f;
+			*left_speed += KplusIR*(80 - IRValue[1])/80.0f;
+		}
 	}
 	
 	/******** Wall avoidance ****************/
-	if(IRValue[3] < 12 || IRValue[4] < 12)
+	if(IRValue[3] < WALL_THRESH || IRValue[4] < WALL_THRESH)
 	{
 		*left_speed += 15;
 	}
 	
-	if(IRValue[5] < 12 || IRValue[6] < 12)
+	if(IRValue[5] < WALL_THRESH || IRValue[6] < WALL_THRESH)
 	{
 		*right_speed += 15;
 	}
-	
 	
 }
 

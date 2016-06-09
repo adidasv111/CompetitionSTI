@@ -65,7 +65,10 @@
 #define DOOR_MOVE		2
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
+#define CRIT_OBS_THRESH	15
+#define OBS_THRESH	50
+#define WALL_THRESH	12
 
-#define N_SENSORS 7
+#define N_SENSORS 8
 
 #endif

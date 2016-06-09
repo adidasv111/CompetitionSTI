@@ -124,6 +124,11 @@ void loop()
 //***************************** TASK FUNCTIONS *************************
 void planning()
 {
+
+  /***********ADD TO TASK********/
+  updateIRSensors();
+  /******************************/
+  
   left_speed = 200;
   right_speed = 200;
   if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
@@ -177,20 +182,24 @@ void planning()
       right_speed = 255;
     }
   }
-if (currentWaypoint == 5)
-{
-  isFull = true;
-}
-
-/*
-  if (gotHome)
+  if (currentWaypoint == 5)
   {
-    left_speed = 0;
-    right_speed = 0;
+    isFull = true;
   }
-*/
-// obstacle_avoidance(&left_speed, &right_speed);
-setSpeeds_I2C(left_speed, right_speed);
+
+  /*
+    if (gotHome)
+    {
+      left_speed = 0;
+      right_speed = 0;
+    }
+  */
+
+  /**********TESTING*****************/
+  left_speed = right_speed = 0;
+  /**********************************/
+  obstacle_avoidance(&left_speed, &right_speed);
+  setSpeeds_I2C(left_speed, right_speed);
 }
 
 void deposition()                   //Deposition manoeuvre
