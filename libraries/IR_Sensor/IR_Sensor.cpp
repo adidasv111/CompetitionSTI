@@ -1,22 +1,27 @@
 #include "IR_Sensor.h"
+#include "constant.h"
 
-#define filterSamples   13              // filterSamples should  be an odd number, no smaller than 3
+int sensSmoothArray [N_SENSORS][filterSamples];   // array for holding raw sensor values for sensor1
+int nbIRSensors = 0;
 
-//int IRValue;
 
-int sensSmoothArray [filterSamples];   // array for holding raw sensor values for sensor1 
 
 IRSensor::IRSensor(int pin){
   //pinMode(pin, OUTPUT); //Set PIN as Output;
   _pin = pin;
+  _num = nbIRSensors;
+  nbIRSensors++;
 }
 
 IRSensor::~IRSensor(){
 /*Nothing to destruct*/
+	nbIRSensors--;
 }
 
 
-int digitalSmoothIR(int rawIn, int *sensSmoothArray){     // "int *sensSmoothArray" passes an array to the function - the asterisk indicates the array name is a pointer
+int digitalSmoothIR(int rawIn, int *sensSmooth)
+{     // "int *sensSmoothArray" passes an array to the function - the asterisk indicates the array name is a pointer
+	
   int j, k, temp, top, bottom;
   long total;
   static int i;
@@ -25,12 +30,12 @@ int digitalSmoothIR(int rawIn, int *sensSmoothArray){     // "int *sensSmoothArr
   boolean done;
 
   i = (i + 1) % filterSamples;    // increment counter and roll over if necc. -  % (modulo operator) rolls over variable
-  sensSmoothArray[i] = rawIn;                 // input new data into the oldest slot
+  sensSmooth[i] = rawIn;                 // input new data into the oldest slot
 
   // Serial.print("raw = ");
 
   for (j=0; j<filterSamples; j++){     // transfer data array into anther array for sorting and averaging
-    sorted[j] = sensSmoothArray[j];
+    sorted[j] = sensSmooth[j];
   }
 
   done = 0;                // flag to know when we're done sorting              
@@ -90,7 +95,7 @@ int IRSensor::calc_distanceIR()
   int IRValue;
   IRValue = analogRead(_pin);
   int smoothData;
-  smoothData = digitalSmoothIR(IRValue, sensSmoothArray);
-  //return millivoltToCentimeters(smoothData);
-  return millivoltToCentimeters(IRValue);
+  smoothData = digitalSmoothIR(IRValue, sensSmoothArray[_num]);
+  return millivoltToCentimeters(smoothData);
+  //return millivoltToCentimeters(IRValue);
 }
