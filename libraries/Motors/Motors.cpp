@@ -147,49 +147,55 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 			{
 				gotBottle = true;
 				removeTarget();
+				Serial.println("*****************************************");
 				Serial.print("George picked bottle at: ");
 				Serial.print(target.x);
 				Serial.print(" , ");
 				Serial.println(target.y);
+				Serial.println("*****************************************");
 			}
 			else if (robotState == GOING_HOME)
 			{
 				gotHome = true;
+				Serial.println("*****************************************");
 				Serial.println("George is home, bitches!");
+				Serial.println("*****************************************");
 			}
 			else if (robotState == GOING_TO_WAYPOINT)
 			{
-				Serial.print("I'm in waypoint number");
-				Serial.print(currentWaypoint);
-				Serial.println("	--George");
+				Serial.println("*****************************************");
+				Serial.print("I'm in waypoint number  ");
+				Serial.print((int)currentWaypoint);
+				Serial.println("		--George");
+				Serial.println("*****************************************");
 				switch(currentWaypoint)
 				{
 					case 0:
-						calibration(position, ROBOT_LEFT, WALL_LEFT);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_LEFT);
+					break;
 					case 1:
-						calibration(position, ROBOT_LEFT, WALL_LEFT);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_LEFT);
+					break;
 					case 8:
-						calibration(position, ROBOT_LEFT, WALL_TOP);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_TOP);
+					break;
 					case 11:
-						calibration(position, ROBOT_LEFT, WALL_RIGHT);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_RIGHT);
+					break;
 					case 15:
-						calibration(position, ROBOT_LEFT, WALL_RIGHT);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_RIGHT);
+					break;
 					case 18:
-						calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-						break;
+					calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+					break;
 					case 20:
-						calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-						break;
+					calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+					break;
 					case 24:
-						calibration(position, ROBOT_LEFT, WALL_BOTTOM);
-						break;
+					calibration(position, ROBOT_LEFT, WALL_BOTTOM);
+					break;
 					default:
-						break;
+					break;
 				}
 				currentWaypoint++;
 			}
@@ -200,14 +206,18 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 
 void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
 {
-	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-	
 	float Ebearing = -(M_PI2 - atan2(target.y-position[1], (target.x-position[0])));
 	if (Ebearing > M_PI)
 		Ebearing -= M_2PI;
 	if (Ebearing < -M_PI)
 		Ebearing += M_2PI;
+
 	Ebearing -= position[2];
+
+	if (Ebearing > M_PI)
+		Ebearing -= M_2PI;
+	if (Ebearing < -M_PI)
+		Ebearing += M_2PI;
 
 	if (Ebearing > BEARING_GOAL_TRESH)
 	{

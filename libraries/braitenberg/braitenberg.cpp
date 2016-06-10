@@ -53,14 +53,14 @@ void updateIRSensors()
 	IRValue[6] = IR_R1.calc_distanceIR();
 	IRValue[7] = IR_R2.calc_distanceIR();
 	
-	for(int i = 0; i < 8; i++)
+	/*for(int i = 0; i < 8; i++)
 	{
 		Serial.print(IRValue[i]);
 		Serial.print(" ");
 		
 	}
 	Serial.println(" ");
-		/*Serial.print("IR Right");
+	*/	/*Serial.print("IR Right");
 			Serial.print(IRValue[0]);
 			Serial.println(" ");
 			Serial.print("IR Left");

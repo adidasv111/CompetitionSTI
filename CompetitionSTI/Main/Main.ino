@@ -76,8 +76,8 @@ void setup()
   initOdometry();
   init_waypoints();
   init_bottlesArray();
-  initMotors_I2C();
   initDynamixels();             //Already includes DymxPusher_Reset() and DymxDoor_Reset()
+  initMotors_I2C();
   //initIMU(0);
   //initCompass_Serial2();
   //calibrateCompass_Serial2();
@@ -125,7 +125,7 @@ void loop()
 void planning()
 {
   /***********ADD TO TASK********/
-  updateIRSensors();
+  //updateIRSensors();
   /******************************/
 
   left_speed = 200;
@@ -156,18 +156,18 @@ void planning()
   }
   else if (robotState == GOING_TO_WAYPOINT)
   {
-    destination = findClosestBottle(robotPosition);
-    if (destination.x != -1)    //new target found
-    {
-      robotState == GOING_TO_BOTTLE;
-    }
-    else        // no new target found
-    {
-      DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
-      destination.x = waypoints[currentWaypoint].x;
-      destination.y = waypoints[currentWaypoint].y;
-      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-    }
+    /*   destination = findClosestBottle(robotPosition);
+       if (destination.x != -1)    //new target found
+       {
+         robotState == GOING_TO_BOTTLE;
+       }
+       else        // no new target found
+       {
+    */   DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+    destination.x = waypoints[currentWaypoint].x;
+    destination.y = waypoints[currentWaypoint].y;
+    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+    //  }
   }
   else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
   {
@@ -182,11 +182,6 @@ void planning()
       right_speed = 255;
     }
   }
-  if (currentWaypoint == 5)
-  {
-    isFull = true;
-  }
-
   /*
     if (gotHome)
     {
@@ -195,9 +190,6 @@ void planning()
     }
   */
 
-  /**********TESTING*****************/
-  left_speed = right_speed = 0;
-  /**********************************/
   //obstacle_avoidance(&left_speed, &right_speed);
   setSpeeds_I2C(left_speed, right_speed);
 }
