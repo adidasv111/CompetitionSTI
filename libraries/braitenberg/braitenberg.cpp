@@ -35,7 +35,7 @@ int IRValue[N_SENSORS];
 //Left Sensors: US5, US6, US4, US3
 //Right Sensors: US8, US7, US1, US2
 
-IRSensor IR_FRR(A0), IR_FR(A1), IR_FLL(A2), IR_FL(A3), IR_L1(A4), IR_L2(A5), IR_R1(A6), IR_R2(A7);
+IRSensor IR_FRR(A6), IR_FR(A1), IR_FLL(A2), IR_FL(A3), IR_L1(A4), IR_L2(A5), IR_R1(A0), IR_R2(A7);
 
 /** Update all the distance sensors
 	
@@ -53,6 +53,13 @@ void updateIRSensors()
 	IRValue[6] = IR_R1.calc_distanceIR();
 	IRValue[7] = IR_R2.calc_distanceIR();
 	
+	for(int i = 0; i < 7; i++)
+	{
+		Serial.print(IRValue[i]);
+		Serial.print(" ");
+		
+	}
+	Serial.println(" ");
 		/*Serial.print("IR Right");
 			Serial.print(IRValue[0]);
 			Serial.println(" ");
