@@ -74,4 +74,13 @@
 
 #define N_SENSORS 8
 
+#define LEFT	0
+#define RIGHT	1
+#define BACk	2
+
+#define	BOTTOM
+#define	RIGHT
+#define	LEFT
+#define	TOP
+
 #endif
