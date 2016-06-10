@@ -154,7 +154,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 void calibration (float *robotPose, char type)
 {
 	float theta = 0;
-	switch(type):
+	switch(type)
 	{
 		case LEFT:
 			if(IRValue[4] < WALL_CAL_THRESH && IRValue[5] < WALL_CAL_THRESH)
