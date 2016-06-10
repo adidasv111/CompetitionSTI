@@ -2,6 +2,7 @@
 #define CONSTANT_H
 
 #include <Arduino.h>
+
 #define M_2PI			2.0*M_PI
 #define M_PI2			0.5*M_PI
 
@@ -81,4 +82,8 @@
 #define	WALL_TOP 	3
 
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
+#define FULL_DELAY	10000
+
+#define ITS_TOO_LATE_INT	570000
+#define ITS_BEEN_TOO_LONG_INT	180000
 #endif

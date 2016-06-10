@@ -45,12 +45,13 @@ void tprint()
   Serial.println(destination.y);
   Serial.print("state:   ");
   Serial.println((int)robotState);
+  Serial.print("full?:   ");
   Serial.println(isFull);
 }
 
 //----- Tasks definitions -----
-Task PlanningTask(100, TASK_FOREVER, &planning);
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
+Task PlanningTask(102, TASK_FOREVER, &planning);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -59,8 +60,8 @@ Task FullTask(2000, TASK_FOREVER, &checkFull);                                  
 Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);              //Create task that moves the pusher back and forth once
 Task PusherResetTask(PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);    //Create task that checks if pusher is reseted
 
-Task goHomeItsTooLateTask(9 * TASK_MINUTE + 30 * TASK_SECOND, 1, &goHomeItsTooLate);                        //go home after 9.30 minutes
-Task goHomeItsBeenTooLongTask(3 * TASK_MINUTE, 1, &goHomeItsBeenTooLong);                  //go home if it's been 3 minutes since last deposition
+Task GeorgeGoHomeItsTooLateTask(ITS_TOO_LATE_INT, 1, &goHomeItsTooLate);                        //go home after 9.30 minutes
+Task GeorgeGoHomeItsBeenTooLongTask(ITS_BEEN_TOO_LONG_INT, 1, &goHomeItsBeenTooLong);                  //go home if it's been 3 minutes since last deposition
 
 Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                               //Create task that communicate with the PI
 Task PrintTask(1000, TASK_FOREVER, &tprint);
@@ -86,8 +87,8 @@ void setup()
 
   //Adding all tasks to runner
   runner.init();
-  runner.addTask(PlanningTask);
   runner.addTask(OdometryTask);
+  runner.addTask(PlanningTask);
   runner.addTask(CaptureBottleTask);
 
   runner.addTask(DoorMoveTask);
@@ -96,21 +97,21 @@ void setup()
   runner.addTask(PusherTask);
   runner.addTask(PusherResetTask);
 
-  runner.addTask(goHomeItsTooLateTask);
-  runner.addTask(goHomeItsBeenTooLongTask);
+  runner.addTask(GeorgeGoHomeItsTooLateTask);
+  runner.addTask(GeorgeGoHomeItsBeenTooLongTask);
 
   runner.addTask(PiComTask);
   runner.addTask(PrintTask);
 
   //enabling tasks that should start at beginnig of the programm
-  PlanningTask.enable();
   OdometryTask.enable();
-  FullTask.enable();
+  PlanningTask.enable();
+  FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
-  goHomeItsTooLateTask.enable();
-  goHomeItsBeenTooLongTask.enable();
+  GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
+  GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
-  PrintTask.enable();
+  PrintTask.enableDelayed(250);
 }
 
 //***************************** LOOP *************************
@@ -120,6 +121,7 @@ void loop()
 }
 
 //***************************** TASK FUNCTIONS *************************
+//--- planning ---
 void planning()
 {
   /***********ADD TO TASK********/
@@ -130,11 +132,12 @@ void planning()
   right_speed = 200;
   if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
   {
-    robotState = GOING_HOME;              //state = GOING_HOME;
+    robotState = GOING_HOME;            //state = GOING_HOME;
+    FullTask.disable();                 //disable full check when going home
   }
   if (robotState == GOING_HOME)         //going home
   {
-    DymxDoor_setState(DOOR_CLOSE);          //close the door when going home
+    DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
     destination.x = HOME_X;
     destination.y = HOME_Y;
     compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
@@ -193,12 +196,13 @@ void planning()
   */
 
   /**********TESTING*****************/
-  //left_speed = right_speed = 0;
+  left_speed = right_speed = 0;
   /**********************************/
-  obstacle_avoidance(&left_speed, &right_speed);
+  //obstacle_avoidance(&left_speed, &right_speed);
   setSpeeds_I2C(left_speed, right_speed);
 }
 
+//------ deposition -----
 void deposition()                   //Deposition manoeuvre
 {
   gotHome = false;
@@ -232,10 +236,14 @@ void deposition()                   //Deposition manoeuvre
     depositionState = 0;
     robotState == GOING_TO_WAYPOINT;
 
-    if (goHomeItsBeenTooLongTask.isEnabled())   //if goHomeItsBeenTooLongTask is enabled, restart it in 3 minutes
-      goHomeItsBeenTooLongTask.restartDelayed(3 * TASK_MINUTE);
+    if (!FullTask.isEnabled())  //if full task isn't already enabled
+    {
+      FullTask.enableDelayed(FULL_DELAY);
+    }
+    if (GeorgeGoHomeItsBeenTooLongTask.isEnabled())                             //if goHomeItsBeenTooLongTask is already enabled, restart it in 3 minutes
+      GeorgeGoHomeItsBeenTooLongTask.restartDelayed(ITS_BEEN_TOO_LONG_INT);
     else
-      goHomeItsBeenTooLongTask.enable();
+      GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);      //if not already enabled, enable it
   }
 }
 
@@ -293,11 +301,11 @@ void tCaptureBottle()
 
 void goHomeItsTooLate()
 {
-  Serial.println("goHomeItsTooLate");
+  Serial.println("GeorgeGoHomeItsTooLate");
   isFull = true;
 }
 void goHomeItsBeenTooLong()
 {
-  Serial.println("goHomeItsBeenTooLong");
+  Serial.println("GeorgeGoHomeItsBeenTooLong");
   isFull = true;
 }
