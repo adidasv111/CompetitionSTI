@@ -15,8 +15,8 @@
 int state = 0;
 
 //USSensor US6(38, 39), US7(36,37);
-//Coordinates for the current destination of the robot
-coord destination;
+
+coord destination;          //Coordinates for the current destination of the robot
 
 //Current coordinates of the robot
 coord robotPos;
