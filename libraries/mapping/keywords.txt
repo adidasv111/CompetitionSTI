@@ -1,19 +1,25 @@
 map_array	KEYWORD1
 coord	KEYWORD1
 bottle	KEYWORD1
-
+waypoints	KEYWORD1
+currentWaypoint	KEYWORD1
+bottlesArray	KEYWORD1
 init_map	KEYWORD2
 init_waypoints	KEYWORD2
 init_bottlesArray	KEYWORD2
+insertBottle	KEYWORD2
+checkTargetExist		KEYWORD2
+findClosestBottle		KEYWORD2
+
 set_map_value_from_pos	KEYWORD2
 get_map_value_from_pos	KEYWORD2
 find_number_bottles	KEYWORD2
-check_target		KEYWORD2
+
 find_closest_bottle	KEYWORD2
 set_target		KEYWORD2
 
 gridMap	KEYWORD1
 getListLength	KEYWORD2
-insertBottle	KEYWORD2
+
 removeBottle	KEYWORD2
 findClosestBottle	KEYWORD2

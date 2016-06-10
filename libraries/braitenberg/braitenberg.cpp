@@ -152,13 +152,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 
 
 void calibration (float *robotPose, char type)
-{
-	switch(type):
-	{
-		
-	}
-	float theta = 0;
-	
+{	
 	
 }
 

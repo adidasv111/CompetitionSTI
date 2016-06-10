@@ -1,4 +1,2 @@
 checkFull	KEYWORD2
-get_info_from_pi	KEYWORD2
-
 isFull	KEYWORD1

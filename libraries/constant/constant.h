@@ -9,21 +9,19 @@
 
 #define filterSamples   13              // filterSamples should  be an odd number, no smaller than 3
 
-// States for machine state
+//--- States for machine state ---
 #define GOING_TO_WAYPOINT 		0
 #define GOING_TO_BOTTLE			1
 #define GOING_HOME		2
 #define DEPOSITION		3
 
-//Mapping
+//--- Mapping ---
 #define HOME_X  500
 #define HOME_Y  500
 
 #define EMPTY 0
 #define BOTTLE 1
 #define TARGET 2
-//#define TARGET 3
-//#define WAYPOINT 4
 
 #define NB_WAYPOINTS 26
 #define NB_BOTTLES_ARRAY	30
@@ -66,6 +64,7 @@
 #define DOOR_CLOSE		1
 #define DOOR_MOVE		2
 
+//
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 #define CRIT_OBS_THRESH	15
 #define OBS_THRESH	50
