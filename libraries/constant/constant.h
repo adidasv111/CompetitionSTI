@@ -70,6 +70,8 @@
 #define CRIT_OBS_THRESH	15
 #define OBS_THRESH	50
 #define WALL_THRESH	12
+#define WALL_CAL_THRESH	40
+#define SENSOR_SEPERATION	15		//In centimeters, the distance between the right and left sensors
 
 #define N_SENSORS 8
 

@@ -150,16 +150,25 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
   
 }*/
 
-
+/*
 void calibration (float *robotPose, char type)
 {
+	float theta = 0;
 	switch(type):
 	{
-		
+		case LEFT:
+			if(IRValue[4] < WALL_CAL_THRESH && IRValue[5] < WALL_CAL_THRESH)
+			{
+				theta = atan2((IRValue[4] - IRValue[5])/SENSOR_SEPERATION);
+			}
+			break;
+		case RIGHT:
+			if(IRValue[6] < WALL_CAL_THRESH && IRValue[7] < WALL_CAL_THRESH)
+			{
+				theta = atan2((IRValue[7] - IRValue[6])/SENSOR_SEPERATION);
+			}
+			break;
 	}
-	float theta = 0;
 	
 	
-}
-
-
+}*/
