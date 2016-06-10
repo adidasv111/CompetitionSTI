@@ -162,6 +162,35 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 				Serial.print("I'm in waypoint number");
 				Serial.print(currentWaypoint);
 				Serial.println("	--George");
+				switch(currentWaypoint)
+				{
+					case 0:
+						calibration(position, ROBOT_LEFT, WALL_LEFT);
+						break;
+					case 1:
+						calibration(position, ROBOT_LEFT, WALL_LEFT);
+						break;
+					case 8:
+						calibration(position, ROBOT_LEFT, WALL_TOP);
+						break;
+					case 11:
+						calibration(position, ROBOT_LEFT, WALL_RIGHT);
+						break;
+					case 15:
+						calibration(position, ROBOT_LEFT, WALL_RIGHT);
+						break;
+					case 18:
+						calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+						break;
+					case 20:
+						calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+						break;
+					case 24:
+						calibration(position, ROBOT_LEFT, WALL_BOTTOM);
+						break;
+					default:
+						break;
+				}
 				currentWaypoint++;
 			}
 		}

@@ -9,13 +9,15 @@ bottle bottlesArray[NB_BOTTLES_ARRAY];
 //initiliaze waypoints array
 void init_waypoints()
 {
+	
+	/******Waypoints starting with grass*********
 	waypoints[0].x = 4000;		waypoints[0].y = 700;
 	//--------------
 	/*waypoints[1].x = 4000;		waypoints[1].y = 1500;
 	waypoints[2].x = 4000;		waypoints[2].y = 3000;
 	waypoints[3].x = 500;		waypoints[3].y = 3000;
 	waypoints[4].x = 500;		waypoints[4].y = 1500;
-*/
+
 	waypoints[1].x = 7500;		waypoints[1].y = 500;
 	waypoints[2].x = 7500;		waypoints[2].y = 1500;
 	waypoints[3].x = 4000;		waypoints[3].y = 1500;
@@ -41,7 +43,35 @@ void init_waypoints()
 	waypoints[22].x = 500;		waypoints[22].y = 7500;
 	waypoints[23].x = 1500;		waypoints[23].y = 7500;
 	waypoints[24].x = 1500;		waypoints[24].y = 4000;
-	waypoints[25].x = 500;		waypoints[25].y = 500;
+	waypoints[25].x = 500;		waypoints[25].y = 500;*/
+	
+	/*********Waypoints ending with grass*************/
+	waypoints[0].x = 500;		waypoints[0].y = 2500; //calibrate left wall left
+	waypoints[1].x = 500;		waypoints[1].y = 5000; //calibrate left wall left
+	waypoints[2].x = 1500;		waypoints[2].y = 5000;
+	waypoints[3].x = 2500;		waypoints[3].y = 5000;
+	waypoints[4].x = 2500;		waypoints[4].y = 2500;
+	waypoints[5].x = 300;		waypoints[5].y = 2500;
+	waypoints[6].x = 3000;		waypoints[6].y = 5500;
+	waypoints[7].x = 3000;		waypoints[7].y = 7500;
+	waypoints[8].x = 4500;		waypoints[8].y = 7500;//calibrate left wall top
+	waypoints[9].x = 4500;		waypoints[9].y = 5000; 
+	waypoints[10].x = 7500;		waypoints[10].y = 5000;
+	waypoints[11].x = 7500;		waypoints[11].y = 4500; //calibrate left wall right
+	waypoints[12].x = 4000;		waypoints[12].y = 4500;
+	waypoints[13].x = 4000;		waypoints[13].y = 3500;
+	waypoints[14].x = 7500;		waypoints[14].y = 3500;
+	waypoints[15].x = 7500;		waypoints[15].y = 2500; //calibrate left wall right
+	waypoints[16].x = 2500;		waypoints[16].y = 2500;
+	waypoints[17].x = 2500;		waypoints[17].y = 500;
+	waypoints[18].x = 4000;		waypoints[18].y = 500; //calibrate right wall bottom
+	waypoints[19].x = 7500;		waypoints[19].y = 500;
+	waypoints[20].x = 7500;		waypoints[20].y = 1500; //calibrate right wall bottom
+	waypoints[21].x = 4000;		waypoints[21].y = 1500;
+	waypoints[22].x = 2000;		waypoints[22].y = 1500;
+	waypoints[23].x = 2000;		waypoints[23].y = 500;
+	waypoints[24].x = 500;		waypoints[24].y = 500; //calibrate left wall bottom
+	waypoints[25].x = 500;		waypoints[25].y = 7500;
 }
 
 //initiliaze bottles array
