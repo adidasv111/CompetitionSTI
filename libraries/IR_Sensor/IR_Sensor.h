@@ -10,6 +10,7 @@ public:
         int calc_distanceIR();
 private:
         int _pin;
+		int _num;
 };
  
 #endif

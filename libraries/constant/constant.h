@@ -7,6 +7,8 @@
 
 #define ERROR 			-1
 
+#define filterSamples   13              // filterSamples should  be an odd number, no smaller than 3
+
 // States for machine state
 #define GOING_TO_WAYPOINT 		0
 #define GOING_TO_BOTTLE			1

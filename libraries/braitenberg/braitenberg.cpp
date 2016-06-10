@@ -13,6 +13,10 @@
 #include "constant.h"
 
 
+
+
+
+
 #define KplusIR 57
 #define KminusIR 110
 
@@ -30,7 +34,7 @@ int IRValue[N_SENSORS];
 //Left Sensors: US5, US6, US4, US3
 //Right Sensors: US8, US7, US1, US2
 
-IRSensor IR_FR(A0), IR_FL(A1), IR_F(A3), IR_L1(A4), IR_L2(A5), IR_R1(A6), IR_R2(A7);
+IRSensor IR_FRR(A0), IR_FR(A1), IR_FLL(A2), IR_FL(A3), IR_L1(A4), IR_L2(A5), IR_R1(A6), IR_R2(A7);
 
 /** Update all the distance sensors
 	
@@ -52,7 +56,7 @@ void updateIRSensors()
 			Serial.print(IRValue[0]);
 			Serial.println(" ");
 			Serial.print("IR Left");
-			Serial.print(IRValue[1]);
+			Serial.print(IRValue[2]);
 			Serial.println(" ");*/
 }
 
@@ -147,6 +151,15 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 }*/
 
 
-
+void calibration (float *robotPose, char type)
+{
+	switch(type):
+	{
+		
+	}
+	float theta = 0;
+	
+	
+}
 
 
