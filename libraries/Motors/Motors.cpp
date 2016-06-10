@@ -62,7 +62,7 @@
 void initMotors_I2C()
 {
 	Wire.begin();
-	setSpeeds(0, 0);
+	setSpeeds_I2C(0, 0);
 }
 
 

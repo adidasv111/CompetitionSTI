@@ -55,7 +55,7 @@
 #define PUSHER_HALF_PERIOD 10000				//in ms
 #define PUSHER_RESET_PERIOD	25000
 //Door
-#define DOOR_INIT_POS	75
+#define DOOR_INIT_POS	75 	
 #define DOOR_END_POS	250
 #define DOOR_CLOSE_POS	400
 #define DOOR_SPEED		300
