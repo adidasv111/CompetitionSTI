@@ -64,23 +64,21 @@
 #define DOOR_CLOSE		1
 #define DOOR_MOVE		2
 
-//
-#define FULL_THRESHOLD	5			//number of times it is full to be considered full
-#define CRIT_OBS_THRESH	15
+//--- Sensors ---
+#define N_SENSORS 8
 #define OBS_THRESH	50
+#define CRIT_OBS_THRESH	15
 #define WALL_THRESH	12
+
 #define WALL_CAL_THRESH	40
 #define SENSOR_SEPERATION	15		//In centimeters, the distance between the right and left sensors
+#define ROBOT_LEFT	0
+#define ROBOT_RIGHT	1
+#define ROBOT_BACk	2
+#define	WALL_BOTTOM	0
+#define	WALL_RIGHT 	1
+#define	WALL_LEFT 	2
+#define	WALL_TOP 	3
 
-#define N_SENSORS 8
-
-#define LEFT	0
-#define RIGHT	1
-#define BACk	2
-
-#define	BOTTOM
-#define	RIGHT
-#define	LEFT
-#define	TOP
-
+#define FULL_THRESHOLD	5			//number of times it is full to be considered full
 #endif
