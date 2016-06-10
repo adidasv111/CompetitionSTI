@@ -24,10 +24,3 @@ void checkFull()
 
   isFull = false; //*******
 }
-
-
-//Communicates with PI
-void get_info_from_pi(float *bottle_x, float *bottle_y, bool *communicate)
-{
-  *communicate = true;
-}
