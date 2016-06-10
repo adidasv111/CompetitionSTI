@@ -147,13 +147,21 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 			{
 				gotBottle = true;
 				removeTarget();
+				Serial.print("George picked bottle at: ");
+				Serial.print(target.x);
+				Serial.print(" , ");
+				Serial.println(target.y);
 			}
 			else if (robotState == GOING_HOME)
 			{
 				gotHome = true;
+				Serial.println("George is home, bitches!");
 			}
 			else if (robotState == GOING_TO_WAYPOINT)
 			{
+				Serial.print("I'm in waypoint number");
+				Serial.print(currentWaypoint);
+				Serial.println("	--George");
 				currentWaypoint++;
 			}
 		}
