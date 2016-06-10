@@ -11,6 +11,7 @@
 #include "IR_Sensor.h"
 #include "US_Sensor.h"
 #include "constant.h"
+#include "math.h"
 
 
 
@@ -145,28 +146,47 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	  
   }
   Serial.println(" ");
-  
-
-  
 }*/
 
 
-void calibration (float *robotPose, char type)
+/** Calibrates the orientation of the robot using
+	IR sensors 
+	
+	@param robotPose Pose of the robot
+	@param side Location of the sensors on the robot
+	@param wall Location of the wall
+	@return void
+*/
+void calibration (float *robotPose, char side, char wall)
 {
 	float theta = 0;
-	switch(type)
+
+	switch(side)
 	{
 		case LEFT:
 			if(IRValue[4] < WALL_CAL_THRESH && IRValue[5] < WALL_CAL_THRESH)
 			{
-				theta = atan2((IRValue[4] - IRValue[5])/SENSOR_SEPERATION);
+				theta = atan2((IRValue[5] - IRValue[4]),SENSOR_SEPERATION);
 			}
+			if(wall == BOTTOM)
+				theta -= M_PI;
+			else if(wall == RIGHT)
+				theta += -M_PI;
+			else if(wall == TOP)
+				theta += -M_PI2;
 			break;
 		case RIGHT:
 			if(IRValue[6] < WALL_CAL_THRESH && IRValue[7] < WALL_CAL_THRESH)
 			{
-				theta = atan2((IRValue[7] - IRValue[6])/SENSOR_SEPERATION);
+				theta = atan2((IRValue[6] - IRValue[7]),SENSOR_SEPERATION);
 			}
+			if(wall == BOTTOM)
+				theta += -M_PI2;
+			else if(wall == TOP)
+				theta += M_PI2;
+			else if(wall == LEFT)
+				theta += -M_PI;
 			break;
 	}
+	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
 }
