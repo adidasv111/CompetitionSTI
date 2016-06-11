@@ -16,6 +16,7 @@
 //----- Global Variables -----
 char robotState = GOING_TO_WAYPOINT;    //state of state machine
 coord destination;                      //Coordinates for the current destination of the robot
+char planningCounter = 0; 
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
 
 //----- Headers for functions -----
@@ -116,7 +117,7 @@ void setup()
   //enabling tasks that should start at beginnig of the programm
   OdometryTask.enable();
   PlanningTask.enable();
-  MotorsTask.enable();
+  //MotorsTask.enable();
   FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
@@ -135,9 +136,12 @@ void loop()
 //--- planning ---
 void planning()
 {
-
   left_speed = 200;
   right_speed = 200;
+
+  if (planningCounter == 5)
+  {
+    planningCounter = 0;
   if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
   {
     robotState = GOING_HOME;            //state = GOING_HOME;
@@ -197,19 +201,19 @@ void planning()
       right_speed = 0;
     }
   */
-
+  }
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
   /**********************************/
- // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
- // setSpeeds_I2C(left_speed, right_speed);
+  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  setSpeeds_I2C(left_speed, right_speed);
+  planningCounter++;
 }
 
 void tmotors()
 {
-      obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  //calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
-  setSpeeds_I2C(left_speed, right_speed);
+     // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+ // setSpeeds_I2C(left_speed, right_speed);
 }
 //------ deposition -----
 void deposition()                   //Deposition manoeuvre
@@ -310,12 +314,16 @@ void tCaptureBottle()
 
 void goHomeItsTooLate()
 {
+    Serial.println("*****************************************");
   Serial.println("GeorgeGoHomeItsTooLate");
+  Serial.println("*****************************************");
   isFull = true;
 }
 void goHomeItsBeenTooLong()
 {
+    Serial.println("*****************************************");
   Serial.println("GeorgeGoHomeItsBeenTooLong");
+  Serial.println("*****************************************");
   isFull = true;
 }
 
