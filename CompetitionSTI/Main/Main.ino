@@ -19,6 +19,7 @@ coord destination;                      //Coordinates for the current destinatio
 char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
 int blockedFlag = 0;
+unsigned int blockedCounter = 0;
 
 //----- Headers for functions -----
 void planning();
@@ -52,8 +53,8 @@ void tprint()
   Serial.println(destination.y);
   Serial.print("state:   ");
   Serial.println((int)robotState);
-  Serial.print("full?:   ");
-  Serial.println(isFull);
+  Serial.print("blocked?:   ");
+  Serial.println((int)blockedFlag);
 }
 
 //----- Tasks definitions -----
@@ -63,7 +64,7 @@ Task PlanningTask(202, TASK_FOREVER, &planning);
 Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
-Task BlockedTask(3000, 1, &blockedEvasiveManoeuvre);
+//Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
@@ -106,7 +107,7 @@ void setup()
   //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
   runner.addTask(TimeoutWaypointTask);
-  runner.addTask(BlockedTask);
+  //runner.addTask(EvasiveManoeuvreTask);
   runner.addTask(DepositionTimeoutTask);
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
@@ -127,6 +128,7 @@ void setup()
   OdometryTask.enable();
   PlanningTask.enable();
   //MotorsTask.enable();
+  //EvasiveManoeuvreTask.disable();
   FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
@@ -147,8 +149,11 @@ void planning()
 {
   left_speed = 200;
   right_speed = 200;
+  Serial.print("freq");
+  Serial.println(checkObstacle());
 
-  if (planningCounter >= checkObstacle(&blockedFlag))
+  checkEvasiveManoeuvre(&blockedFlag);
+  if (planningCounter >= checkObstacle())
   {
     planningCounter = 0;
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
@@ -199,23 +204,40 @@ void planning()
         gotWaypoint = 0;
         TimeoutWaypointTask.disable();
       }
+
       if (blockedFlag == 2)
       {
-        if (!BlockedTask.isEnabled())  //if full task isn't already enabled
-        {
-          BlockedTask.enableDelayed(3000);
-        }
         left_speed = 150;
         right_speed = 255;
+        blockedCounter++;
+        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
+        {
+          blockedFlag = 0;
+          blockedCounter = 0;
+        }
+        /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
+          {
+           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+          }*/
       }
       else if (blockedFlag == 4)
       {
-        if (!BlockedTask.isEnabled())  //if full task isn't already enabled
-        {
-          BlockedTask.enableDelayed(3000);
-        }
         left_speed = 255;
         right_speed = 150;
+        blockedCounter++;
+        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
+        {
+          Serial.println("dkfieuhfiuehfbcdviu done");
+          blockedFlag = 0;
+          blockedCounter = 0;
+        }
+        //EvasiveManoeuvreTask.enable();
+        /*if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
+          {
+                    Serial.println("dkfieuhfiuehfbcdviu start");
+          EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+          }*/
+
       }
     }
     else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
@@ -231,7 +253,7 @@ void planning()
         right_speed = 255;
       }
     }
-    if (currentWaypoint == 1)
+    if (currentWaypoint == 2)
       isFull = true;
     /*
       if (gotHome)
@@ -278,7 +300,7 @@ void deposition()                   //Deposition manoeuvre
   {
     if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
     {
-      DepositionTimeoutTask.enableDelayed(3000);
+      DepositionTimeoutTask.enableDelayed(1500);
     }
     left_speed = -250;
     right_speed = -250;
@@ -360,13 +382,19 @@ void timeoutWaypoint()
   TimeoutWaypointTask.disable();
   currentWaypoint++;
 }
-
-void blockedEvasiveManoeuvre()
-{
-  blockedFlag = 0;
-  BlockedTask.disable();
-}
-
+/*
+  void evasiveManoeuvre()
+  {
+  if (EvasiveManoeuvreTask.isFirstIteration() == false)
+  {
+    Serial.println("dkfieuhfiuehfbcdviu done");
+    blockedFlag = 0;
+    EvasiveManoeuvreTask.disable();
+  }
+  else
+  Serial.println("hhtffgddtrvytf ytdftd");
+  }
+*/
 //Communicates with PI
 void get_info_from_pi()
 {

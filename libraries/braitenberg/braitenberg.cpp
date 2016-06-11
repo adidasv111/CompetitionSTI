@@ -45,14 +45,14 @@ void updateIRSensors()
 	IRValue[6] = IR_R1.calc_distanceIR();
 	IRValue[7] = IR_R2.calc_distanceIR();
 	
-	for(int i = 0; i < 8; i++)
+	/*for(int i = 0; i < 8; i++)
 	{
 		Serial.print(IRValue[i]);
 		Serial.print(" ");
 		
 	}
 	Serial.println(" ");
-		/*Serial.print("IR Right");
+	*/	/*Serial.print("IR Right");
 			Serial.print(IRValue[0]);
 			Serial.println(" ");
 			Serial.print("IR Left");
@@ -60,78 +60,16 @@ void updateIRSensors()
 			Serial.println(" ");*/
 }
 
-int checkObstacle(int *blockedFlag)
+int checkObstacle()
 {
-	/*if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH || IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
+	if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH || IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
 	{
 		if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH || IRValue[4] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
 		{
-			*blockedFlag = 1;
 			return 20;
 		}
 		else
 		{
-			if(*blockedFlag = 1)
-				*blockedFlag = 2;
-			return 10;
-			
-		}
-	}*/
-	
-	if(IRValue[0] < OBS_THRESH)
-	{
-		if(IRValue[0] < CRIT_OBS_THRESH)
-		{
-			*blockedFlag = 1;
-			return 20;
-		}
-		else
-		{
-			if(*blockedFlag == 1)
-				*blockedFlag = 2;
-			return 10;
-			
-		}
-	}
-	else if(IRValue[2] < OBS_THRESH)
-	{
-		if(IRValue[2] < CRIT_OBS_THRESH)
-		{
-			*blockedFlag = 1;
-			return 20;
-		}
-		else
-		{
-			if(*blockedFlag == 1)
-				*blockedFlag = 2;
-			return 10;
-		}
-	}
-	else if(IRValue[1] < OBS_THRESH)
-	{
-		if(IRValue[1] < CRIT_OBS_THRESH)
-		{
-			*blockedFlag = 3;
-			return 20;
-		}
-		else
-		{
-			if(*blockedFlag == 3)
-				*blockedFlag = 4;
-			return 10;
-		}
-	}
-	else if(IRValue[3] < OBS_THRESH)
-	{
-		if(IRValue[3] < CRIT_OBS_THRESH)
-		{
-			*blockedFlag == 3;
-			return 20;
-		}
-		else
-		{
-			if(*blockedFlag == 3)
-				*blockedFlag = 4;
 			return 10;
 		}
 	}
@@ -139,6 +77,30 @@ int checkObstacle(int *blockedFlag)
 }
 
 
+void checkEvasiveManoeuvre(int *blockedFlag)
+{
+	if(IRValue[2] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
+	{
+		*blockedFlag = 3;
+		return;
+	}
+	else if (*blockedFlag == 3 && IRValue[2] >= CRIT_OBS_THRESH && IRValue[3] >= CRIT_OBS_THRESH)
+	{
+		*blockedFlag = 4;
+		return;
+	}
+
+	if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH)
+	{
+		*blockedFlag = 1;
+		return;
+	}
+	else if (*blockedFlag == 1 && IRValue[0] >= CRIT_OBS_THRESH && IRValue[1] >= CRIT_OBS_THRESH)
+	{
+		*blockedFlag = 2;
+		return;
+	}
+}
 /** Changes the left and right wheel speeds to perform obstacle
 	avoidance manoeuvres
 	
