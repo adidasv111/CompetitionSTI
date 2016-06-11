@@ -196,9 +196,9 @@ void planning()
   */
 
   /**********TESTING*****************/
-  left_speed = right_speed = 0;
+  //left_speed = right_speed = 0;
   /**********************************/
-  //obstacle_avoidance(&left_speed, &right_speed);
+  obstacle_avoidance(&left_speed, &right_speed);
   setSpeeds_I2C(left_speed, right_speed);
 }
 
