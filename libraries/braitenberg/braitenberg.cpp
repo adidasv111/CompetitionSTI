@@ -136,6 +136,8 @@ int checkObstacle(int *blockedFlag)
 			return 10;
 		}
 	}
+	
+	return 0;
 }
 
 
