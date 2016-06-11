@@ -60,16 +60,19 @@ void updateIRSensors()
 			Serial.println(" ");*/
 }
 
-int checkObstacle()
+int checkObstacle(int *blockedFlag)
 {
 	if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH || IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
 	{
 		if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH || IRValue[4] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
 		{
+			*blockedFlag = 1;
 			return 20;
 		}
 		else
 		{
+			if(*blockedFlag = 1)
+				*blockedFlag = 2;
 			return 10;
 			
 		}
