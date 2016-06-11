@@ -33,6 +33,7 @@
 #define Kmotors_plus	35.0
 #define Kmotors_minus	10*Kmotors_plus
 #define DIST_GOAL_THRESH	150
+#define BIG_DIST_GOAL_THRESH	500
 #define BEARING_GOAL_TRESH	0.15
 #define SPEED_UNIT_RADS	0.0137
 
