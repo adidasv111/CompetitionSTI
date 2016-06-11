@@ -141,7 +141,7 @@ void planning()
   left_speed = 200;
   right_speed = 200;
   
-  if (planningCounter >= 1)
+  if (planningCounter >= 2)
   {
     planningCounter = 0;
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home

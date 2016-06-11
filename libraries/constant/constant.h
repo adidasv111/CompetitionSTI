@@ -68,7 +68,7 @@
 
 //--- Sensors ---
 #define N_SENSORS 8
-#define OBS_THRESH	50
+#define OBS_THRESH	40
 #define CRIT_OBS_THRESH	15
 #define WALL_THRESH	12
 
