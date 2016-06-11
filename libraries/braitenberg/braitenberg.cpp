@@ -108,14 +108,14 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	}
 	
 	/******** Wall avoidance ****************/
-	if(IRValue[3] < WALL_THRESH || IRValue[4] < WALL_THRESH)
+	if(IRValue[4] < WALL_THRESH || IRValue[5] < WALL_THRESH)
 	{
-		*left_speed += 15;
+		*right_speed -= 15;
 	}
 	
-	if(IRValue[5] < WALL_THRESH || IRValue[6] < WALL_THRESH)
+	if(IRValue[6] < WALL_THRESH || IRValue[7] < WALL_THRESH)
 	{
-		*right_speed += 15;
+		*left_speed -= 15;
 	}
 	
 }
@@ -196,4 +196,5 @@ void calibration (float *robotPose, char side, char wall)
 			break;
 	}
 	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
+	//robotPose[2] = theta;
 }
