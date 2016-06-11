@@ -56,13 +56,10 @@ void tprint()
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(202, TASK_FOREVER, &planning);
-<<<<<<< HEAD
-Task MotorsTask(150, TASK_FOREVER, &tmotors);
-Task TimeoutWaypointTask(20*TASK_SECOND, 1, &timeoutWaypoint);
-=======
+
 //Task MotorsTask(150, TASK_FOREVER, &tmotors);
 Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
->>>>>>> 87701509f7a2d0957ba990da72192ea19d85bc18
+
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth

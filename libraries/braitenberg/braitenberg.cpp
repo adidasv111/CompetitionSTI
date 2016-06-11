@@ -106,8 +106,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 			*left_speed += KplusIR*(80 - IRValue[2])/80.0f;
 		}
 	}
-	
-	if(IRValue[1] < OBS_THRESH)
+	else if(IRValue[1] < OBS_THRESH)
 	{
 		if(IRValue[1] < CRIT_OBS_THRESH)
 		{
