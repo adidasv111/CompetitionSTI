@@ -57,7 +57,7 @@ void tprint()
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(202, TASK_FOREVER, &planning);
 Task MotorsTask(150, TASK_FOREVER, &tmotors);
-Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
+Task TimeoutWaypointTask(20*TASK_SECOND, 1, &timeoutWaypoint);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -153,6 +153,7 @@ void planning()
     if (robotState == GOING_HOME)         //going home
     {
       //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
+      DymxDoor_setState(DOOR_MOVE);      //move the door when going home
       destination.x = HOME_X;
       destination.y = HOME_Y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
@@ -183,9 +184,13 @@ void planning()
       destination.y = waypoints[currentWaypoint].y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
       //  }
-      if (almostWaypoint)
+      if (gotWaypoint == 1)
       {
         TimeoutWaypointTask.enableIfNot();
+      }
+      if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
+      {
+        TimeoutWaypointTask.disable();
       }
     }
     else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
@@ -314,7 +319,7 @@ void timeoutWaypoint()
   Serial.println("Fuck this shit, moving on!");
   Serial.println("*****************************************");
 
-  almostWaypoint = false;
+  gotWaypoint = 0;
   TimeoutWaypointTask.disable();
   currentWaypoint++;
 }

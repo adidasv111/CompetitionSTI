@@ -18,7 +18,7 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState);
 void check_goal(float Erange, float* position, coord target, char robotState);
 
-extern bool almostWaypoint;
+extern char gotWaypoint;	//0 - not active, 1 - almost waypoint, 2 - got to waypoint
 extern bool gotBottle;
 extern bool gotHome;
 #endif

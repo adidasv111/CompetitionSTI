@@ -11,7 +11,7 @@
 // mode: 0=reverse, 1=brake, 2=forward
 // PWM: PWM value for right motor speed / brake
 
-    bool almostWaypoint = false;
+    char gotWaypoint;	//0 - not active, 1 - almost waypoint, 2 - got to waypoint
     bool gotBottle = false;
     bool gotHome = false;
 /** Initialize the motors and set wheel speeds to 0
@@ -181,11 +181,11 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 
 void check_goal(float Erange, float* position, coord target, char robotState)
 {
-	if (robotState == GOING_TO_WAYPOINT && almostWaypoint == false)	//if close to waypoint
+	if (robotState == GOING_TO_WAYPOINT && gotWaypoint == 0)	//if close to waypoint
 	{
 		if (Erange < BIG_DIST_GOAL_THRESH)
 		{
-			almostWaypoint = true;
+			gotWaypoint = 1;
 		}
 	}
 	if (Erange < DIST_GOAL_THRESH)
@@ -210,6 +210,7 @@ void check_goal(float Erange, float* position, coord target, char robotState)
 		}
 		else if (robotState == GOING_TO_WAYPOINT)		//just got to waypoint
 		{
+			gotWaypoint = 2;
 			Serial.println("*****************************************");
 			Serial.print("I'm in waypoint number ");
 			Serial.print((int)currentWaypoint);
