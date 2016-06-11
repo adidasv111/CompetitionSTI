@@ -51,7 +51,7 @@ void init_waypoints()
 	waypoints[2].x = 1500;		waypoints[2].y = 5000;
 	waypoints[3].x = 2500;		waypoints[3].y = 5000;
 	waypoints[4].x = 2500;		waypoints[4].y = 2500;
-	waypoints[5].x = 300;		waypoints[5].y = 2500;
+	waypoints[5].x = 3000;		waypoints[5].y = 2500;
 	waypoints[6].x = 3000;		waypoints[6].y = 5500;
 	waypoints[7].x = 3000;		waypoints[7].y = 7500;
 	waypoints[8].x = 4500;		waypoints[8].y = 7500;//calibrate left wall top
