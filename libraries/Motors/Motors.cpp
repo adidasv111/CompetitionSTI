@@ -181,12 +181,9 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 
 void check_goal(float Erange, float* position, coord target, char robotState)
 {
-	if (robotState == GOING_TO_WAYPOINT && gotWaypoint == 0)	//if close to waypoint
+	if (robotState == GOING_TO_WAYPOINT && Erange < BIG_DIST_GOAL_THRESH && gotWaypoint == 0)	//if close to waypoint
 	{
-		if (Erange < BIG_DIST_GOAL_THRESH)
-		{
-			gotWaypoint = 1;
-		}
+		gotWaypoint = 1;
 	}
 	if (Erange < DIST_GOAL_THRESH)
 	{

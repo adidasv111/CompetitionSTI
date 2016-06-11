@@ -189,6 +189,7 @@ void planning()
       }
       if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
       {
+        gotWaypoint = 0;
         TimeoutWaypointTask.disable();
       }
     }

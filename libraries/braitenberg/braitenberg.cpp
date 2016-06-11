@@ -85,7 +85,6 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		{
 			*right_speed += (KplusIR/2.0f)*(80 - IRValue[0])/80.0f;
 			*left_speed = -1*(*right_speed);
-			Serial.println("000");
 		}
 		else
 		{
@@ -110,7 +109,6 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	}
 	else if(IRValue[1] < OBS_THRESH)
 	{
-		Serial.println("111");
 		if(IRValue[1] < CRIT_OBS_THRESH)
 		{
 			*right_speed += (KplusIR/2.0f)*(80 - IRValue[1])/80.0f;
@@ -124,7 +122,6 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	}
 	else if(IRValue[3] < OBS_THRESH)
 	{
-		Serial.println("222");
 		if(IRValue[3] < CRIT_OBS_THRESH)
 		{
 			*left_speed += (KplusIR/2.2f)*(80 - IRValue[3])/80.0f;
