@@ -18,13 +18,16 @@ char robotState = GOING_TO_WAYPOINT;    //state of state machine
 coord destination;                      //Coordinates for the current destination of the robot
 char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
+int blockedFlag = 0;
 
 //----- Headers for functions -----
 void planning();
 void tmotors();
 void deposition();
+void DepositionTimeout();
 void timeoutWaypoint();
 void tCaptureBottle();
+void blockedEvasiveManoeuvre();
 void DymxDoor_setState(int stateDoor);
 void get_info_from_pi();
 void goHomeItsTooLate();
@@ -59,6 +62,8 @@ Task PlanningTask(202, TASK_FOREVER, &planning);
 //Task MotorsTask(150, TASK_FOREVER, &tmotors);
 Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
+Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
+Task BlockedTask(3000, 1, &blockedEvasiveManoeuvre);
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
@@ -101,6 +106,8 @@ void setup()
   //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
   runner.addTask(TimeoutWaypointTask);
+  runner.addTask(BlockedTask);
+  runner.addTask(DepositionTimeoutTask);
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
   //runner.addTask(DepositionTask);
@@ -140,8 +147,8 @@ void planning()
 {
   left_speed = 200;
   right_speed = 200;
-  
-  if (planningCounter >= checkObstacle())
+
+  if (planningCounter >= checkObstacle(&blockedFlag))
   {
     planningCounter = 0;
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
@@ -192,6 +199,24 @@ void planning()
         gotWaypoint = 0;
         TimeoutWaypointTask.disable();
       }
+      if (blockedFlag == 2)
+      {
+        if (!BlockedTask.isEnabled())  //if full task isn't already enabled
+        {
+          BlockedTask.enableDelayed(3000);
+        }
+        left_speed = 150;
+        right_speed = 255;
+      }
+      else if (blockedFlag == 4)
+      {
+        if (!BlockedTask.isEnabled())  //if full task isn't already enabled
+        {
+          BlockedTask.enableDelayed(3000);
+        }
+        left_speed = 255;
+        right_speed = 150;
+      }
     }
     else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
     {
@@ -206,6 +231,8 @@ void planning()
         right_speed = 255;
       }
     }
+    if (currentWaypoint == 1)
+      isFull = true;
     /*
       if (gotHome)
       {
@@ -220,6 +247,7 @@ void planning()
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
   setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
+
 }
 
 void tmotors()
@@ -248,9 +276,12 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 2)    //once pusher is done, go backwards for
   {
-    left_speed = -240;
-    right_speed = -240;
-    depositionState = 3;
+    if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
+    {
+      DepositionTimeoutTask.enableDelayed(3000);
+    }
+    left_speed = -250;
+    right_speed = -250;
   }
   else if (depositionState == 3)    //once done going backwards, stop, and finish deposition manoeuvre
   {
@@ -270,6 +301,12 @@ void deposition()                   //Deposition manoeuvre
     else
       GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);      //if not already enabled, enable it
   }
+}
+
+void DepositionTimeout()
+{
+  depositionState = 3;
+  DepositionTimeoutTask.disable();
 }
 
 //Change door state according to wished state
@@ -322,6 +359,12 @@ void timeoutWaypoint()
   gotWaypoint = 0;
   TimeoutWaypointTask.disable();
   currentWaypoint++;
+}
+
+void blockedEvasiveManoeuvre()
+{
+  blockedFlag = 0;
+  BlockedTask.disable();
 }
 
 //Communicates with PI
