@@ -16,7 +16,7 @@
 //----- Global Variables -----
 char robotState = GOING_TO_WAYPOINT;    //state of state machine
 coord destination;                      //Coordinates for the current destination of the robot
-char planningCounter = 0; 
+char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
 
 //----- Headers for functions -----
@@ -55,7 +55,7 @@ void tprint()
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(202, TASK_FOREVER, &planning);
-Task MotorsTask(150, TASK_FOREVER, &tmotors);
+//Task MotorsTask(150, TASK_FOREVER, &tmotors);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -96,7 +96,7 @@ void setup()
   runner.init();
   runner.addTask(OdometryTask);
   runner.addTask(PlanningTask);
-  runner.addTask(MotorsTask);
+  //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
 
   runner.addTask(DoorMoveTask);
@@ -138,69 +138,69 @@ void planning()
 {
   left_speed = 200;
   right_speed = 200;
-
-  if (planningCounter == 5)
+  
+  if (planningCounter >= 1)
   {
     planningCounter = 0;
-  if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
-  {
-    robotState = GOING_HOME;            //state = GOING_HOME;
-    FullTask.disable();                 //disable full check when going home
-  }
-  if (robotState == GOING_HOME)         //going home
-  {
-    DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
-    destination.x = HOME_X;
-    destination.y = HOME_Y;
-    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
+    if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+    {
+      robotState = GOING_HOME;            //state = GOING_HOME;
+      FullTask.disable();                 //disable full check when going home
+    }
+    if (robotState == GOING_HOME)         //going home
+    {
+      DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
+      destination.x = HOME_X;
+      destination.y = HOME_Y;
+      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
 
-    if (gotHome)                            //if got home
-    {
-      robotState = DEPOSITION;
-      //DepositionTask.enable();
+      if (gotHome)                            //if got home
+      {
+        robotState = DEPOSITION;
+        //DepositionTask.enable();
+      }
     }
-  }
-  else if (robotState == DEPOSITION)
-  {
-    destination.x = HOME_X;
-    destination.y = HOME_Y;
-    deposition();//DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
-  }
-  else if (robotState == GOING_TO_WAYPOINT)
-  {
-    /*   destination = findClosestBottle(robotPosition);
-       if (destination.x != -1)    //new target found
-       {
-         robotState == GOING_TO_BOTTLE;
-       }
-       else        // no new target found
-       {*/
-    DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
-    destination.x = waypoints[currentWaypoint].x;
-    destination.y = waypoints[currentWaypoint].y;
-    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-    //  }
-  }
-  else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
-  {
-    DymxDoor_setState(DOOR_MOVE);   //start moving door
-    //destination is already set to target
-    compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+    else if (robotState == DEPOSITION)
+    {
+      destination.x = HOME_X;
+      destination.y = HOME_Y;
+      deposition();//DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
+    }
+    else if (robotState == GOING_TO_WAYPOINT)
+    {
+      /*   destination = findClosestBottle(robotPosition);
+         if (destination.x != -1)    //new target found
+         {
+           robotState == GOING_TO_BOTTLE;
+         }
+         else        // no new target found
+         {*/
+      DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      destination.x = waypoints[currentWaypoint].x;
+      destination.y = waypoints[currentWaypoint].y;
+      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+      //  }
+    }
+    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
+    {
+      DymxDoor_setState(DOOR_MOVE);   //start moving door
+      //destination is already set to target
+      compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
 
-    if (gotBottle)
-    {
-      CaptureBottleTask.enableIfNot();
-      left_speed = 255;
-      right_speed = 255;
+      if (gotBottle)
+      {
+        CaptureBottleTask.enableIfNot();
+        left_speed = 255;
+        right_speed = 255;
+      }
     }
-  }
-  /*
-    if (gotHome)
-    {
-      left_speed = 0;
-      right_speed = 0;
-    }
-  */
+    /*
+      if (gotHome)
+      {
+        left_speed = 0;
+        right_speed = 0;
+      }
+    */
   }
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
@@ -212,8 +212,8 @@ void planning()
 
 void tmotors()
 {
-     // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
- // setSpeeds_I2C(left_speed, right_speed);
+  // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  // setSpeeds_I2C(left_speed, right_speed);
 }
 //------ deposition -----
 void deposition()                   //Deposition manoeuvre
@@ -314,14 +314,14 @@ void tCaptureBottle()
 
 void goHomeItsTooLate()
 {
-    Serial.println("*****************************************");
+  Serial.println("*****************************************");
   Serial.println("GeorgeGoHomeItsTooLate");
   Serial.println("*****************************************");
   isFull = true;
 }
 void goHomeItsBeenTooLong()
 {
-    Serial.println("*****************************************");
+  Serial.println("*****************************************");
   Serial.println("GeorgeGoHomeItsBeenTooLong");
   Serial.println("*****************************************");
   isFull = true;
