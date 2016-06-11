@@ -90,7 +90,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		else
 		{
 			*right_speed += KplusIR*(80 - IRValue[0])/80.0f;
-			*left_speed -= 5*KminusIR*(80 - IRValue[0])/80.0f;
+			*left_speed -= 4*KminusIR*(80 - IRValue[0])/80.0f;
 			
 		}
 	}
@@ -104,7 +104,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		}
 		else
 		{
-			*right_speed -= 5*KminusIR*(80 - IRValue[2])/80.0f;
+			*right_speed -= 4*KminusIR*(80 - IRValue[2])/80.0f;
 			*left_speed += KplusIR*(80 - IRValue[2])/80.0f;
 		}
 	}
