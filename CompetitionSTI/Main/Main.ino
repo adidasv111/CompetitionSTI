@@ -51,10 +51,11 @@ void tprint()
   Serial.print(destination.x);
   Serial.print(" , ");
   Serial.println(destination.y);
-  Serial.print("state:   ");
-  Serial.println((int)robotState);
+  //Serial.print("state:   ");
+  //Serial.println((int)robotState);
   Serial.print("blocked?:   ");
   Serial.println((int)blockedFlag);
+  Serial.println(blockedCounter);
 }
 
 //----- Tasks definitions -----
