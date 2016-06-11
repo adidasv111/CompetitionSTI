@@ -60,6 +60,57 @@ void updateIRSensors()
 			Serial.println(" ");*/
 }
 
+int checkObstacle()
+{
+	if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH || IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
+	{
+		if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH || IRValue[4] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
+		{
+			return 20;
+		}
+		else
+		{
+			return 10;
+			
+		}
+	}
+	/*
+	else if(IRValue[2] < OBS_THRESH)
+	{
+		if(IRValue[2] < CRIT_OBS_THRESH)
+		{
+			return 20;
+			
+		}
+		else
+		{
+			return 10;
+		}
+	}
+	else if(IRValue[1] < OBS_THRESH)
+	{
+		if(IRValue[1] < CRIT_OBS_THRESH)
+		{
+			return 20;
+		}
+		else
+		{
+			return 10;
+		}
+	}
+	else if(IRValue[3] < OBS_THRESH)
+	{
+		if(IRValue[3] < CRIT_OBS_THRESH)
+		{
+			return 20;
+		}
+		else
+		{
+			return 10;
+		}
+	}*/
+}
+
 
 /** Changes the left and right wheel speeds to perform obstacle
 	avoidance manoeuvres
