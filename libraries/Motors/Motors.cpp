@@ -11,6 +11,7 @@
 // mode: 0=reverse, 1=brake, 2=forward
 // PWM: PWM value for right motor speed / brake
 
+    bool almostWaypoint = false;
     bool gotBottle = false;
     bool gotHome = false;
 /** Initialize the motors and set wheel speeds to 0
@@ -35,7 +36,7 @@
 			speedLeft = 255;
 		else if(speedLeft < -255)
 			speedLeft = -255;
-		
+
 		if(speedRight > 255)
 			speedRight = 255;
 		else if(speedRight < -255)
@@ -141,67 +142,10 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 		}
 
 		float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-		if (Erange < DIST_GOAL_THRESH)
-		{
-			if(robotState == GOING_TO_BOTTLE)		//just captured a bottle
-			{
-				gotBottle = true;
-				removeTarget();
-				Serial.println("*****************************************");
-				Serial.print("George picked bottle at: ");
-				Serial.print(target.x);
-				Serial.print(" , ");
-				Serial.println(target.y);
-				Serial.println("*****************************************");
-			}
-			else if (robotState == GOING_HOME)		//just got home
-			{
-				gotHome = true;
-				Serial.println("*****************************************");
-				Serial.println("George is home, bitches!");
-				Serial.println("*****************************************");
-			}
-			else if (robotState == GOING_TO_WAYPOINT)		//just got to waypoint
-			{
-				Serial.println("*****************************************");
-				Serial.print("I'm in waypoint number ");
-				Serial.print((int)currentWaypoint);
-				Serial.println("	--George");
-				Serial.println("*****************************************");
-				switch(currentWaypoint)
-				{
-					case 0:
-					calibration(position, ROBOT_LEFT, WALL_LEFT);
-					break;
-					case 1:
-					calibration(position, ROBOT_LEFT, WALL_LEFT);
-					break;
-					case 8:
-					calibration(position, ROBOT_LEFT, WALL_TOP);
-					break;
-					case 11:
-					calibration(position, ROBOT_LEFT, WALL_RIGHT);
-					break;
-					case 15:
-					calibration(position, ROBOT_LEFT, WALL_RIGHT);
-					break;
-					case 18:
-					calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-					break;
-					case 20:
-					calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-					break;
-					case 24:
-					calibration(position, ROBOT_LEFT, WALL_BOTTOM);
-					break;
-					default:
-					break;
-				}
-				currentWaypoint++;
-			}
-		}
+		check_goal(Erange, position, target, robotState);
 	}
 }
+
 
 
 void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState)
@@ -235,6 +179,75 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	}
 }
 
+void check_goal(float Erange, float* position, coord target, char robotState)
+{
+	if (robotState == GOING_TO_WAYPOINT && almostWaypoint == false)	//if close to waypoint
+	{
+		if (Erange < BIG_DIST_GOAL_THRESH)
+		{
+			almostWaypoint = true;
+		}
+	}
+	if (Erange < DIST_GOAL_THRESH)
+	{
+		if(robotState == GOING_TO_BOTTLE)		//just captured a bottle
+		{
+			gotBottle = true;
+			removeTarget();
+			Serial.println("*****************************************");
+			Serial.print("George picked bottle at: ");
+			Serial.print(target.x);
+			Serial.print(" , ");
+			Serial.println(target.y);
+			Serial.println("*****************************************");
+		}
+		else if (robotState == GOING_HOME)		//just got home
+		{
+			gotHome = true;
+			Serial.println("*****************************************");
+			Serial.println("George is home, bitches!");
+			Serial.println("*****************************************");
+		}
+		else if (robotState == GOING_TO_WAYPOINT)		//just got to waypoint
+		{
+			Serial.println("*****************************************");
+			Serial.print("I'm in waypoint number ");
+			Serial.print((int)currentWaypoint);
+			Serial.println("	--George");
+			Serial.println("*****************************************");
+			switch(currentWaypoint)
+			{
+				case 0:
+				calibration(position, ROBOT_LEFT, WALL_LEFT);
+				break;
+				case 1:
+				calibration(position, ROBOT_LEFT, WALL_LEFT);
+				break;
+				case 8:
+				calibration(position, ROBOT_LEFT, WALL_TOP);
+				break;
+				case 11:
+				calibration(position, ROBOT_LEFT, WALL_RIGHT);
+				break;
+				case 15:
+				calibration(position, ROBOT_LEFT, WALL_RIGHT);
+				break;
+				case 18:
+				calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+				break;
+				case 20:
+				calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
+				break;
+				case 24:
+				calibration(position, ROBOT_LEFT, WALL_BOTTOM);
+				break;
+				default:
+				break;
+			}
+			currentWaypoint++;
+		}
+	}
+}
 /** Adjust wheel speeds to follow target based on target 
 	range and bearing
 	

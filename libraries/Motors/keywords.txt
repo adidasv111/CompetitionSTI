@@ -1,3 +1,4 @@
+almostWaypoint	KEYWORD1
 gotHome	KEYWORD1
 gotBottle	KEYWORD1
 initMotors	KEYWORD2

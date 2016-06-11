@@ -23,9 +23,10 @@ int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of p
 void planning();
 void tmotors();
 void deposition();
+void timeoutWaypoint();
+void tCaptureBottle();
 void DymxDoor_setState(int stateDoor);
 void get_info_from_pi();
-void tCaptureBottle();
 void goHomeItsTooLate();
 void goHomeItsBeenTooLong();
 void stopRobot();
@@ -56,6 +57,7 @@ void tprint()
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(202, TASK_FOREVER, &planning);
 //Task MotorsTask(150, TASK_FOREVER, &tmotors);
+Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -98,7 +100,7 @@ void setup()
   runner.addTask(PlanningTask);
   //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
-
+  runner.addTask(TimeoutWaypointTask);
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
   //runner.addTask(DepositionTask);
@@ -141,6 +143,7 @@ void planning()
   
   if (planningCounter >= 1)
   {
+    Serial.print("planning");
     planningCounter = 0;
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
     {
@@ -149,7 +152,7 @@ void planning()
     }
     if (robotState == GOING_HOME)         //going home
     {
-      DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
+      //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
       destination.x = HOME_X;
       destination.y = HOME_Y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
@@ -180,6 +183,10 @@ void planning()
       destination.y = waypoints[currentWaypoint].y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
       //  }
+      if (almostWaypoint)
+      {
+        TimeoutWaypointTask.enableIfNot();
+      }
     }
     else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
     {
@@ -291,6 +298,26 @@ void DymxDoor_setState(int stateDoor)
   }
 }
 
+void tCaptureBottle()
+{
+  gotBottle = false;
+  CaptureBottleTask.disable();
+  robotState == GOING_TO_WAYPOINT;
+}
+
+//if cannot get to waypoint too long, leave it
+void timeoutWaypoint()
+{
+  Serial.println("*****************************************");
+  Serial.print("I cannot get to waypoint number ");
+  Serial.println((int)currentWaypoint);
+  Serial.println("Fuck this shit, moving on!");
+  Serial.println("*****************************************");
+
+  almostWaypoint = false;
+  TimeoutWaypointTask.disable();
+  currentWaypoint++;
+}
 
 //Communicates with PI
 void get_info_from_pi()
@@ -303,13 +330,6 @@ void get_info_from_pi()
   //newBottle.y = robotPosition[1] + bottle.y;
   // insertBottle(newBottle)
   //*communicate = true;
-}
-
-void tCaptureBottle()
-{
-  gotBottle = false;
-  CaptureBottleTask.disable();
-  robotState == GOING_TO_WAYPOINT;
 }
 
 void goHomeItsTooLate()
