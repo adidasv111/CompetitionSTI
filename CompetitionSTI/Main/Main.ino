@@ -68,7 +68,7 @@ Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                           
 Task PrintTask(1000, TASK_FOREVER, &tprint);
 
 Task DistSensorTask(20, TASK_FOREVER, &updateIRSensors);                           //Create task that updates IR Sensors
-Task StopTask(1000, 1, &stopRobot);
+//Task StopTask(1000, 1, &stopRobot);
 
 Scheduler runner;
 
@@ -131,13 +131,10 @@ void loop()
 //--- planning ---
 void planning()
 {
-  /***********ADD TO TASK********/
-  
-  /******************************/
 
   left_speed = 200;
   right_speed = 200;
-  /*if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+  if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
   {
     robotState = GOING_HOME;            //state = GOING_HOME;
     FullTask.disable();                 //disable full check when going home
@@ -169,7 +166,7 @@ void planning()
          robotState == GOING_TO_BOTTLE;
        }
        else        // no new target found
-       {
+       {*/
        DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
     destination.x = waypoints[currentWaypoint].x;
     destination.y = waypoints[currentWaypoint].y;
@@ -188,7 +185,7 @@ void planning()
       left_speed = 255;
       right_speed = 255;
     }
-  }*/
+  }
   /*
     if (gotHome)
     {
@@ -198,10 +195,10 @@ void planning()
   */
 
   /**********TESTING*****************/
-  left_speed = right_speed = 0;
+  //left_speed = right_speed = 0;
   /**********************************/
-  //obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
+  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  //calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
   setSpeeds_I2C(left_speed, right_speed);
 }
 
@@ -315,6 +312,6 @@ void goHomeItsBeenTooLong()
 
 void stopRobot()
 {
-  
+  left_speed = right_speed = 0;
 }
 

@@ -96,6 +96,6 @@ int IRSensor::calc_distanceIR()
   IRValue = analogRead(_pin);
   int smoothData;
   smoothData = digitalSmoothIR(IRValue, sensSmoothArray[_num]);
-  //return millivoltToCentimeters(smoothData);
-  return millivoltToCentimeters(IRValue);
+  return millivoltToCentimeters(smoothData);
+  //return millivoltToCentimeters(IRValue);
 }
