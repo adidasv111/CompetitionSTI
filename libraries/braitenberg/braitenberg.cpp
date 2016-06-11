@@ -80,9 +80,9 @@ void updateIRSensors()
 void obstacle_avoidance(int* left_speed, int* right_speed)
 {
 	
-	if(IRValue[0] < OBS_THRESH || IRValue[1] < OBS_THRESH)
+	if(IRValue[0] < OBS_THRESH)
 	{
-		if(IRValue[0] < CRIT_OBS_THRESH || IRValue[1] < CRIT_OBS_THRESH)
+		if(IRValue[0] < CRIT_OBS_THRESH)
 		{
 			*right_speed += (KplusIR/2.0f)*(80 - IRValue[0])/80.0f;
 			*left_speed = -1*(*right_speed);
@@ -93,17 +93,44 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		*left_speed -= 5*KminusIR*(80 - IRValue[0])/80.0f;
 		}
 	}
-	else if(IRValue[2] < OBS_THRESH || IRValue[3] < OBS_THRESH)
+	else if(IRValue[2] < OBS_THRESH)
 	{
-		if(IRValue[2] < CRIT_OBS_THRESH || IRValue[3] < CRIT_OBS_THRESH)
+		if(IRValue[2] < CRIT_OBS_THRESH)
 		{
-			*left_speed += (KplusIR/2.2f)*(80 - IRValue[1])/80.0f;
+			*left_speed += (KplusIR/2.2f)*(80 - IRValue[2])/80.0f;
 			*right_speed = -1*(*left_speed);
 		}
 		else
 		{
-			*right_speed -= 5*KminusIR*(80 - IRValue[1])/80.0f;
-			*left_speed += KplusIR*(80 - IRValue[1])/80.0f;
+			*right_speed -= 5*KminusIR*(80 - IRValue[2])/80.0f;
+			*left_speed += KplusIR*(80 - IRValue[2])/80.0f;
+		}
+	}
+	
+	if(IRValue[1] < OBS_THRESH)
+	{
+		if(IRValue[1] < CRIT_OBS_THRESH)
+		{
+			*right_speed += (KplusIR/2.0f)*(80 - IRValue[1])/80.0f;
+			*left_speed = -1*(*right_speed);
+		}
+		else
+		{
+		*right_speed += KplusIR*(80 - IRValue[1])/80.0f;
+		*left_speed -= 5*KminusIR*(80 - IRValue[1])/80.0f;
+		}
+	}
+	else if(IRValue[3] < OBS_THRESH)
+	{
+		if(IRValue[3] < CRIT_OBS_THRESH)
+		{
+			*left_speed += (KplusIR/2.2f)*(80 - IRValue[3])/80.0f;
+			*right_speed = -1*(*left_speed);
+		}
+		else
+		{
+			*right_speed -= 5*KminusIR*(80 - IRValue[3])/80.0f;
+			*left_speed += KplusIR*(80 - IRValue[3])/80.0f;
 		}
 	}
 	
