@@ -71,6 +71,8 @@
 #define OBS_THRESH	40
 #define CRIT_OBS_THRESH	15
 #define WALL_THRESH	12
+#define KplusIR 57
+#define KminusIR 4*110
 
 #define WALL_CAL_THRESH	40
 #define SENSOR_SEPERATION	21		//In centimeters, the distance between the right and left sensors

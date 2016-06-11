@@ -13,14 +13,6 @@
 #include "constant.h"
 #include "math.h"
 
-
-
-
-
-
-#define KplusIR 57
-#define KminusIR 110
-
 //double l_weight[N_SENSORS] = {0, 0, 0, 0, 20, 50, -50, -20};
 //double r_weight[N_SENSORS] = {0, 0, 0, 0, -20, -50, 50, 20};
 
@@ -89,7 +81,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		else
 		{
 			*right_speed += KplusIR*(80 - IRValue[0])/80.0f;
-			*left_speed -= 4*KminusIR*(80 - IRValue[0])/80.0f;
+			*left_speed -= KminusIR*(80 - IRValue[0])/80.0f;
 			
 		}
 	}
@@ -103,7 +95,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		}
 		else
 		{
-			*right_speed -= 4*KminusIR*(80 - IRValue[2])/80.0f;
+			*right_speed -= 4KminusIR*(80 - IRValue[2])/80.0f;
 			*left_speed += KplusIR*(80 - IRValue[2])/80.0f;
 		}
 	}
@@ -117,7 +109,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		else
 		{
 			*right_speed += KplusIR*(80 - IRValue[1])/80.0f;
-			*left_speed -= 5*KminusIR*(80 - IRValue[1])/80.0f;
+			*left_speed -= KminusIR*(80 - IRValue[1])/80.0f;
 		}
 	}
 	else if(IRValue[3] < OBS_THRESH)
@@ -129,7 +121,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 		}
 		else
 		{
-			*right_speed -= 5*KminusIR*(80 - IRValue[3])/80.0f;
+			*right_speed -= KminusIR*(80 - IRValue[3])/80.0f;
 			*left_speed += KplusIR*(80 - IRValue[3])/80.0f;
 		}
 	}
