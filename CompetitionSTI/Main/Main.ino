@@ -20,6 +20,7 @@ int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of p
 
 //----- Headers for functions -----
 void planning();
+void tmotors();
 void deposition();
 void DymxDoor_setState(int stateDoor);
 void get_info_from_pi();
@@ -35,7 +36,7 @@ void tprint()
   Serial.print("y:   ");
   Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
-  Serial.println(robotPosition[2]*180/M_PI);
+  Serial.println(robotPosition[2] * 180 / M_PI);
   Serial.print("left:   ");
   Serial.print(left_speed);
   Serial.print("      right:   ");
@@ -52,7 +53,8 @@ void tprint()
 
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
-Task PlanningTask(102, TASK_FOREVER, &planning);
+Task PlanningTask(202, TASK_FOREVER, &planning);
+Task MotorsTask(150, TASK_FOREVER, &tmotors);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -167,7 +169,7 @@ void planning()
        }
        else        // no new target found
        {*/
-       DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+    DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
     destination.x = waypoints[currentWaypoint].x;
     destination.y = waypoints[currentWaypoint].y;
     compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
@@ -197,11 +199,17 @@ void planning()
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
   /**********************************/
-  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+ // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  //calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
+ // setSpeeds_I2C(left_speed, right_speed);
+}
+
+void tmotors()
+{
+      obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
   //calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
   setSpeeds_I2C(left_speed, right_speed);
 }
-
 //------ deposition -----
 void deposition()                   //Deposition manoeuvre
 {
