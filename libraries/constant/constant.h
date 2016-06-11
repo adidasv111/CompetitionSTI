@@ -72,7 +72,7 @@
 #define WALL_THRESH	12
 
 #define WALL_CAL_THRESH	40
-#define SENSOR_SEPERATION	15		//In centimeters, the distance between the right and left sensors
+#define SENSOR_SEPERATION	21		//In centimeters, the distance between the right and left sensors
 #define ROBOT_LEFT	0
 #define ROBOT_RIGHT	1
 #define ROBOT_BACk	2

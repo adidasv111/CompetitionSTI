@@ -26,6 +26,7 @@ void get_info_from_pi();
 void tCaptureBottle();
 void goHomeItsTooLate();
 void goHomeItsBeenTooLong();
+void stopRobot();
 
 void tprint()
 {
@@ -34,7 +35,7 @@ void tprint()
   Serial.print("y:   ");
   Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
-  Serial.println(robotPosition[2]);
+  Serial.println(robotPosition[2]*180/M_PI);
   Serial.print("left:   ");
   Serial.print(left_speed);
   Serial.print("      right:   ");
@@ -65,6 +66,9 @@ Task GeorgeGoHomeItsBeenTooLongTask(ITS_BEEN_TOO_LONG_INT, 1, &goHomeItsBeenTooL
 
 Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                               //Create task that communicate with the PI
 Task PrintTask(1000, TASK_FOREVER, &tprint);
+
+Task DistSensorTask(20, TASK_FOREVER, &updateIRSensors);                           //Create task that updates IR Sensors
+Task StopTask(1000, 1, &stopRobot);
 
 Scheduler runner;
 
@@ -103,6 +107,9 @@ void setup()
   runner.addTask(PiComTask);
   runner.addTask(PrintTask);
 
+  runner.addTask(DistSensorTask);
+  DistSensorTask.enable();
+
   //enabling tasks that should start at beginnig of the programm
   OdometryTask.enable();
   PlanningTask.enable();
@@ -125,12 +132,12 @@ void loop()
 void planning()
 {
   /***********ADD TO TASK********/
-  //updateIRSensors();
+  
   /******************************/
 
   left_speed = 200;
   right_speed = 200;
-  if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+  /*if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
   {
     robotState = GOING_HOME;            //state = GOING_HOME;
     FullTask.disable();                 //disable full check when going home
@@ -163,7 +170,7 @@ void planning()
        }
        else        // no new target found
        {
-    */   DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+       DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
     destination.x = waypoints[currentWaypoint].x;
     destination.y = waypoints[currentWaypoint].y;
     compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
@@ -181,7 +188,7 @@ void planning()
       left_speed = 255;
       right_speed = 255;
     }
-  }
+  }*/
   /*
     if (gotHome)
     {
@@ -190,7 +197,11 @@ void planning()
     }
   */
 
-  //obstacle_avoidance(&left_speed, &right_speed);
+  /**********TESTING*****************/
+  left_speed = right_speed = 0;
+  /**********************************/
+  //obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
   setSpeeds_I2C(left_speed, right_speed);
 }
 
@@ -301,3 +312,9 @@ void goHomeItsBeenTooLong()
   Serial.println("GeorgeGoHomeItsBeenTooLong");
   isFull = true;
 }
+
+void stopRobot()
+{
+  
+}
+
