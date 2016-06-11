@@ -95,6 +95,7 @@ void setup()
   runner.init();
   runner.addTask(OdometryTask);
   runner.addTask(PlanningTask);
+  runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
 
   runner.addTask(DoorMoveTask);
@@ -115,6 +116,7 @@ void setup()
   //enabling tasks that should start at beginnig of the programm
   OdometryTask.enable();
   PlanningTask.enable();
+  MotorsTask.enable();
   FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
@@ -200,7 +202,6 @@ void planning()
   //left_speed = right_speed = 0;
   /**********************************/
  // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  //calibration(robotPosition, ROBOT_LEFT, WALL_LEFT);
  // setSpeeds_I2C(left_speed, right_speed);
 }
 
