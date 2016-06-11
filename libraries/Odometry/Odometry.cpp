@@ -37,6 +37,12 @@ volatile int rightEncTicks = 0;
   robotPosition[0] = INIT_X;
   robotPosition[1] = INIT_Y;
   robotPosition[2] = INIT_THETA; 
+  
+  /* In case of reset
+    robotPosition[0] = ;
+  robotPosition[1] = ;
+  robotPosition[2] = ;
+  */
 }
 
 void doEncoderLeft()

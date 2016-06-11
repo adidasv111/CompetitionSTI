@@ -81,8 +81,9 @@
 #define	WALL_LEFT 	2
 #define	WALL_TOP 	3
 
+#define FULL_DELAY	60000
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
-#define FULL_DELAY	10000
+#define FULL_N		5
 
 #define ITS_TOO_LATE_INT	570000
 #define ITS_BEEN_TOO_LONG_INT	180000

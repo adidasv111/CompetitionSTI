@@ -8,14 +8,20 @@ USSensor US_detection(52, 53);
 
 void checkFull()
 {
-  int detector_dist = US_detection.calc_distanceUS();
+  int detector_dist = 0;
+  for (int i = 0; i < FULL_N; i++)
+  {
+    detector_dist += US_detection.calc_distanceUS();    //****
+  }
+  detector_dist /= FULL_N;
+
   if (detector_dist < 15)
     fullCounter++;
 
   if (fullCounter >= FULL_THRESHOLD)
   {
-    fullCounter = 0;
     isFull = true;
+    fullCounter = 0;
   }
   else
   {
