@@ -222,7 +222,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	@param wall Location of the wall
 	@return void
 */
-void poseCalibration (float *robotPose, char side, char wall, int* left_speed, *right_speed, int* calibrationFlag)
+void poseCalibration (float *robotPose, char side, char wall, int* left_speed, int* right_speed, int* calibrationFlag)
 {
 	float theta = 0;
 	float x_cal, y_cal = 0;
