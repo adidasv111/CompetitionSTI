@@ -248,7 +248,6 @@ void planning()
                     Serial.println("dkfieuhfiuehfbcdviu start");
           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
           }*/
-
       }
     }
     else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
