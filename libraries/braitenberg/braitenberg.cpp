@@ -70,7 +70,7 @@ int checkObstacle()
 		}
 		else
 		{
-			return 10;
+			return 7;
 		}
 	}
 	return 0;

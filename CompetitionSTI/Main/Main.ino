@@ -63,7 +63,7 @@ void tprint()
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(PLANNING_FREQ, TASK_FOREVER, &planning);
-Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
+Task TimeoutWaypointTask(45 * TASK_SECOND, 1, &timeoutWaypoint);
 //Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 //Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
 //Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
@@ -164,16 +164,10 @@ void planning()
     if (robotState == GOING_HOME)         //going home
     {
       //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
-      DymxDoor_setState(DOOR_MOVE);      //move the door when going home
+      DymxDoor_setState(DOOR_OPEN);
       destination.x = HOME_X;
       destination.y = HOME_Y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-
-      if (gotHome)                            //if got home
-      {
-        robotState = DEPOSITION;
-        //DepositionTask.enable();
-      }
     }
     else if (robotState == DEPOSITION)
     {
@@ -190,21 +184,12 @@ void planning()
          }
          else        // no new target found
          {*/
-      DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      //DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      DymxDoor_setState(DOOR_MOVE);
       destination.x = waypoints[currentWaypoint].x;
       destination.y = waypoints[currentWaypoint].y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
       //  }
-      if (gotWaypoint == 1)
-      {
-        TimeoutWaypointTask.enableIfNot();
-      }
-      if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
-      {
-        gotWaypoint = 0;
-        TimeoutWaypointTask.disable();
-      }
-
       if (blockedFlag == 2)
       {
         left_speed = 150;
@@ -247,39 +232,52 @@ void planning()
       DymxDoor_setState(DOOR_MOVE);   //start moving door
       //destination is already set to target
       compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-
-      if (gotBottle)
-      {
-        //CaptureBottleTask.enableIfNot();
-        left_speed = 255;
-        right_speed = 255;
-        
-        captureBottleCounter++;
-        if (captureBottleCounter >= CAPTURE_BOTTLE_DELAY)
-        {
-          gotBottle = false;
-          captureBottleCounter = 0;
-          robotState == GOING_TO_WAYPOINT;
-        }
-      }
     }
-    if (currentWaypoint == 2)
+  }
+  check_goal(robotPosition, destination, robotState);
+  if (gotHome)                            //if got home
+  {
+    robotState = DEPOSITION;
+    //DepositionTask.enable();
+  }
+  if (gotWaypoint == 1)
+  {
+    TimeoutWaypointTask.enableIfNot();
+  }
+  if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
+  {
+    gotWaypoint = 0;
+    TimeoutWaypointTask.disable();
+  }
+  if (gotBottle)
+  {
+    //CaptureBottleTask.enableIfNot();
+    left_speed = 255;
+    right_speed = 255;
+
+    captureBottleCounter++;
+    if (captureBottleCounter >= CAPTURE_BOTTLE_DELAY)
+    {
+      gotBottle = false;
+      captureBottleCounter = 0;
+      robotState == GOING_TO_WAYPOINT;
+    }
+  }
+  /**********TESTING*****************/
+  //left_speed = right_speed = 0;
+      if (currentWaypoint == 3)
       isFull = true;
-    /*
+          /*
       if (gotHome)
       {
         left_speed = 0;
         right_speed = 0;
       }
     */
-  }
-  /**********TESTING*****************/
-  //left_speed = right_speed = 0;
   /**********************************/
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
   setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
-
 }
 
 //------ deposition -----
@@ -307,8 +305,8 @@ void deposition()                   //Deposition manoeuvre
       {
       DepositionTimeoutTask.enableDelayed(1500);
       }*/
-    left_speed = -250;
-    right_speed = -250;
+    left_speed = -240;
+    right_speed = -240;
 
     depositionTimeoutCounter++;
     if (depositionTimeoutCounter >= DEPOSITION_DELAY)
