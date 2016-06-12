@@ -16,7 +16,7 @@ void setSpeeds_I2C(int speedLeft, int speedRight);
 void compute_wheel_speeds(float target_range, float target_bearing, int *msl, int *msr);
 void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState);
 void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int *msr, char robotState);
-void check_goal(float Erange, float* position, coord target, char robotState);
+void check_goal(float* position, coord target, char robotState);
 
 extern char gotWaypoint;	//0 - not active, 1 - almost waypoint, 2 - got to waypoint
 extern bool gotBottle;

@@ -120,29 +120,26 @@ void compute_bottle_speeds_coord(float* position, coord target, int *msl, int *m
 		if (Ebearing < -M_PI)
 			Ebearing += M_2PI;
 
-		if (Ebearing > 0 && Ebearing < M_PI2)
-		{
-			*msl -= Kmotors_minus*abs(Ebearing);
-			*msr += Kmotors_plus*abs(Ebearing);
-		}
 		else if (Ebearing < 0 && Ebearing > -M_PI2)
 		{
 			*msl += Kmotors_plus*abs(Ebearing);
 			*msr -= Kmotors_minus*abs(Ebearing);
 		}	
-		else if (Ebearing > M_PI2)
+		else if (Ebearing > 0 && Ebearing < M_PI2)
 		{
-			*msl = -255;
-			*msr = 255;
+			*msl -= Kmotors_minus*abs(Ebearing);
+			*msr += Kmotors_plus*abs(Ebearing);
 		}
 		else if (Ebearing < -M_PI2)
 		{
 			*msl = 255;
 			*msr = -255;
 		}
-
-		float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
-		check_goal(Erange, position, target, robotState);
+		else if (Ebearing > M_PI2)
+		{
+			*msl = -255;
+			*msr = 255;
+		}
 	}
 }
 
@@ -163,15 +160,15 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	if (Ebearing < -M_PI)
 		Ebearing += M_2PI;
 
-	if (Ebearing > BEARING_GOAL_TRESH)
-	{
-		*msr += Kmotors_plus*abs(Ebearing);
-		*msl = -1*(*msr);
-	}
-	else if (Ebearing < -BEARING_GOAL_TRESH)
+	if (Ebearing < -BEARING_GOAL_TRESH)
 	{
 		*msl += Kmotors_plus*abs(Ebearing);
 		*msr = -1*(*msl);
+	}
+	else if (Ebearing > BEARING_GOAL_TRESH)
+	{
+		*msr += Kmotors_plus*abs(Ebearing);
+		*msl = -1*(*msr);
 	}
 	else
 	{
@@ -179,8 +176,10 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	}
 }
 
-void check_goal(float Erange, float* position, coord target, char robotState)
+void check_goal(float* position, coord target, char robotState)
 {
+	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
+
 	if (robotState == GOING_TO_WAYPOINT && Erange < BIG_DIST_GOAL_THRESH && gotWaypoint == 0)	//if close to waypoint
 	{
 		gotWaypoint = 1;
