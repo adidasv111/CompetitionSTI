@@ -9,7 +9,8 @@ USSensor US_detection(52, 53);
 void checkFull()
 {
   int detector_dist = 0;
-  for (int i = 0; i < FULL_N; i++)
+  int i;
+  for (i = 0; i < FULL_N; i++)
   {
 	  if(US_detection.calc_distanceUS() > 15)
 		  break;
