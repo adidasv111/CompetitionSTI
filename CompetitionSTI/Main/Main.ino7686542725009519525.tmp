@@ -19,8 +19,6 @@ coord destination;                      //Coordinates for the current destinatio
 char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
 int blockedFlag = 0;
-unsigned int blockedCounter = 0;
-int calibrationFlag = 0;
 
 //----- Headers for functions -----
 void planning();
@@ -52,21 +50,20 @@ void tprint()
   Serial.print(destination.x);
   Serial.print(" , ");
   Serial.println(destination.y);
-  //Serial.print("state:   ");
-  //Serial.println((int)robotState);
-  Serial.print("blocked?:   ");
-  Serial.println((int)blockedFlag);
-  Serial.println(blockedCounter);
+  Serial.print("state:   ");
+  Serial.println((int)robotState);
+  Serial.print("full?:   ");
+  Serial.println(isFull);
 }
 
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
-
-Task PlanningTask(PLANNING_FREQ, TASK_FOREVER, &planning);
-Task TimeoutWaypointTask(40 * TASK_SECOND, 1, &timeoutWaypoint);
-//Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
-//Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
-//Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
+Task PlanningTask(202, TASK_FOREVER, &planning);
+//Task MotorsTask(150, TASK_FOREVER, &tmotors);
+Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
+Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
+Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
+Task BlockedTask(3000, 1, &blockedEvasiveManoeuvre);
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
@@ -109,8 +106,7 @@ void setup()
   //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
   runner.addTask(TimeoutWaypointTask);
-  //runner.addTask(EvasiveManoeuvreTask);
-  //runner.addTask(DepositionTimeoutTask);
+  runner.addTask(DepositionTimeoutTask);
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
   //runner.addTask(DepositionTask);
@@ -130,19 +126,17 @@ void setup()
   OdometryTask.enable();
   PlanningTask.enable();
   //MotorsTask.enable();
-  //EvasiveManoeuvreTask.disable();
   FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
   GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
   PrintTask.enableDelayed(250);
-  Dynamixel.setEndless(DYMX_PUSHER_ID, ON);
 }
 
 //***************************** LOOP *************************
 void loop()
-{ robotState = DEPOSITION;
+{
   runner.execute();
 }
 
@@ -150,22 +144,10 @@ void loop()
 //--- planning ---
 void planning()
 {
-  if(calibrationFlag = 0)
-  {
-    left_speed = 200;
-    right_speed = 200;
-  }
-  else
-  {
-    left_speed = 0;
-    left_speed = 0;
-  }
-  
-  Serial.print("freq");
-  Serial.println(checkObstacle());
+  left_speed = 200;
+  right_speed = 200;
 
-  checkEvasiveManoeuvre(&blockedFlag);
-  if (planningCounter >= checkObstacle())
+  if (planningCounter >= checkObstacle(&blockedFlag))
   {
     planningCounter = 0;
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
@@ -191,6 +173,7 @@ void planning()
     {
       destination.x = HOME_X;
       destination.y = HOME_Y;
+      deposition();//DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
     }
     else if (robotState == GOING_TO_WAYPOINT)
     {
@@ -215,39 +198,8 @@ void planning()
         gotWaypoint = 0;
         TimeoutWaypointTask.disable();
       }
-
       if (blockedFlag == 2)
       {
-        left_speed = 150;
-        right_speed = 255;
-        blockedCounter++;
-        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-        {
-          blockedFlag = 0;
-          blockedCounter = 0;
-        }
-        /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
-          {
-           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-          }*/
-      }
-      else if (blockedFlag == 4)
-      {
-        left_speed = 255;
-        right_speed = 150;
-        blockedCounter++;
-        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-        {
-          Serial.println("dkfieuhfiuehfbcdviu done");
-          blockedFlag = 0;
-          blockedCounter = 0;
-        }
-        //EvasiveManoeuvreTask.enable();
-        /*if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
-          {
-                    Serial.println("dkfieuhfiuehfbcdviu start");
-          EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-          }*/
 
       }
     }
@@ -256,34 +208,26 @@ void planning()
       DymxDoor_setState(DOOR_MOVE);   //start moving door
       //destination is already set to target
       compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
-    }
-  }
-  if (robotState == DEPOSITION)
-    deposition();                 //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
 
-  //Checking if current goal is achieved
-  check_goal(robotPosition, destination, robotState);
-  if (gotHome)                            //if got home
-  {
-    robotState = DEPOSITION;
-    //DepositionTask.enable();
-  }
-  if (gotWaypoint == 1)
-  {
-    TimeoutWaypointTask.enableIfNot();
-  }
-  if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
-  {
-    gotWaypoint = 0;
-    TimeoutWaypointTask.disable();
-  }
-  if (gotBottle)
-  {
-    //CaptureBottleTask.enableIfNot();
-    left_speed = 255;
-    right_speed = 255;
-
+      if (gotBottle)
+      {
+        CaptureBottleTask.enableIfNot();
+        left_speed = 255;
+        right_speed = 255;
+      }
     }
+    if (currentWaypoint == 1)
+      isFull = true;
+    /*
+      if (gotHome)
+      {
+        left_speed = 0;
+        right_speed = 0;
+      }
+    */
+  }
+  /**********TESTING*****************/
+  //left_speed = right_speed = 0;
   /**********************************/
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
   setSpeeds_I2C(left_speed, right_speed);
@@ -319,7 +263,7 @@ void deposition()                   //Deposition manoeuvre
   {
     if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
     {
-      DepositionTimeoutTask.enableDelayed(1500);
+      DepositionTimeoutTask.enableDelayed(3000);
     }
     left_speed = -250;
     right_speed = -250;
@@ -401,19 +345,13 @@ void timeoutWaypoint()
   TimeoutWaypointTask.disable();
   currentWaypoint++;
 }
-/*
-  void evasiveManoeuvre()
-  {
-  if (EvasiveManoeuvreTask.isFirstIteration() == false)
-  {
-    Serial.println("dkfieuhfiuehfbcdviu done");
-    blockedFlag = 0;
-    EvasiveManoeuvreTask.disable();
-  }
-  else
-  Serial.println("hhtffgddtrvytf ytdftd");
-  }
-*/
+
+void blockedEvasiveManoeuvre()
+{
+  blockedFlag = 0;
+  BlockedTASK.disable();
+}
+
 //Communicates with PI
 void get_info_from_pi()
 {

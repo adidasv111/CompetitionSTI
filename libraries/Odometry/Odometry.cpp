@@ -98,12 +98,12 @@ void calcOdometry()
   	//initalize encoders counters so they are differential
   	leftEncTicks = 0;
   	rightEncTicks = 0;
-    /*
+    
     Serial.print("left:   ");
     Serial.println(leftTicks);
-    Serial.print("right:   ");
-    Serial.println(rightTicks);
-  */
+    //Serial.print("right:   ");
+    //Serial.println(rightTicks);
+  
     //calculate movement of each wheel in meters
     float dist_right = rightTicks/TICKS_PER_M;
     float dist_left = leftTicks/TICKS_PER_M;
