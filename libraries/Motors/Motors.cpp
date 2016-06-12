@@ -263,7 +263,7 @@ void startCalibration(float* position, int *left_speed, int *right_speed, int* c
 		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
 		break;
 		case 29:
-		poseCalibration(position, ROBOT_RIGHT, WALL_TOP, left_speed, right_speed, calibrationFlag);
+		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
 		break;
 		default:
 		break;

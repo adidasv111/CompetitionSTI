@@ -141,7 +141,7 @@ void setup()
 
 //***************************** LOOP *************************
 void loop()
-{ 
+{
   runner.execute();
 }
 
@@ -157,78 +157,78 @@ void planning()
 
   checkEvasiveManoeuvre(&blockedFlag);
 
-    if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+  if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
+  {
+    robotState = GOING_HOME;            //state = GOING_HOME;
+    FullTask.disable();                 //disable full check when going home
+  }
+  if (robotState == GOING_HOME)         //going home
+  {
+    //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
+    DymxDoor_setState(DOOR_OPEN);
+    destination.x = HOME_X;
+    destination.y = HOME_Y;
+  }
+  else if (robotState == DEPOSITION)
+  {
+    destination.x = HOME_X;
+    destination.y = HOME_Y;
+  }
+  else if (robotState == GOING_TO_WAYPOINT)
+  {
+    /*   destination = findClosestBottle(robotPosition);
+       if (destination.x != -1)    //new target found
+       {
+         robotState == GOING_TO_BOTTLE;
+       }
+       else        // no new target found
+       {*/
+    //DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+    DymxDoor_setState(DOOR_MOVE);
+    destination.x = waypoints[currentWaypoint].x;
+    destination.y = waypoints[currentWaypoint].y;
+    //  }
+    if (blockedFlag == 2)
     {
-      robotState = GOING_HOME;            //state = GOING_HOME;
-      FullTask.disable();                 //disable full check when going home
-    }
-    if (robotState == GOING_HOME)         //going home
-    {
-      //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
-      DymxDoor_setState(DOOR_OPEN);
-      destination.x = HOME_X;
-      destination.y = HOME_Y;
-    }
-    else if (robotState == DEPOSITION)
-    {
-      destination.x = HOME_X;
-      destination.y = HOME_Y;
-    }
-    else if (robotState == GOING_TO_WAYPOINT)
-    {
-      /*   destination = findClosestBottle(robotPosition);
-         if (destination.x != -1)    //new target found
-         {  
-           robotState == GOING_TO_BOTTLE;
-         }
-         else        // no new target found
-         {*/
-      //DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
-      DymxDoor_setState(DOOR_MOVE);
-      destination.x = waypoints[currentWaypoint].x;
-      destination.y = waypoints[currentWaypoint].y;
-      //  }
-      if (blockedFlag == 2)
-      {
-        left_speed = 150;
-        right_speed = 255;
+      left_speed = 150;
+      right_speed = 255;
 
-        blockedCounter++;
-        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-        {
-          blockedFlag = 0;
-          blockedCounter = 0;
-        }
-        /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
-          {
-           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-          }*/
-      }
-      else if (blockedFlag == 4)
+      blockedCounter++;
+      if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
       {
-        left_speed = 255;
-        right_speed = 150;
-
-        blockedCounter++;
-        if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-        {
-          blockedFlag = 0;
-          blockedCounter = 0;
-        }
-        /*EvasiveManoeuvreTask.enable();
-          if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
-          {
-                    Serial.println("dkfieuhfiuehfbcdviu start");
-          EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-          }*/
+        blockedFlag = 0;
+        blockedCounter = 0;
       }
+      /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
+        {
+         EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+        }*/
     }
-/*    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
+    else if (blockedFlag == 4)
     {
-      DymxDoor_setState(DOOR_MOVE);   //start moving door
-      //destination is already set to target
-      compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+      left_speed = 255;
+      right_speed = 150;
+
+      blockedCounter++;
+      if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
+      {
+        blockedFlag = 0;
+        blockedCounter = 0;
+      }
+      /*EvasiveManoeuvreTask.enable();
+        if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
+        {
+                  Serial.println("dkfieuhfiuehfbcdviu start");
+        EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+        }*/
     }
+  }
+  /*    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
+      {
+        DymxDoor_setState(DOOR_MOVE);   //start moving door
+        //destination is already set to target
+        compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
+      }
   */
   if (robotState == DEPOSITION)
     deposition();                 //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
@@ -236,11 +236,11 @@ void planning()
   if (planningCounter >= checkObstacle())
   {
     compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
-        planningCounter = 0;
+    planningCounter = 0;
   }
-  
+
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  
+
   //Checking if current goal is achieved
   check_goal(robotPosition, destination, robotState);
   if (gotHome)                            //if got home
@@ -254,6 +254,10 @@ void planning()
   }
   if (gotWaypoint == 2)
   {
+    if (currentWaypoint == 2 || currentWaypoint == 8 ||currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
+    {
+      isFull = true;
+    }
     if (calibrationFlag == 1)
     {
       startCalibration(robotPosition, &left_speed, &right_speed, &calibrationFlag);
@@ -265,29 +269,34 @@ void planning()
       TimeoutWaypointTask.disable();
     }
   }
-/*  if (gotBottle)
-  {
-    //CaptureBottleTask.enableIfNot();
-    left_speed = 255;
-    right_speed = 255;
-
-    captureBottleCounter++;
-    if (captureBottleCounter >= CAPTURE_BOTTLE_DELAY)
+  /*  if (gotBottle)
     {
-      gotBottle = false;
-      captureBottleCounter = 0;
-      robotState == GOING_TO_WAYPOINT;
-    }
-    obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  }*/
-    /**********TESTING*****************/
+      //CaptureBottleTask.enableIfNot();
+      left_speed = 255;
+      right_speed = 255;
+
+      captureBottleCounter++;
+      if (captureBottleCounter >= CAPTURE_BOTTLE_DELAY)
+      {
+        gotBottle = false;
+        captureBottleCounter = 0;
+        robotState == GOING_TO_WAYPOINT;
+      }
+      obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+    }*/
+  /**********TESTING*****************/
   //left_speed = right_speed = 0;
-  if (currentWaypoint == 3)
-    isFull = true;
+
   /**********************************/
-      
-setSpeeds_I2C(left_speed, right_speed);
+
+  setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
+
+  if (currentWaypoint > 30)
+  {
+    setSpeeds_I2C(0, 0);
+    runner.disableAll();
+  }
 }
 
 //------ deposition -----
@@ -441,6 +450,7 @@ void timeoutWaypoint()
   //*communicate = true;
   }
 */
+
 void goHomeItsTooLate()
 {
   Serial.println("*****************************************");
