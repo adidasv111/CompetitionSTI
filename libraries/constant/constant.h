@@ -63,12 +63,14 @@
 #define DOOR_INIT_POS	75 	
 #define DOOR_END_POS	250
 #define DOOR_CLOSE_POS	470
+#define DOOR_DEPOSITION_POS	125
 #define DOOR_SPEED		300
 #define DOOR_HALF_PERIOD 750				//in ms
 
 #define DOOR_OPEN		0
 #define DOOR_CLOSE		1
 #define DOOR_MOVE		2
+#define DOOR_DEPOSITION	3
 
 //--- Sensors ---
 #define N_SENSORS 8

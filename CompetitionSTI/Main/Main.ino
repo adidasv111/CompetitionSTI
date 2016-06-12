@@ -363,7 +363,7 @@ void DymxDoor_setState(int stateDoor)
       if (doorState != DOOR_CLOSE)         //close the door
       {
         DoorMoveTask.disable(); //stop door from moving
-        DymxDoor_close();       //close the door
+        DymxDoor_setPosition(DOOR_CLOSE_POS);       //close the door
         doorState = DOOR_CLOSE;
       }
       break;
@@ -372,6 +372,14 @@ void DymxDoor_setState(int stateDoor)
       {
         DoorMoveTask.enableIfNot();  //start moving the door
         doorState = DOOR_MOVE;
+      }
+      break;
+    case DOOR_DEPOSITION:
+      if (doorState != DOOR_DEPOSITION)
+      {
+        DoorMoveTask.disable(); //stop door from moving
+        DymxDoor_setPosition(DOOR_DEPOSITION_POS);       //close the door
+        doorState = DOOR_DEPOSITION;
       }
       break;
   }
