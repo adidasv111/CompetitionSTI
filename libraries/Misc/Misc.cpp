@@ -11,11 +11,14 @@ void checkFull()
   int detector_dist = 0;
   for (int i = 0; i < FULL_N; i++)
   {
+	  if(US_detection.calc_distanceUS() > 15)
+		  break;
     detector_dist += US_detection.calc_distanceUS();    //****
   }
-  detector_dist /= FULL_N;
+  
+  detector_dist /= i;
 
-  if (detector_dist < 15)
+  if (detector_dist < 15 && i == FULL_N)
     fullCounter++;
 
   if (fullCounter >= FULL_THRESHOLD)
