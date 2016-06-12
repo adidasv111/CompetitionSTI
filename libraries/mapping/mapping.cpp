@@ -9,7 +9,48 @@ bottle bottlesArray[NB_BOTTLES_ARRAY];
 //initiliaze waypoints array
 void init_waypoints()
 {
-	
+	//waypoints without full
+	waypoints[0].x = 500;		waypoints[0].y = 5000; 	//calibrate left wall left
+	waypoints[1].x = 1500;		waypoints[1].y = 5000;
+	waypoints[2].x = 1500;		waypoints[2].y = 2500;	//goHome
+	//Home
+	waypoints[3].x = 2500;		waypoints[3].y = 500;	//calibrate right wall bottom
+	waypoints[4].x = 2500;		waypoints[4].y = 5000;
+	waypoints[5].x = 3500;		waypoints[5].y = 5000;
+	waypoints[6].x = 3500;		waypoints[6].y = 2500;
+	waypoints[7].x = 500;		waypoints[7].y = 2500;
+	waypoints[8].x = 500;		waypoints[8].y = 1500;	//calibrate right wall left, goHome
+	//Home
+	waypoints[9].x = 3000;		waypoints[9].y = 4500; 
+	waypoints[10].x = 3000;		waypoints[10].y = 7500;
+	waypoints[11].x = 4500;		waypoints[11].y = 7500; //calibrate left wall top
+	waypoints[12].x = 4000;		waypoints[12].y = 4500;	//goHome
+	//Home
+	waypoints[13].x = 500;		waypoints[13].y = 2500;	//calibrate left wall left
+	waypoints[14].x = 7500;		waypoints[14].y = 3000;
+	waypoints[15].x = 7500;		waypoints[15].y = 3500; //calibrate right wall right
+	waypoints[16].x = 4500;		waypoints[16].y = 3500;	//goHome
+	//Home
+	waypoints[17].x = 1500;		waypoints[17].y = 500;	//calibrate right wall bottom
+	waypoints[18].x = 4000;		waypoints[18].y = 4500;
+	waypoints[19].x = 7500;		waypoints[19].y = 4500;
+	waypoints[20].x = 7500;		waypoints[20].y = 5500; //calibrate right wall right
+	waypoints[21].x = 4000;		waypoints[21].y = 5500;	//goHome
+	//Home
+	//--- grass ---
+	waypoints[22].x = 7500;		waypoints[22].y = 500;	//calibrate right wall bottom
+	waypoints[23].x = 7500;		waypoints[23].y = 1500;	//calibrate right wall right
+	waypoints[24].x = 4000;		waypoints[24].y = 1500; //goHome
+	//Home
+	//--- stone motherf*@#err!!!
+	waypoints[25].x = 500;		waypoints[25].y = 5000;	//calibrate left wall left
+	waypoints[26].x = 500;		waypoints[26].y = 6500;	//calibrate left wall left
+	waypoints[27].x = 500;		waypoints[27].y = 7500;	//calibrate left wall left
+	waypoints[28].x = 1000;		waypoints[28].y = 7500;	//calibrate left wall top
+	waypoints[29].x = 1500;		waypoints[29].y = 7500;	//calibrate left wall top
+	waypoints[30].x = 1500;		waypoints[30].y = 6500;
+	//stop at this point!!!!!
+
 	/******Waypoints starting with grass*********
 	waypoints[0].x = 4000;		waypoints[0].y = 700;
 	//--------------

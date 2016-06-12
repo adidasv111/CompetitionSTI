@@ -223,26 +223,47 @@ void startCalibration(float* position, int *left_speed, int *right_speed, int* c
 		case 0:
 		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
 		break;
-		case 1:
-		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		case 3:
+		poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
 		break;
 		case 8:
-		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
+		poseCalibration(position, ROBOT_RIGHT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
 		break;
 		case 11:
-		poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
+		break;
+		case 13:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
 		break;
 		case 15:
-		poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		poseCalibration(position, ROBOT_RIGHT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
 		break;
-		case 18:
+		case 17:
 		poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
 		break;
 		case 20:
+		poseCalibration(position, ROBOT_RIGHT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 22:
 		poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
 		break;
-		case 24:
-		poseCalibration(position, ROBOT_LEFT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
+		case 23:
+		poseCalibration(position, ROBOT_RIGHT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 25:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 26:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 27:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 28:
+		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
+		break;
+		case 29:
+		poseCalibration(position, ROBOT_RIGHT, WALL_TOP, left_speed, right_speed, calibrationFlag);
 		break;
 		default:
 		break;
