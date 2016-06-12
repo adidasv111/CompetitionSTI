@@ -2,3 +2,4 @@ updateIRSensors	KEYWORD2
 obstacle_avoidance	KEYWORD2
 calibration	KEYWORD2
 checkObstacle	KEYWORD2
+poseCalibration	KEYWORD2

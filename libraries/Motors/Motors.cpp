@@ -176,7 +176,7 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	}
 }
 
-void check_goal(float* position, coord target, char robotState)
+void check_goal(float* position, coord target, char robotState, int* calibrationFlag)
 {
 	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
 
@@ -215,31 +215,31 @@ void check_goal(float* position, coord target, char robotState)
 			switch(currentWaypoint)
 			{
 				case 0:
-				calibration(position, ROBOT_LEFT, WALL_LEFT);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_LEFT, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 1:
-				calibration(position, ROBOT_LEFT, WALL_LEFT);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_LEFT, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 8:
-				calibration(position, ROBOT_LEFT, WALL_TOP);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_TOP, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 11:
-				calibration(position, ROBOT_LEFT, WALL_RIGHT);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 15:
-				calibration(position, ROBOT_LEFT, WALL_RIGHT);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 18:
-				calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-				break;
+					poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 20:
-				calibration(position, ROBOT_RIGHT, WALL_BOTTOM);
-				break;
+					poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				case 24:
-				calibration(position, ROBOT_LEFT, WALL_BOTTOM);
-				break;
+					poseCalibration(position, ROBOT_LEFT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
+					break;
 				default:
-				break;
+					break;
 			}
 			currentWaypoint++;
 		}
