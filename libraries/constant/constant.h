@@ -10,6 +10,7 @@
 
 #define filterSamples   13              // filterSamples should  be an odd number, no smaller than 3
 #define PLANNING_FREQ	200
+
 //--- States for machine state ---
 #define GOING_TO_WAYPOINT 		0
 #define GOING_TO_BOTTLE			1
@@ -26,6 +27,8 @@
 
 #define NB_WAYPOINTS 26
 #define NB_BOTTLES_ARRAY	30
+
+#define CAPTURE_BOTTLE_DELAY	700/PLANNING_FREQ
 
 //--- Motors ---
 #define MS_OFFSET	22	//Substract from left speed, Right motors turn slowers

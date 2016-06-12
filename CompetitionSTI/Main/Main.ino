@@ -16,18 +16,20 @@
 //----- Global Variables -----
 char robotState = GOING_TO_WAYPOINT;    //state of state machine
 coord destination;                      //Coordinates for the current destination of the robot
-char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
+
+unsigned int planningCounter = 0;
 int blockedFlag = 0;
-unsigned int blockedCounter = 0;
-unsigned int depositionTimeoutCounter = 0;
+unsigned int blockedCounter = 0;            //counter for the evasive manoeuvre
+unsigned int depositionTimeoutCounter = 0;  //counter for the deposition reverde
+unsigned int captureBottleCounter = 0;      //counter for bottle capturing
 
 //----- Headers for functions -----
 void planning();
 void deposition();
 //void DepositionTimeout();
 void timeoutWaypoint();
-void tCaptureBottle();
+//void tCaptureBottle();
 void blockedEvasiveManoeuvre();
 void DymxDoor_setState(int stateDoor);
 //void get_info_from_pi();
@@ -62,7 +64,7 @@ void tprint()
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(PLANNING_FREQ, TASK_FOREVER, &planning);
 Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
-Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
+//Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 //Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
 //Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
 
@@ -104,8 +106,8 @@ void setup()
   runner.init();
   runner.addTask(OdometryTask);
   runner.addTask(PlanningTask);
-  runner.addTask(CaptureBottleTask);
   runner.addTask(TimeoutWaypointTask);
+  //runner.addTask(CaptureBottleTask);
   //runner.addTask(EvasiveManoeuvreTask);
   //  runner.addTask(DepositionTimeoutTask);
   runner.addTask(DoorMoveTask);
@@ -208,12 +210,12 @@ void planning()
         left_speed = 150;
         right_speed = 255;
 
+        blockedCounter++;
         if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
         {
           blockedFlag = 0;
           blockedCounter = 0;
         }
-        blockedCounter++;
         /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
           {
            EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
@@ -224,15 +226,15 @@ void planning()
         left_speed = 255;
         right_speed = 150;
 
+        blockedCounter++;
         if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
         {
           Serial.println("dkfieuhfiuehfbcdviu done");
           blockedFlag = 0;
           blockedCounter = 0;
         }
-        blockedCounter++;
         /*EvasiveManoeuvreTask.enable();
-        if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
+          if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
           {
                     Serial.println("dkfieuhfiuehfbcdviu start");
           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
@@ -248,9 +250,17 @@ void planning()
 
       if (gotBottle)
       {
-        CaptureBottleTask.enableIfNot();
+        //CaptureBottleTask.enableIfNot();
         left_speed = 255;
         right_speed = 255;
+        
+        captureBottleCounter++;
+        if (captureBottleCounter >= CAPTURE_BOTTLE_DELAY)
+        {
+          gotBottle = false;
+          captureBottleCounter = 0;
+          robotState == GOING_TO_WAYPOINT;
+        }
       }
     }
     if (currentWaypoint == 2)
@@ -300,10 +310,9 @@ void deposition()                   //Deposition manoeuvre
     left_speed = -250;
     right_speed = -250;
 
+    depositionTimeoutCounter++;
     if (depositionTimeoutCounter >= DEPOSITION_DELAY)
       depositionState = 3;
-
-    depositionTimeoutCounter++;
   }
   else if (depositionState == 3)    //once done going backwards, stop, and finish deposition manoeuvre
   {
@@ -365,13 +374,14 @@ void DymxDoor_setState(int stateDoor)
   }
 }
 
-void tCaptureBottle()
-{
+/*
+  void tCaptureBottle()
+  {
   gotBottle = false;
   CaptureBottleTask.disable();
   robotState == GOING_TO_WAYPOINT;
-}
-
+  }
+*/
 //if cannot get to waypoint too long, leave it
 void timeoutWaypoint()
 {
