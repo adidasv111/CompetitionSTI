@@ -88,7 +88,7 @@
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 #define FULL_N		5
 
-#define EVASIVE_MANOEUVRE_DELAY	10
+#define EVASIVE_MANOEUVRE_DELAY	5
 #define ITS_TOO_LATE_INT	570000
 #define ITS_BEEN_TOO_LONG_INT	180000
 
