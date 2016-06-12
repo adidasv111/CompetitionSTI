@@ -163,8 +163,7 @@ void planning()
     }
     if (robotState == GOING_HOME)         //going home
     {
-      //DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
-      DymxDoor_setState(DOOR_MOVE);      //move the door when going home
+      DymxDoor_setState(DOOR_CLOSE);      //close the door when going home
       destination.x = HOME_X;
       destination.y = HOME_Y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
@@ -190,7 +189,8 @@ void planning()
          }
          else        // no new target found
          {*/
-      DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      //DymxDoor_setState(DOOR_CLOSE);          //close the door when going to waypoint
+      DymxDoor_setState(DOOR_MOVE);
       destination.x = waypoints[currentWaypoint].x;
       destination.y = waypoints[currentWaypoint].y;
       compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
@@ -279,7 +279,6 @@ void planning()
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
   setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
-
 }
 
 //------ deposition -----
