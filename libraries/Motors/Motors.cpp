@@ -176,7 +176,7 @@ void compute_waypoint_speeds_coord(float* position, coord target, int *msl, int 
 	}
 }
 
-void check_goal(float* position, coord target, char robotState, int* calibrationFlag)
+void check_goal(float* position, coord target, char robotState)
 {
 	float Erange = sqrtf((target.x-position[0])*(target.x-position[0]) + (target.y-position[1])*(target.y-position[1]));
 
@@ -212,37 +212,40 @@ void check_goal(float* position, coord target, char robotState, int* calibration
 			Serial.print((int)currentWaypoint);
 			Serial.println("	--George");
 			Serial.println("*****************************************");
-			switch(currentWaypoint)
-			{
-				case 0:
-					poseCalibration(position, ROBOT_LEFT, WALL_LEFT, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 1:
-					poseCalibration(position, ROBOT_LEFT, WALL_LEFT, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 8:
-					poseCalibration(position, ROBOT_LEFT, WALL_TOP, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 11:
-					poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 15:
-					poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 18:
-					poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 20:
-					poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				case 24:
-					poseCalibration(position, ROBOT_LEFT, WALL_BOTTOM, *left_speed, *right_speed, *calibrationFlag);
-					break;
-				default:
-					break;
-			}
-			currentWaypoint++;
 		}
+	}
+}
+
+void startCalibration(float* position, int *left_speed, int *right_speed, int* calibrationFlag)
+{
+	switch(currentWaypoint)
+	{
+		case 0:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 1:
+		poseCalibration(position, ROBOT_LEFT, WALL_LEFT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 8:
+		poseCalibration(position, ROBOT_LEFT, WALL_TOP, left_speed, right_speed, calibrationFlag);
+		break;
+		case 11:
+		poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 15:
+		poseCalibration(position, ROBOT_LEFT, WALL_RIGHT, left_speed, right_speed, calibrationFlag);
+		break;
+		case 18:
+		poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
+		break;
+		case 20:
+		poseCalibration(position, ROBOT_RIGHT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
+		break;
+		case 24:
+		poseCalibration(position, ROBOT_LEFT, WALL_BOTTOM, left_speed, right_speed, calibrationFlag);
+		break;
+		default:
+		break;
 	}
 }
 /** Adjust wheel speeds to follow target based on target 

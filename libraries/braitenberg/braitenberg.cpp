@@ -224,6 +224,7 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 */
 void poseCalibration (float *robotPose, char side, char wall, int* left_speed, int* right_speed, int* calibrationFlag)
 {
+	Serial.println("calibration");
 	float theta = 0;
 	float x_cal, y_cal = 0;
 	*calibrationFlag = 1;
@@ -237,7 +238,7 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 				*right_speed = 200;
 				*left_speed = -200;
 			}
-			else_if(IRValue[4] < IRValue[5] - 3)
+			else if(IRValue[4] < IRValue[5] - 3)
 			{
 				*right_speed = -200;
 				*left_speed = 200;
@@ -247,7 +248,6 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 				*right_speed = 0;
 				*left_speed = 0;
 				*calibrationFlag = 0;
-				
 			}
 			
 			if(IRValue[4] < WALL_CAL_THRESH && IRValue[5] < WALL_CAL_THRESH)
@@ -256,21 +256,21 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 			}
 			if(wall == WALL_BOTTOM)
 			{
-				y_cal = (IRValue[4] + IRValue[5])/2;
+				y_cal = (IRValue[4] + IRValue[5])/2 + HALF_ROBOT_WIDTH;
 				theta -= M_PI;
 			}
 			else if(wall == WALL_RIGHT)
 			{
-				x_cal = (IRValue[4] + IRValue[5])/2;
+				x_cal = 8000 - (IRValue[4] + IRValue[5])/2 - HALF_ROBOT_WIDTH;
 				theta += -M_PI;
 			}
 			else if(wall == WALL_TOP)
 			{
-				y_cal = 8000 - (IRValue[4] + IRValue[5])/2;
+				y_cal = 8000 - (IRValue[4] + IRValue[5])/2 - HALF_ROBOT_WIDTH;
 				theta += -M_PI2;
 			}
 			else
-				x_cal = 8000 - (IRValue[4] + IRValue[5])/2;
+				x_cal = (IRValue[4] + IRValue[5])/2 + HALF_ROBOT_WIDTH;
 
 			break;
 		case ROBOT_RIGHT:
@@ -280,7 +280,7 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 				*right_speed = -200;
 				*left_speed = 200;
 			}
-			else_if(IRValue[6] < IRValue[7] -3)
+			else if(IRValue[6] < IRValue[7] -3)
 			{
 				*right_speed = 200;
 				*left_speed = -200;
@@ -292,7 +292,6 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 				*calibrationFlag = 0;
 			}
 			
-			
 			if(IRValue[6] < WALL_CAL_THRESH && IRValue[7] < WALL_CAL_THRESH)
 			{
 				theta = atan2((IRValue[6] - IRValue[7]),SENSOR_SEPERATION);
@@ -300,20 +299,20 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 			if(wall == WALL_BOTTOM)
 			{
 				theta += -M_PI2;
-				y_cal = (IRValue[6] + IRValue[7])/2;
+				y_cal = (IRValue[6] + IRValue[7])/2 + HALF_ROBOT_WIDTH;
 			}
 			else if(wall == WALL_TOP)
 			{
 				theta += M_PI2;
-				y_cal = 8000 - (IRValue[6] + IRValue[7])/2;
+				y_cal = 8000 - (IRValue[6] + IRValue[7])/2 - HALF_ROBOT_WIDTH;
 			}
 			else if(wall == WALL_LEFT)
 			{
 				theta += -M_PI;
-				x_cal = 8000 - (IRValue[6] + IRValue[7])/2;
+				x_cal = 8000 - (IRValue[6] + IRValue[7])/2 - HALF_ROBOT_WIDTH;
 			}
 			else
-				x_cal = (IRValue[6] + IRValue[7])/2;
+				x_cal = (IRValue[6] + IRValue[7])/2 + HALF_ROBOT_WIDTH;
 				
 			break;
 	}
@@ -335,6 +334,7 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 
 void Calibration(float *robotPose, char side, char wall)
 {
+	float theta = 0;
 	switch(side)
 	{
 		case ROBOT_LEFT:
@@ -362,4 +362,5 @@ void Calibration(float *robotPose, char side, char wall)
 				theta += -M_PI;
 			break;
 	}
+	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
 }

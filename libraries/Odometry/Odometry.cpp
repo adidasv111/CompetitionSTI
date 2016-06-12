@@ -99,8 +99,8 @@ void calcOdometry()
   	leftEncTicks = 0;
   	rightEncTicks = 0;
     
-    Serial.print("left:   ");
-    Serial.println(leftTicks);
+    //Serial.print("left:   ");
+    //Serial.println(leftTicks);
     //Serial.print("right:   ");
     //Serial.println(rightTicks);
   

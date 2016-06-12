@@ -46,25 +46,25 @@ void tprint()
   Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
   Serial.println(robotPosition[2] * 180 / M_PI);
-  Serial.print("left:   ");
-  Serial.print(left_speed);
-  Serial.print("      right:   ");
-  Serial.println(right_speed);
+  //Serial.print("left:   ");
+  //Serial.print(left_speed);
+  //Serial.print("      right:   ");
+  //Serial.println(right_speed);
   Serial.print("current target:   ");
   Serial.print(destination.x);
   Serial.print(" , ");
   Serial.println(destination.y);
   //Serial.print("state:   ");
   //Serial.println((int)robotState);
-  Serial.print("blocked?:   ");
-  Serial.println((int)blockedFlag);
-  Serial.println(blockedCounter);
+  //Serial.print("blocked?:   ");
+  //Serial.println((int)blockedFlag);
+  //Serial.println(blockedCounter);
 }
 
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
 Task PlanningTask(PLANNING_FREQ, TASK_FOREVER, &planning);
-Task TimeoutWaypointTask(40 * TASK_SECOND, 1, &timeoutWaypoint);
+Task TimeoutWaypointTask(30 * TASK_SECOND, 1, &timeoutWaypoint);
 //Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
 //Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
 //Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
@@ -141,7 +141,7 @@ void setup()
 
 //***************************** LOOP *************************
 void loop()
-{ robotState = DEPOSITION;
+{ 
   runner.execute();
 }
 
@@ -152,13 +152,11 @@ void planning()
   left_speed = 200;
   right_speed = 200;
 
-  Serial.print("freq");
-  Serial.println(checkObstacle());
+  //Serial.print("freq");
+  //Serial.println(checkObstacle());
 
   checkEvasiveManoeuvre(&blockedFlag);
-  if (planningCounter >= checkObstacle())
-  {
-    planningCounter = 0;
+
     if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
     {
       robotState = GOING_HOME;            //state = GOING_HOME;
@@ -170,7 +168,6 @@ void planning()
       DymxDoor_setState(DOOR_OPEN);
       destination.x = HOME_X;
       destination.y = HOME_Y;
-      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
     }
     else if (robotState == DEPOSITION)
     {
@@ -181,7 +178,7 @@ void planning()
     {
       /*   destination = findClosestBottle(robotPosition);
          if (destination.x != -1)    //new target found
-         {
+         {  
            robotState == GOING_TO_BOTTLE;
          }
          else        // no new target found
@@ -190,7 +187,6 @@ void planning()
       DymxDoor_setState(DOOR_MOVE);
       destination.x = waypoints[currentWaypoint].x;
       destination.y = waypoints[currentWaypoint].y;
-      compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
       //  }
       if (blockedFlag == 2)
       {
@@ -216,7 +212,6 @@ void planning()
         blockedCounter++;
         if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
         {
-          Serial.println("dkfieuhfiuehfbcdviu done");
           blockedFlag = 0;
           blockedCounter = 0;
         }
@@ -228,16 +223,24 @@ void planning()
           }*/
       }
     }
-    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
+/*    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
     {
       DymxDoor_setState(DOOR_MOVE);   //start moving door
       //destination is already set to target
       compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
     }
-  }
+  */
   if (robotState == DEPOSITION)
     deposition();                 //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
 
+  if (planningCounter >= checkObstacle())
+  {
+    compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
+        planningCounter = 0;
+  }
+  
+  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  
   //Checking if current goal is achieved
   check_goal(robotPosition, destination, robotState);
   if (gotHome)                            //if got home
@@ -249,12 +252,20 @@ void planning()
   {
     TimeoutWaypointTask.enableIfNot();
   }
-  if (gotWaypoint == 2 && TimeoutWaypointTask.isEnabled())
+  if (gotWaypoint == 2)
   {
-    gotWaypoint = 0;
-    TimeoutWaypointTask.disable();
+    if (calibrationFlag == 1)
+    {
+      startCalibration(robotPosition, &left_speed, &right_speed, &calibrationFlag);
+    }
+    else
+    {
+      gotWaypoint = 0;
+      currentWaypoint++;
+      TimeoutWaypointTask.disable();
+    }
   }
-  if (gotBottle)
+/*  if (gotBottle)
   {
     //CaptureBottleTask.enableIfNot();
     left_speed = 255;
@@ -267,25 +278,16 @@ void planning()
       captureBottleCounter = 0;
       robotState == GOING_TO_WAYPOINT;
     }
-  }
-  /**********TESTING*****************/
+    obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  }*/
+    /**********TESTING*****************/
   //left_speed = right_speed = 0;
   if (currentWaypoint == 3)
     isFull = true;
-  /*
-    if (gotHome)
-    {
-    left_speed = 0;
-    right_speed = 0;
-    }
-  */
-
   /**********************************/
-  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-
-  setSpeeds_I2C(left_speed, right_speed);
+      
+setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
-
 }
 
 //------ deposition -----
@@ -399,15 +401,18 @@ void DymxDoor_setState(int stateDoor)
 //if cannot get to waypoint too long, leave it
 void timeoutWaypoint()
 {
-  Serial.println("*****************************************");
-  Serial.print("I cannot get to waypoint number ");
-  Serial.println((int)currentWaypoint);
-  Serial.println("Fuck this shit, moving on!");
-  Serial.println("*****************************************");
+  if (TimeoutWaypointTask.isFirstIteration() == false)
+  {
+    Serial.println("*****************************************");
+    Serial.print("I cannot get to waypoint number ");
+    Serial.println((int)currentWaypoint);
+    Serial.println("Fuck this shit, moving on!");
+    Serial.println("*****************************************");
 
-  gotWaypoint = 0;
-  TimeoutWaypointTask.disable();
-  currentWaypoint++;
+    gotWaypoint = 0;
+    TimeoutWaypointTask.disable();
+    currentWaypoint++;
+  }
 }
 /*
   void evasiveManoeuvre()

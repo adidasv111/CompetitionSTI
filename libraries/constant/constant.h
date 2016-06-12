@@ -41,8 +41,8 @@
 #define SPEED_UNIT_RADS	0.0137
 
 //--- Odometry ---
-#define INIT_X			1000
-#define INIT_Y			1000
+#define INIT_X			500
+#define INIT_Y			500
 #define INIT_THETA		0
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
 #define WHEEL_BASE    0.45 		// Distance between wheels of robot (m)
@@ -58,7 +58,7 @@
 #define PUSHER_SPEED	1000
 #define PUSHER_HALF_PERIOD 10000				//in ms
 #define PUSHER_RESET_PERIOD	25000
-#define DEPOSITION_DELAY	600/PLANNING_FREQ
+#define DEPOSITION_DELAY	1000/PLANNING_FREQ
 //Door
 #define DOOR_INIT_POS	75 	
 #define DOOR_END_POS	250
@@ -80,6 +80,7 @@
 #define KplusIR 57
 #define KminusIR 150//4*110
 
+//Calibration
 #define WALL_CAL_THRESH	40
 #define SENSOR_SEPERATION	21		//In centimeters, the distance between the right and left sensors
 #define ROBOT_LEFT	0
@@ -89,6 +90,7 @@
 #define	WALL_RIGHT 	1
 #define	WALL_LEFT 	2
 #define	WALL_TOP 	3
+#define HALF_ROBOT_WIDTH 150
 
 #define FULL_DELAY	60000
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
