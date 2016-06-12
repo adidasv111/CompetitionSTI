@@ -23,6 +23,7 @@ int blockedFlag = 0;
 unsigned int blockedCounter = 0;            //counter for the evasive manoeuvre
 unsigned int depositionTimeoutCounter = 0;  //counter for the deposition reverde
 unsigned int captureBottleCounter = 0;      //counter for bottle capturing
+int calibrationFlag = 0;
 
 //----- Headers for functions -----
 void planning();
@@ -150,6 +151,7 @@ void planning()
 {
   left_speed = 200;
   right_speed = 200;
+
   Serial.print("freq");
   Serial.println(checkObstacle());
 
@@ -280,8 +282,10 @@ void planning()
 
   /**********************************/
   obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+
   setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
+
 }
 
 //------ deposition -----
