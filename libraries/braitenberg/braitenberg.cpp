@@ -222,9 +222,11 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 	@param wall Location of the wall
 	@return void
 */
-void calibration (float *robotPose, char side, char wall)
+void calibration (float *robotPose, char side, char wall, int* left_speed, *right_speed, int* calibrationFlag)
 {
 	float theta = 0;
+	*calibrationFlag = 1;
+	//setSpeeds_I2C(0,0);		//Stop the robot
 
 	switch(side)
 	{
@@ -255,4 +257,44 @@ void calibration (float *robotPose, char side, char wall)
 	}
 	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
 	//robotPose[2] = theta;
+}
+
+/** Turn the robot to calibrate the complete pose of
+	the robot 
+	
+	@param robotPose Pose of the robot
+	@param side Location of the sensors on the robot
+	@param wall Location of the wall
+	@return void
+*/
+
+void poseCalibration(float *robotPose, char side, char wall)
+{
+	switch(side)
+	{
+		case ROBOT_LEFT:
+			if(IRValue[4] < WALL_CAL_THRESH && IRValue[5] < WALL_CAL_THRESH)
+			{
+				theta = atan2((IRValue[5] - IRValue[4]),SENSOR_SEPERATION);
+			}
+			if(wall == WALL_BOTTOM)
+				theta -= M_PI;
+			else if(wall == WALL_RIGHT)
+				theta += -M_PI;
+			else if(wall == WALL_TOP)
+				theta += -M_PI2;
+			break;
+		case ROBOT_RIGHT:
+			if(IRValue[6] < WALL_CAL_THRESH && IRValue[7] < WALL_CAL_THRESH)
+			{
+				theta = atan2((IRValue[6] - IRValue[7]),SENSOR_SEPERATION);
+			}
+			if(wall == WALL_BOTTOM)
+				theta += -M_PI2;
+			else if(wall == WALL_TOP)
+				theta += M_PI2;
+			else if(wall == WALL_LEFT)
+				theta += -M_PI;
+			break;
+	}
 }

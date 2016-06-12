@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <constant.h>
-#include <US_Sensor.h>
+#include <Ultrasonic.h>
 #include <Pusher.h>
 
 void checkFull();			//check if container is full

@@ -4,7 +4,7 @@ char fullCounter = 0;
 bool isFull = false;
 
 //Ultrasound sensor to detect bottles that enter the robot
-USSensor US_detection(52, 53);
+Ultrasonic US_detection(52);
 
 void checkFull()
 {
@@ -12,9 +12,9 @@ void checkFull()
   int i;
   for (i = 0; i < FULL_N; i++)
   {
-	  if(US_detection.calc_distanceUS() > 15)
+	  if(US_detection.MeasureInCentimeters() > 15)
 		  break;
-    detector_dist += US_detection.calc_distanceUS();    //****
+    detector_dist += US_detection.MeasureInCentimeters();    //****
   }
   
   detector_dist /= i;

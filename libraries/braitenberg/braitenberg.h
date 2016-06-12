@@ -2,6 +2,7 @@
 #define BRAITENBERG_H
  
 #include <Arduino.h>
+#include <Motors.h>
 
 void updateIRSensors();
 void obstacle_avoidance(int* left_speed, int* right_speed);
