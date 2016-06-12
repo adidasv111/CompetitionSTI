@@ -43,7 +43,7 @@
 //--- Odometry ---
 #define INIT_X			1000
 #define INIT_Y			1000
-#define INIT_THETA			0
+#define INIT_THETA		0
 #define COMPASS_WEIGHT 0.75		// Weight for compass in yaw estimation
 #define WHEEL_BASE    0.45 		// Distance between wheels of robot (m)
 #define WHEEL_RADIUS  0.062  	// Wheel radius (meters)
