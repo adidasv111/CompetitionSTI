@@ -20,17 +20,17 @@ char planningCounter = 0;
 int left_speed = 0, right_speed = 0;    //motors speeds, changed every call of planning
 int blockedFlag = 0;
 unsigned int blockedCounter = 0;
+unsigned int depositionTimeoutCounter = 0;
 
 //----- Headers for functions -----
 void planning();
-void tmotors();
 void deposition();
-void DepositionTimeout();
+//void DepositionTimeout();
 void timeoutWaypoint();
 void tCaptureBottle();
 void blockedEvasiveManoeuvre();
 void DymxDoor_setState(int stateDoor);
-void get_info_from_pi();
+//void get_info_from_pi();
 void goHomeItsTooLate();
 void goHomeItsBeenTooLong();
 void stopRobot();
@@ -60,11 +60,10 @@ void tprint()
 
 //----- Tasks definitions -----
 Task OdometryTask(100, TASK_FOREVER, &calcOdometry);                                //Create task that is called every 100ms and last forever to calculate odometry
-Task PlanningTask(202, TASK_FOREVER, &planning);
-//Task MotorsTask(150, TASK_FOREVER, &tmotors);
+Task PlanningTask(PLANNING_FREQ, TASK_FOREVER, &planning);
 Task TimeoutWaypointTask(20 * TASK_SECOND, 1, &timeoutWaypoint);
 Task CaptureBottleTask(1000, 1, &tCaptureBottle);                                   //move forward over the bottle for 1sec when capturing
-Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
+//Task DepositionTimeoutTask(3000, 1, &DepositionTimeout);
 //Task EvasiveManoeuvreTask(EVASIVE_MANOEUVRE_DELAY, 2, &evasiveManoeuvre);
 
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
@@ -76,7 +75,7 @@ Task PusherResetTask(PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);
 Task GeorgeGoHomeItsTooLateTask(ITS_TOO_LATE_INT, 1, &goHomeItsTooLate);                        //go home after 9.30 minutes
 Task GeorgeGoHomeItsBeenTooLongTask(ITS_BEEN_TOO_LONG_INT, 1, &goHomeItsBeenTooLong);                  //go home if it's been 3 minutes since last deposition
 
-Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                               //Create task that communicate with the PI
+//Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                               //Create task that communicate with the PI
 Task PrintTask(1000, TASK_FOREVER, &tprint);
 
 Task DistSensorTask(20, TASK_FOREVER, &updateIRSensors);                           //Create task that updates IR Sensors
@@ -105,11 +104,10 @@ void setup()
   runner.init();
   runner.addTask(OdometryTask);
   runner.addTask(PlanningTask);
-  //runner.addTask(MotorsTask);
   runner.addTask(CaptureBottleTask);
   runner.addTask(TimeoutWaypointTask);
   //runner.addTask(EvasiveManoeuvreTask);
-  runner.addTask(DepositionTimeoutTask);
+  //  runner.addTask(DepositionTimeoutTask);
   runner.addTask(DoorMoveTask);
   runner.addTask(FullTask);
   //runner.addTask(DepositionTask);
@@ -119,7 +117,7 @@ void setup()
   runner.addTask(GeorgeGoHomeItsTooLateTask);
   runner.addTask(GeorgeGoHomeItsBeenTooLongTask);
 
-  runner.addTask(PiComTask);
+  //runner.addTask(PiComTask);
   runner.addTask(PrintTask);
 
   runner.addTask(DistSensorTask);
@@ -128,7 +126,6 @@ void setup()
   //enabling tasks that should start at beginnig of the programm
   OdometryTask.enable();
   PlanningTask.enable();
-  //MotorsTask.enable();
   //EvasiveManoeuvreTask.disable();
   FullTask.enableDelayed(FULL_DELAY);
   PusherResetTask.enable();
@@ -210,12 +207,13 @@ void planning()
       {
         left_speed = 150;
         right_speed = 255;
-        blockedCounter++;
+
         if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
         {
           blockedFlag = 0;
           blockedCounter = 0;
         }
+        blockedCounter++;
         /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
           {
            EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
@@ -225,15 +223,16 @@ void planning()
       {
         left_speed = 255;
         right_speed = 150;
-        blockedCounter++;
+
         if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
         {
           Serial.println("dkfieuhfiuehfbcdviu done");
           blockedFlag = 0;
           blockedCounter = 0;
         }
-        //EvasiveManoeuvreTask.enable();
-        /*if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
+        blockedCounter++;
+        /*EvasiveManoeuvreTask.enable();
+        if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
           {
                     Serial.println("dkfieuhfiuehfbcdviu start");
           EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
@@ -273,11 +272,6 @@ void planning()
 
 }
 
-void tmotors()
-{
-  // obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
-  // setSpeeds_I2C(left_speed, right_speed);
-}
 //------ deposition -----
 void deposition()                   //Deposition manoeuvre
 {
@@ -299,15 +293,21 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 2)    //once pusher is done, go backwards for
   {
-    if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
-    {
+    /*if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
+      {
       DepositionTimeoutTask.enableDelayed(1500);
-    }
+      }*/
     left_speed = -250;
     right_speed = -250;
+
+    if (depositionTimeoutCounter >= DEPOSITION_DELAY)
+      depositionState = 3;
+
+    depositionTimeoutCounter++;
   }
   else if (depositionState == 3)    //once done going backwards, stop, and finish deposition manoeuvre
   {
+    depositionTimeoutCounter = 0;
     //DepositionTask.disable();
     left_speed = 0;
     right_speed = 0;
@@ -326,11 +326,13 @@ void deposition()                   //Deposition manoeuvre
   }
 }
 
-void DepositionTimeout()
-{
+/*
+  void DepositionTimeout()
+  {
   depositionState = 3;
   DepositionTimeoutTask.disable();
-}
+  }
+*/
 
 //Change door state according to wished state
 void DymxDoor_setState(int stateDoor)
@@ -396,9 +398,10 @@ void timeoutWaypoint()
   Serial.println("hhtffgddtrvytf ytdftd");
   }
 */
-//Communicates with PI
-void get_info_from_pi()
-{
+
+/*//Communicates with PI
+  void get_info_from_pi()
+  {
   coord newBottle;
   //communicate
   //
@@ -407,8 +410,8 @@ void get_info_from_pi()
   //newBottle.y = robotPosition[1] + bottle.y;
   // insertBottle(newBottle)
   //*communicate = true;
-}
-
+  }
+*/
 void goHomeItsTooLate()
 {
   Serial.println("*****************************************");

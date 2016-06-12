@@ -9,7 +9,7 @@
 #define ERROR 			-1
 
 #define filterSamples   13              // filterSamples should  be an odd number, no smaller than 3
-
+#define PLANNING_FREQ	200
 //--- States for machine state ---
 #define GOING_TO_WAYPOINT 		0
 #define GOING_TO_BOTTLE			1
@@ -55,6 +55,7 @@
 #define PUSHER_SPEED	1000
 #define PUSHER_HALF_PERIOD 10000				//in ms
 #define PUSHER_RESET_PERIOD	25000
+#define DEPOSITION_DELAY	1000/PLANNING_FREQ
 //Door
 #define DOOR_INIT_POS	75 	
 #define DOOR_END_POS	250
@@ -88,7 +89,7 @@
 #define FULL_THRESHOLD	5			//number of times it is full to be considered full
 #define FULL_N		5
 
-#define EVASIVE_MANOEUVRE_DELAY	5
+#define EVASIVE_MANOEUVRE_DELAY	500/PLANNING_FREQ
 #define ITS_TOO_LATE_INT	570000
 #define ITS_BEEN_TOO_LONG_INT	180000
 
