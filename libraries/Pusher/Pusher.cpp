@@ -134,9 +134,9 @@ void DymxDoor_moveToEnd()                              //move door to end positi
 }
 
 //Close door
-void DymxDoor_close()                              //move door to end position
+void DymxDoor_setPosition(int position)                             //move door to end position
 {
-    Dynamixel.moveSpeed(DYMX_DOOR_ID, DOOR_CLOSE_POS, DOOR_SPEED);
+    Dynamixel.moveSpeed(DYMX_DOOR_ID, position, DOOR_SPEED);
 }
 
 

@@ -33,7 +33,7 @@
     void DymxDoor_Reset();					//Reset Door position and set to position mode
     void DymxDoor_moveToInit();				//Move door to initial position
     void DymxDoor_moveToEnd();				//Move door to end position
-	void DymxDoor_close();					//Close door
+	void DymxDoor_setPosition(int position);	//set door position
 
     void tDoor();							//Task function for door
 
