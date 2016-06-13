@@ -298,7 +298,7 @@ void planning()
 void deposition()                   //Deposition manoeuvre
 {
   gotHome = false;
-  DymxDoor_setState(DOOR_OPEN);     //open the door
+  DymxDoor_setState(DOOR_DEPOSITION);     //open the door
 
   if (depositionState == 0)         //1st iteration: stop, start pusher
   {
@@ -315,10 +315,6 @@ void deposition()                   //Deposition manoeuvre
   }
   else if (depositionState == 2)    //once pusher is done, go backwards for
   {
-    /*if (!DepositionTimeoutTask.isEnabled())  //if full task isn't already enabled
-      {
-      DepositionTimeoutTask.enableDelayed(1500);
-      }*/
     left_speed = -240;
     right_speed = -240;
 
@@ -329,7 +325,6 @@ void deposition()                   //Deposition manoeuvre
   else if (depositionState == 3)    //once done going backwards, stop, and finish deposition manoeuvre
   {
     depositionTimeoutCounter = 0;
-    //DepositionTask.disable();
     left_speed = 0;
     right_speed = 0;
     isFull = false;
