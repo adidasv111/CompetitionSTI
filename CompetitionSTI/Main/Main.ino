@@ -258,7 +258,7 @@ void planning()
       currentWaypoint++;
       TimeoutWaypointTask.disable();
     }
-    if (currentWaypoint == 2 || currentWaypoint == 8 || currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
+    if (currentWaypoint == 3 || currentWaypoint == 9 || currentWaypoint == 13 || currentWaypoint == 17 || currentWaypoint == 22 || currentWaypoint == 25)
     {
       isFull = true;
     }
@@ -410,9 +410,8 @@ void timeoutWaypoint()
     Serial.println("Fuck this shit, moving on!");
     Serial.println("*****************************************");
 
-    gotWaypoint = 0;
+    gotWaypoint = 2;
     TimeoutWaypointTask.disable();
-    currentWaypoint++;
   }
 }
 /*
