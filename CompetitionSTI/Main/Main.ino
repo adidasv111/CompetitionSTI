@@ -362,7 +362,7 @@ void DymxDoor_setState(int stateDoor)
   switch (stateDoor)
   {
     case DOOR_OPEN:
-      if (doorState != DOOR_DEPOSITION)         //open the door
+      if (doorState != DOOR_OPEN)         //open the door
       {
         DoorMoveTask.disable(); //stop door from moving
         DymxDoor_moveToInit();  //open the door

@@ -12,7 +12,7 @@ void initDynamixels()
 {
     Serial.println("---- Initializing Dynamixels communication ----");
 
-    Dynamixel.begin(1000000,7);  // Initialize the servo at 1Mbps and Pin Control 2
+    Dynamixel.begin(1000000,7);  // Initialize the servo at 1Mbps and Pin Control 7
     delay(100);
 
     DymxPusher_Reset();
