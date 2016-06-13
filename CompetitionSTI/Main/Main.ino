@@ -24,6 +24,9 @@ unsigned int blockedCounter = 0;            //counter for the evasive manoeuvre
 unsigned int depositionTimeoutCounter = 0;  //counter for the deposition reverde
 unsigned int captureBottleCounter = 0;      //counter for bottle capturing
 int calibrationFlag = 0;
+int pusherState = 0;
+unsigned 
+int depositionShake = 0;
 
 //----- Headers for functions -----
 void planning();
@@ -72,8 +75,8 @@ Task TimeoutWaypointTask(30 * TASK_SECOND, 1, &timeoutWaypoint);
 Task DoorMoveTask(DOOR_HALF_PERIOD, TASK_FOREVER, &tDoor);                          //Create task that moves the door back and forth
 Task FullTask(2000, TASK_FOREVER, &checkFull);                                      //Create task that check if full
 //Task DepositionTask(100, TASK_FOREVER, &deposition);                              //Deposition manoeuvre
-Task PusherTask(PUSHER_HALF_PERIOD, 2, &DymxPusher_EmptyBottles_Task);              //Create task that moves the pusher back and forth once
-Task PusherResetTask(PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);    //Create task that checks if pusher is reseted
+Task PusherTask(PUSHER_HALF_PERIOD, 3, &DymxPusher_EmptyBottles_Task);              //Create task that moves the pusher back and forth once
+//Task PusherResetTask(PUSHER_RESET_PERIOD, TASK_FOREVER, &DymxPusher_checkReset);    //Create task that checks if pusher is reseted
 
 Task GeorgeGoHomeItsTooLateTask(ITS_TOO_LATE_INT, 1, &goHomeItsTooLate);                        //go home after 9.30 minutes
 Task GeorgeGoHomeItsBeenTooLongTask(ITS_BEEN_TOO_LONG_INT, 1, &goHomeItsBeenTooLong);                  //go home if it's been 3 minutes since last deposition
@@ -116,7 +119,7 @@ void setup()
   runner.addTask(FullTask);
   //runner.addTask(DepositionTask);
   runner.addTask(PusherTask);
-  runner.addTask(PusherResetTask);
+  //runner.addTask(PusherResetTask);
   runner.addTask(GeorgeGoHomeItsTooLateTask);
   runner.addTask(GeorgeGoHomeItsBeenTooLongTask);
   //runner.addTask(PiComTask);
@@ -130,12 +133,11 @@ void setup()
   PlanningTask.enable();
   //EvasiveManoeuvreTask.disable();
   FullTask.enableDelayed(FULL_DELAY);
-  PusherResetTask.enable();
+  //PusherResetTask.enable();
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
   GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
   PrintTask.enableDelayed(250);
-
 }
 
 //***************************** LOOP *************************
@@ -281,7 +283,6 @@ void planning()
 
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
-
   /**********************************/
 
   setSpeeds_I2C(left_speed, right_speed);
@@ -304,17 +305,26 @@ void deposition()                   //Deposition manoeuvre
   {
     left_speed = 0;
     right_speed = 0;
-    PusherTask.enable();
     depositionState = 1;
+    PusherTask.enable();
   }
   else if (depositionState == 1)    //waiting for pusher to finish
-  {
-    left_speed = 0;
-    right_speed = 0;
-    //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
+  {    //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
+    if (depositionShake % 4 < 2)
+    {
+      left_speed = 240;
+      right_speed = -240;
+    }
+    else
+    {
+      left_speed = -240;
+      right_speed = 240;
+    }
+    depositionShake++;
   }
   else if (depositionState == 2)    //once pusher is done, go backwards for
   {
+    pusherState = 0;
     left_speed = -240;
     right_speed = -240;
 
@@ -330,7 +340,7 @@ void deposition()                   //Deposition manoeuvre
     isFull = false;
     depositionState = 0;
     robotState == GOING_TO_WAYPOINT;
-    currentWaypoint++;
+    //currentWaypoint++;
     Serial.println("*****************************Deposition Done******************************");
 
     if (!FullTask.isEnabled())  //if full task isn't already enabled
@@ -461,5 +471,70 @@ void goHomeItsBeenTooLong()
 void stopRobot()
 {
   left_speed = right_speed = 0;
+}
+
+
+//Start emptying manoeuvre using task scheduler
+void DymxPusher_EmptyBottles_Task()
+{
+    //Serial.println("---- Pusher task start ----");
+  switch(pusherState)
+  {
+    case 0:
+      Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+      PusherTask.setInterval(10*TASK_SECOND);
+      pusherState++;
+      break;
+    case 1:
+      Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+      PusherTask.setInterval(10*TASK_SECOND);
+      pusherState++;
+      break;
+    /*case 2:
+      Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+      PusherTask.setInterval(7500);
+      pusherState++;
+      break;
+    case 3:
+      Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+      PusherTask.setInterval(7500);
+      pusherState++;
+      break;
+    case 4:
+      Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+      PusherTask.setInterval(10*TASK_SECOND);
+      pusherState++;
+      break;
+    case 5:
+      Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+      PusherTask.setInterval(10*TASK_SECOND);
+      pusherState++;
+      break;*/
+    case 2:
+      DymxPusher_Reset();
+      PusherTask.setInterval(10*TASK_SECOND);
+      //resetPusher = false;
+      left_speed = -240;
+      right_speed = 240;
+      break;
+    default:
+      DymxPusher_Reset();
+      PusherTask.setInterval(10*TASK_SECOND);
+      //resetPusher = false;
+      break;
+  }
+  /*
+
+    if (pusherDirection == false)
+    {
+        Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);     //Move forward to empty bottles
+        pusherDirection = true;
+    }
+    else if (pusherDirection == true)
+    {
+        Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);    //Change direction
+        pusherDirection = false;
+        resetPusher = true;
+    }*/
 }
 

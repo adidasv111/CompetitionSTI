@@ -88,65 +88,7 @@ void DymxPusher_EmptyBottles_Timer()
     startTimer2_Pusher();
 }
 */
-//Start emptying manoeuvre using task scheduler
-void DymxPusher_EmptyBottles_Task(Task *pusherTask)
-{
-    //Serial.println("---- Pusher task start ----");
-	switch(pusherState)
-	{
-		case 0:
-			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
-			pusherTask.setInterval(10*TASK_SECOND);
-			pusherState++;
-			break;
-		case 1:
-			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
-			pusherTask.setInterval(10*TASK_SECOND);
-			pusherState++;
-			break;
-		case 2:
-			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
-			pusherTask.setInterval(7500);
-			pusherState++;
-			break;
-		case 3:
-			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
-			pusherTask.setInterval(7500);
-			pusherState++;
-			break;
-		case 4:
-			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
-			pusherTask.setInterval(10*TASK_SECOND);
-			pusherState++;
-			break;
-		case 5:
-			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
-			pusherTask.setInterval(10*TASK_SECOND);
-			pusherState++;
-			break;
-		case 6:
-			DymxPusher_Reset();
-			resetPusher = false;
-			break;
-		default:
-			DymxPusher_Reset();
-			resetPusher = false;
-			break;
-	}
-	/*
 
-    if (pusherDirection == false)
-    {
-        Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);     //Move forward to empty bottles
-        pusherDirection = true;
-    }
-    else if (pusherDirection == true)
-    {
-        Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);    //Change direction
-        pusherDirection = false;
-        resetPusher = true;
-    }*/
-}
 
 //----- Door functions -----
 //Reset Door position and set to position mode
