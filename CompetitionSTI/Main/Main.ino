@@ -54,8 +54,8 @@ void tprint()
   Serial.print(destination.x);
   Serial.print(" , ");
   Serial.println(destination.y);
-  //Serial.print("state:   ");
-  //Serial.println((int)robotState);
+  Serial.print("state:   ");
+  Serial.println((int)robotState);
   //Serial.print("blocked?:   ");
   //Serial.println((int)blockedFlag);
   //Serial.println(blockedCounter);
@@ -335,6 +335,7 @@ void deposition()                   //Deposition manoeuvre
     isFull = false;
     depositionState = 0;
     robotState == GOING_TO_WAYPOINT;
+    currentWaypoint++;
 
     if (!FullTask.isEnabled())  //if full task isn't already enabled
     {
@@ -344,6 +345,7 @@ void deposition()                   //Deposition manoeuvre
       GeorgeGoHomeItsBeenTooLongTask.restartDelayed(ITS_BEEN_TOO_LONG_INT);
     else
       GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);      //if not already enabled, enable it
+
   }
 }
 
