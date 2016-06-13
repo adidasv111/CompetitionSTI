@@ -42,7 +42,7 @@ void init_waypoints()
 	waypoints[23].x = 7500;		waypoints[23].y = 1500;	//calibrate right wall right
 	waypoints[24].x = 4000;		waypoints[24].y = 1500; //goHome
 	//Home
-	//--- stone motherf*@#err!!!
+	//--- stone motherf*@#errs!!!
 	waypoints[25].x = 500;		waypoints[25].y = 5000;	//calibrate left wall left
 	waypoints[26].x = 500;		waypoints[26].y = 6500;	//calibrate left wall left
 	waypoints[27].x = 500;		waypoints[27].y = 7500;	//calibrate left wall left

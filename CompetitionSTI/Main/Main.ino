@@ -24,6 +24,8 @@ unsigned int blockedCounter = 0;            //counter for the evasive manoeuvre
 unsigned int depositionTimeoutCounter = 0;  //counter for the deposition reverde
 unsigned int captureBottleCounter = 0;      //counter for bottle capturing
 int calibrationFlag = 0;
+int pusherState = 0;
+int depositionShake = 0;
 
 //----- Headers for functions -----
 void planning();
@@ -281,7 +283,6 @@ void planning()
 
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
-
   /**********************************/
 
   setSpeeds_I2C(left_speed, right_speed);
@@ -304,17 +305,26 @@ void deposition()                   //Deposition manoeuvre
   {
     left_speed = 0;
     right_speed = 0;
-    PusherTask.enable();
     depositionState = 1;
+    PusherTask.enable();
   }
   else if (depositionState == 1)    //waiting for pusher to finish
-  {
-    left_speed = 0;
-    right_speed = 0;
-    //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
+  {    //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
+    if (depositionShake)
+    {
+      left_speed = 240;
+      right_speed = -240;
+    }
+    else
+    {
+      left_speed = -240;
+      right_speed = 240;
+    }
+    depositionShake = (depositionShake++) % 2;
   }
   else if (depositionState == 2)    //once pusher is done, go backwards for
   {
+    pusherState = 0;
     left_speed = -240;
     right_speed = -240;
 
@@ -329,7 +339,7 @@ void deposition()                   //Deposition manoeuvre
     right_speed = 0;
     isFull = false;
     depositionState = 0;
-    robotState == GOING_TO_WAYPOINT;
+    robotState = GOING_TO_WAYPOINT;
 
     if (!FullTask.isEnabled())  //if full task isn't already enabled
     {
