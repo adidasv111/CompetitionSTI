@@ -116,10 +116,8 @@ void setup()
   //runner.addTask(DepositionTask);
   runner.addTask(PusherTask);
   runner.addTask(PusherResetTask);
-
   runner.addTask(GeorgeGoHomeItsTooLateTask);
   runner.addTask(GeorgeGoHomeItsBeenTooLongTask);
-
   //runner.addTask(PiComTask);
   runner.addTask(PrintTask);
 
@@ -136,7 +134,6 @@ void setup()
   GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
   PrintTask.enableDelayed(250);
-  Dynamixel.setEndless(DYMX_PUSHER_ID, ON);
 }
 
 //***************************** LOOP *************************
