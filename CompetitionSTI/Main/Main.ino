@@ -152,9 +152,6 @@ void planning()
   left_speed = 200;
   right_speed = 200;
 
-  //Serial.print("freq");
-  //Serial.println(checkObstacle());
-
   checkEvasiveManoeuvre(&blockedFlag);
 
   if (isFull && (robotState != GOING_HOME) && (robotState != DEPOSITION)) //Container is full, start going home
@@ -188,40 +185,6 @@ void planning()
     destination.x = waypoints[currentWaypoint].x;
     destination.y = waypoints[currentWaypoint].y;
     //  }
-    if (blockedFlag == 2)
-    {
-      left_speed = 150;
-      right_speed = 255;
-
-      blockedCounter++;
-      if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-      {
-        blockedFlag = 0;
-        blockedCounter = 0;
-      }
-      /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
-        {
-         EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-        }*/
-    }
-    else if (blockedFlag == 4)
-    {
-      left_speed = 255;
-      right_speed = 150;
-
-      blockedCounter++;
-      if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
-      {
-        blockedFlag = 0;
-        blockedCounter = 0;
-      }
-      /*EvasiveManoeuvreTask.enable();
-        if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
-        {
-                  Serial.println("dkfieuhfiuehfbcdviu start");
-        EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
-        }*/
-    }
   }
   /*    else if (robotState == GOING_TO_BOTTLE)    //Target already present, robot must continue tragectory towards target
       {
@@ -230,16 +193,51 @@ void planning()
         compute_bottle_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to waypoint
       }
   */
-  if (robotState == DEPOSITION)
-    deposition();                 //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
-
   if (planningCounter >= checkObstacle())
   {
     compute_waypoint_speeds_coord(robotPosition, destination, &left_speed, &right_speed, robotState);  //compute speeds to go to bottle
     planningCounter = 0;
   }
 
-  obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
+  if (blockedFlag == 2)
+  {
+    left_speed = 150;
+    right_speed = 255;
+
+    blockedCounter++;
+    if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
+    {
+      blockedFlag = 0;
+      blockedCounter = 0;
+    }
+    /* if (!EvasiveManoeuvreTask.isEnabled())  //if full task isn't already enabled
+      {
+       EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+      }*/
+  }
+  else if (blockedFlag == 4)
+  {
+    left_speed = 255;
+    right_speed = 150;
+
+    blockedCounter++;
+    if (blockedCounter >= EVASIVE_MANOEUVRE_DELAY)
+    {
+      blockedFlag = 0;
+      blockedCounter = 0;
+    }
+    /*EvasiveManoeuvreTask.enable();
+      if (EvasiveManoeuvreTask.isEnabled() == false)  //if full task isn't already enabled
+      {
+            Serial.println("dkfieuhfiuehfbcdviu start");
+      EvasiveManoeuvreTask.enableDelayed(EVASIVE_MANOEUVRE_DELAY);
+      }*/
+  }
+
+  if (robotState == DEPOSITION)
+    deposition();                 //DepositionTask is working. Wait for it to change robotState to GOING_TO_WAYPOINT when done.
+  else
+    obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
 
   //Checking if current goal is achieved
   check_goal(robotPosition, destination, robotState);
@@ -254,7 +252,7 @@ void planning()
   }
   if (gotWaypoint == 2)
   {
-    if (currentWaypoint == 2 || currentWaypoint == 8 ||currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
+    if (currentWaypoint == 2 || currentWaypoint == 8 || currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
     {
       isFull = true;
     }
@@ -284,6 +282,7 @@ void planning()
       }
       obstacle_avoidance(&left_speed, &right_speed); //Turn on updateIRSensor function
     }*/
+
   /**********TESTING*****************/
   //left_speed = right_speed = 0;
 
@@ -292,7 +291,7 @@ void planning()
   setSpeeds_I2C(left_speed, right_speed);
   planningCounter++;
 
-  if (currentWaypoint > 30)
+  if (currentWaypoint > NB_WAYPOINTS)
   {
     setSpeeds_I2C(0, 0);
     runner.disableAll();
@@ -366,7 +365,7 @@ void DymxDoor_setState(int stateDoor)
   switch (stateDoor)
   {
     case DOOR_OPEN:
-      if (doorState != DOOR_OPEN)         //open the door
+      if (doorState != DOOR_DEPOSITION)         //open the door
       {
         DoorMoveTask.disable(); //stop door from moving
         DymxDoor_moveToInit();  //open the door
