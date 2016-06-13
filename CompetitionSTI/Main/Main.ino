@@ -331,6 +331,7 @@ void deposition()                   //Deposition manoeuvre
     depositionState = 0;
     robotState == GOING_TO_WAYPOINT;
     currentWaypoint++;
+    Serial.println("*****************************Deposition Done******************************");
 
     if (!FullTask.isEnabled())  //if full task isn't already enabled
     {

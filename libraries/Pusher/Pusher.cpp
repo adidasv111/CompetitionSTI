@@ -63,6 +63,7 @@ void DymxPusher_Reset()
     delay(20);
     Dynamixel.move(DYMX_PUSHER_ID, PUSHER_INIT_POS);           //Move to initial position
     delay(1000);
+    Dynamixel.setEndless(DYMX_PUSHER_ID, ON);                   //Set to speed mode
     if (depositionState == 1)
         depositionState = 2;
     Serial.println("---- End Reset Pusher ----");
@@ -88,11 +89,52 @@ void DymxPusher_EmptyBottles_Timer()
 }
 */
 //Start emptying manoeuvre using task scheduler
-void DymxPusher_EmptyBottles_Task()
+void DymxPusher_EmptyBottles_Task(Task *pusherTask)
 {
     //Serial.println("---- Pusher task start ----");
-    Dynamixel.setEndless(DYMX_PUSHER_ID, ON);                   //Set to speed mode
-    
+	switch(pusherState)
+	{
+		case 0:
+			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+			pusherTask.setInterval(10*TASK_SECOND);
+			pusherState++;
+			break;
+		case 1:
+			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+			pusherTask.setInterval(10*TASK_SECOND);
+			pusherState++;
+			break;
+		case 2:
+			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+			pusherTask.setInterval(7500);
+			pusherState++;
+			break;
+		case 3:
+			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+			pusherTask.setInterval(7500);
+			pusherState++;
+			break;
+		case 4:
+			Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
+			pusherTask.setInterval(10*TASK_SECOND);
+			pusherState++;
+			break;
+		case 5:
+			Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
+			pusherTask.setInterval(10*TASK_SECOND);
+			pusherState++;
+			break;
+		case 6:
+			DymxPusher_Reset();
+			resetPusher = false;
+			break;
+		default:
+			DymxPusher_Reset();
+			resetPusher = false;
+			break;
+	}
+	/*
+
     if (pusherDirection == false)
     {
         Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);     //Move forward to empty bottles
@@ -103,7 +145,7 @@ void DymxPusher_EmptyBottles_Task()
         Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);    //Change direction
         pusherDirection = false;
         resetPusher = true;
-    }
+    }*/
 }
 
 //----- Door functions -----
