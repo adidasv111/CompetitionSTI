@@ -96,6 +96,7 @@ void setup()
   init_bottlesArray();
   initDynamixels();             //Already includes DymxPusher_Reset() and DymxDoor_Reset()
   initMotors_I2C();
+
   //initIMU(0);
   //initCompass_Serial2();
   //calibrateCompass_Serial2();
@@ -139,7 +140,9 @@ void setup()
 //***************************** LOOP *************************
 void loop()
 {
-  runner.execute();
+  //runner.execute();
+  DymxDoor_setState(DOOR_OPEN);
+
 }
 
 //***************************** TASK FUNCTIONS *************************
@@ -249,19 +252,16 @@ void planning()
   }
   if (gotWaypoint == 2)
   {
-    if (currentWaypoint == 2 || currentWaypoint == 8 || currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
-    {
-      isFull = true;
-    }
-    if (calibrationFlag == 1)
-    {
-      startCalibration(robotPosition, &left_speed, &right_speed, &calibrationFlag);
-    }
-    else
+    startCalibration(robotPosition, &left_speed, &right_speed, &calibrationFlag);
+    if (calibrationFlag == 0)
     {
       gotWaypoint = 0;
       currentWaypoint++;
       TimeoutWaypointTask.disable();
+    }
+    if (currentWaypoint == 2 || currentWaypoint == 8 || currentWaypoint == 12 || currentWaypoint == 16 || currentWaypoint == 21 || currentWaypoint == 24)
+    {
+      isFull = true;
     }
   }
   /*  if (gotBottle)
