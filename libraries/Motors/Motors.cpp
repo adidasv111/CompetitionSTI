@@ -30,17 +30,17 @@
 	@param right_speed Speed of the right wheels
 	@return void
 */
-	void setSpeeds(int speedLeft, int speedRight)
-	{
-		if(speedLeft > 255)
-			speedLeft = 255;
-		else if(speedLeft < -255)
-			speedLeft = -255;
+void setSpeeds(int speedLeft, int speedRight)
+{
+	if(speedLeft > 255)
+		speedLeft = 255;
+	else if(speedLeft < -255)
+		speedLeft = -255;
 
-		if(speedRight > 255)
-			speedRight = 255;
-		else if(speedRight < -255)
-			speedRight = -255;
+	if(speedRight > 255)
+		speedRight = 255;
+	else if(speedRight < -255)
+		speedRight = -255;
   // Serial3.write("HB");
   unsigned int LeftMode = (speedLeft > 0) - (speedLeft < 0) + 1;	//returns positive->2, zero->1, negative->0
   unsigned int LeftPWM = abs(speedLeft);

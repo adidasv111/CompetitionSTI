@@ -224,7 +224,6 @@ void obstacle_avoidance(int* left_speed, int* right_speed)
 */
 void poseCalibration (float *robotPose, char side, char wall, int* left_speed, int* right_speed, int* calibrationFlag)
 {
-	Serial.println("calibration");
 	float theta = 0;
 	float x_cal, y_cal = 0;
 	*calibrationFlag = 1;
@@ -320,6 +319,14 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 	robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
 	robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
+	Serial.println("/***********************************************************************/");
+	Serial.println("new x: ");
+	Serial.println(robotPose[0]);
+	Serial.println("new y: ");
+	Serial.println(robotPose[1]);
+		Serial.println("new t: ");
+	Serial.println(robotPose[2]);
+	Serial.println("/***********************************************************************/");
 	//robotPose[2] = theta;
 }
 

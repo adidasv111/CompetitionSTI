@@ -18,14 +18,14 @@
 #define DEPOSITION		3
 
 //--- Mapping ---
-#define HOME_X  500
-#define HOME_Y  500
+#define HOME_X  1000
+#define HOME_Y  1000
 
 #define EMPTY 0
 #define BOTTLE 1
 #define TARGET 2
 
-#define NB_WAYPOINTS 30
+#define NB_WAYPOINTS 31
 #define NB_BOTTLES_ARRAY	30
 
 #define CAPTURE_BOTTLE_DELAY	700/PLANNING_FREQ
@@ -35,7 +35,7 @@
 
 #define Kmotors_plus	35.0
 #define Kmotors_minus	10*Kmotors_plus
-#define DIST_GOAL_THRESH	150
+#define DIST_GOAL_THRESH	250
 #define BIG_DIST_GOAL_THRESH	500
 #define BEARING_GOAL_TRESH	0.15
 #define SPEED_UNIT_RADS	0.0137

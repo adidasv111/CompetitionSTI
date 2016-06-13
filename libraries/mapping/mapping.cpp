@@ -87,7 +87,7 @@ void init_waypoints()
 	waypoints[25].x = 500;		waypoints[25].y = 500;*/
 	
 	/*********Waypoints ending with grass*************/
-	waypoints[0].x = 500;		waypoints[0].y = 2500; //calibrate left wall left
+	/*waypoints[0].x = 500;		waypoints[0].y = 2500; //calibrate left wall left
 	waypoints[1].x = 500;		waypoints[1].y = 5000; //calibrate left wall left
 	waypoints[2].x = 1500;		waypoints[2].y = 5000;
 	waypoints[3].x = 2500;		waypoints[3].y = 5000;
@@ -112,7 +112,7 @@ void init_waypoints()
 	waypoints[22].x = 2000;		waypoints[22].y = 1500;
 	waypoints[23].x = 2000;		waypoints[23].y = 500;
 	waypoints[24].x = 500;		waypoints[24].y = 500; //calibrate left wall bottom
-	waypoints[25].x = 500;		waypoints[25].y = 7500;
+	waypoints[25].x = 500;		waypoints[25].y = 7500;*/
 }
 
 //initiliaze bottles array
