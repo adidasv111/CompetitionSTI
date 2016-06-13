@@ -29,8 +29,8 @@ volatile int rightEncTicks = 0;
   //digitalWrite(encoder0PinB, HIGH);       // turn on pullup resistor
     pinMode(rightEncA, INPUT); 
     pinMode(rightEncB, INPUT); 
-    pinMode(2, INPUT_PULLUP);
-    pinMode(3, INPUT_PULLUP);
+    //pinMode(2, INPUT_PULLUP);
+    //pinMode(3, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(2), doEncoderLeft, RISING);  // encoder pin on interrupt 0 - pin 2
   attachInterrupt(digitalPinToInterrupt(3), doEncoderRight, RISING);   // encoder pin on interrupt 1 - pin 3
   

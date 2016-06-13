@@ -130,7 +130,6 @@ void loop()
     {
       I2Cmode();
     }
-
     // Drive dual "H" bridges based on acquired motors modes and speeds
     if (Charged == 1)                                           // Only power motors if battery voltage is good
     {
@@ -260,15 +259,13 @@ void receiveEvent(int bytesReceived)
 {
   if (Wire.available()==4)
   {
+    
          Leftmode=Wire.read();
          LeftPWM=Wire.read();
          Rightmode=Wire.read();
          RightPWM=Wire.read();
 
          last_update=millis();
-             if (Leftmode == 2)
-             {
-             }
      /*char cmd=Wire.read();
      if (cmd=='s') { //set speed
         Speed=(int)(((unsigned int)Wire.read())<<8 | (unsigned int)Wire.read());
