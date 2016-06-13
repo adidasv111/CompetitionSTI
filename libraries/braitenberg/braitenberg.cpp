@@ -257,19 +257,25 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 			{
 				y_cal = (IRValue[4] + IRValue[5])/2 + HALF_ROBOT_WIDTH;
 				theta -= M_PI;
+				robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 			}
 			else if(wall == WALL_RIGHT)
 			{
 				x_cal = 8000 - (IRValue[4] + IRValue[5])/2 - HALF_ROBOT_WIDTH;
 				theta += -M_PI;
+				robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
 			}
 			else if(wall == WALL_TOP)
 			{
 				y_cal = 8000 - (IRValue[4] + IRValue[5])/2 - HALF_ROBOT_WIDTH;
 				theta += -M_PI2;
+				robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 			}
 			else
+			{
 				x_cal = (IRValue[4] + IRValue[5])/2 + HALF_ROBOT_WIDTH;
+				robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
+			}
 
 			break;
 		case ROBOT_RIGHT:
@@ -299,25 +305,30 @@ void poseCalibration (float *robotPose, char side, char wall, int* left_speed, i
 			{
 				theta += -M_PI2;
 				y_cal = (IRValue[6] + IRValue[7])/2 + HALF_ROBOT_WIDTH;
+				robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 			}
 			else if(wall == WALL_TOP)
 			{
 				theta += M_PI2;
 				y_cal = 8000 - (IRValue[6] + IRValue[7])/2 - HALF_ROBOT_WIDTH;
+				robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 			}
 			else if(wall == WALL_LEFT)
 			{
 				theta += -M_PI;
 				x_cal = 8000 - (IRValue[6] + IRValue[7])/2 - HALF_ROBOT_WIDTH;
+				robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
 			}
 			else
+			{
 				x_cal = (IRValue[6] + IRValue[7])/2 + HALF_ROBOT_WIDTH;
+				robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
+			}
+			
 				
 			break;
 	}
 	
-	robotPose[0] = 0.2*robotPose[0] + 0.8*x_cal;
-	robotPose[1] = 0.2*robotPose[1] + 0.8*y_cal;
 	robotPose[2] = 0.3*robotPose[2] + 0.7*theta;
 	Serial.println("/***********************************************************************/");
 	Serial.println("new x: ");

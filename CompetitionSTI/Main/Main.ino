@@ -46,10 +46,10 @@ void tprint()
   Serial.println(robotPosition[1]);
   Serial.print(" theta:   ");
   Serial.println(robotPosition[2] * 180 / M_PI);
-  //Serial.print("left:   ");
-  //Serial.print(left_speed);
-  //Serial.print("      right:   ");
-  //Serial.println(right_speed);
+  Serial.print("left:   ");
+  Serial.print(left_speed);
+  Serial.print("      right:   ");
+  Serial.println(right_speed);
   Serial.print("current target:   ");
   Serial.print(destination.x);
   Serial.print(" , ");
@@ -135,14 +135,13 @@ void setup()
   GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
   PrintTask.enableDelayed(250);
+
 }
 
 //***************************** LOOP *************************
 void loop()
 {
-  //runner.execute();
-  DymxDoor_setState(DOOR_OPEN);
-
+  runner.execute();
 }
 
 //***************************** TASK FUNCTIONS *************************
