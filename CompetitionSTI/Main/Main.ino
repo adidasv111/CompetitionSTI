@@ -314,13 +314,13 @@ void deposition()                   //Deposition manoeuvre
   {    //Pusher is moving. wait for resetPusher to change depositionState to 2 when pusher is done
     if (depositionShake % 4 < 2)
     {
-      left_speed = 240;
+      left_speed = 230;
       right_speed = -240;
     }
     else
     {
-      left_speed = -240;
-      right_speed = 240;
+      left_speed = -230;
+      right_speed = 220;
     }
     depositionShake++;
   }
@@ -485,13 +485,15 @@ void DymxPusher_EmptyBottles_Task()
   {
     case 0:
       Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
-      PusherTask.setInterval(10*TASK_SECOND);
+      //PusherTask.setInterval(9*TASK_SECOND);
       pusherState++;
       break;
     case 1:
       Dynamixel.turn(DYMX_PUSHER_ID , BACKWARD, PUSHER_SPEED);
-      PusherTask.setInterval(10*TASK_SECOND);
+      //PusherTask.setInterval(9*TASK_SECOND);
       pusherState++;
+      depositionState = 2;  
+      setSpeeds_I2C(-200,-200);
       break;
     /*case 2:
       Dynamixel.turn(DYMX_PUSHER_ID , FORWARD, PUSHER_SPEED);
@@ -515,14 +517,14 @@ void DymxPusher_EmptyBottles_Task()
       break;*/
     case 2:
       DymxPusher_Reset();
-      PusherTask.setInterval(10*TASK_SECOND);
+      //PusherTask.setInterval(10*TASK_SECOND);
       //resetPusher = false;
-      if (depositionState == 1)
-        depositionState = 2;
+      //if (depositionState == 1)
+      //  depositionState = 2;  
       break;
     default:
       DymxPusher_Reset();
-      PusherTask.setInterval(10*TASK_SECOND);
+      //PusherTask.setInterval(10*TASK_SECOND);
       //resetPusher = false;
       break;
   }

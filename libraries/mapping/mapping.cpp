@@ -15,7 +15,7 @@ void init_waypoints()
 	waypoints[2].x = 1500;		waypoints[2].y = 2500;	//goHome
 	//Home
 	waypoints[3].x = 2500;		waypoints[3].y = 500;	//calibrate right wall bottom
-	waypoints[4].x = 2500;		waypoints[4].y = 5000;
+	waypoints[4].x = 2500;		waypoints[4].y = 4700;
 	waypoints[5].x = 3500;		waypoints[5].y = 5000;
 	waypoints[6].x = 3500;		waypoints[6].y = 2500;
 	waypoints[7].x = 500;		waypoints[7].y = 2500;
