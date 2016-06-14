@@ -82,7 +82,7 @@ Task GeorgeGoHomeItsTooLateTask(ITS_TOO_LATE_INT, 1, &goHomeItsTooLate);        
 Task GeorgeGoHomeItsBeenTooLongTask(ITS_BEEN_TOO_LONG_INT, 1, &goHomeItsBeenTooLong);                  //go home if it's been 3 minutes since last deposition
 
 //Task PiComTask(500, TASK_FOREVER, &get_info_from_pi);                               //Create task that communicate with the PI
-Task PrintTask(1000, TASK_FOREVER, &tprint);
+//Task PrintTask(1000, TASK_FOREVER, &tprint);
 
 Task DistSensorTask(20, TASK_FOREVER, &updateIRSensors);                           //Create task that updates IR Sensors
 //Task StopTask(1000, 1, &stopRobot);
@@ -123,7 +123,7 @@ void setup()
   runner.addTask(GeorgeGoHomeItsTooLateTask);
   runner.addTask(GeorgeGoHomeItsBeenTooLongTask);
   //runner.addTask(PiComTask);
-  runner.addTask(PrintTask);
+  //runner.addTask(PrintTask);
 
   runner.addTask(DistSensorTask);
   DistSensorTask.enable();
@@ -137,7 +137,7 @@ void setup()
   GeorgeGoHomeItsTooLateTask.enableDelayed(ITS_TOO_LATE_INT);
   GeorgeGoHomeItsBeenTooLongTask.enableDelayed(ITS_BEEN_TOO_LONG_INT);
   //PiComTask.enable();
-  PrintTask.enableDelayed(250);
+  //PrintTask.enableDelayed(250);
 }
 
 //***************************** LOOP *************************
@@ -259,11 +259,13 @@ void planning()
       gotWaypoint = 0;
       currentWaypoint++;
       TimeoutWaypointTask.disable();
-    }
-    if (currentWaypoint == 3 || currentWaypoint == 9 || currentWaypoint == 13 || currentWaypoint == 17 || currentWaypoint == 22 || currentWaypoint == 25)
+      
+      if (currentWaypoint == 3 || currentWaypoint == 9 || currentWaypoint == 13 || currentWaypoint == 17 || currentWaypoint == 22 || currentWaypoint == 25)
     {
       isFull = true;
     }
+    }
+    
   }
   /*  if (gotBottle)
     {
@@ -327,6 +329,7 @@ void deposition()                   //Deposition manoeuvre
     pusherState = 0;
     left_speed = -240;
     right_speed = -240;
+    setSpeeds_I2C(left_speed, right_speed);
 
     depositionTimeoutCounter++;
     if (depositionTimeoutCounter >= DEPOSITION_DELAY)
@@ -514,8 +517,6 @@ void DymxPusher_EmptyBottles_Task()
       DymxPusher_Reset();
       PusherTask.setInterval(10*TASK_SECOND);
       //resetPusher = false;
-      left_speed = -240;
-      right_speed = -240;
       if (depositionState == 1)
         depositionState = 2;
       break;
