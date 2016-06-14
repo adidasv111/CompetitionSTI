@@ -339,7 +339,7 @@ void deposition()                   //Deposition manoeuvre
     right_speed = 0;
     isFull = false;
     depositionState = 0;
-    robotState == GOING_TO_WAYPOINT;
+    robotState = GOING_TO_WAYPOINT;
     //currentWaypoint++;
     Serial.println("*****************************Deposition Done******************************");
 
@@ -515,7 +515,9 @@ void DymxPusher_EmptyBottles_Task()
       PusherTask.setInterval(10*TASK_SECOND);
       //resetPusher = false;
       left_speed = -240;
-      right_speed = 240;
+      right_speed = -240;
+      if (depositionState == 1)
+        depositionState = 2;
       break;
     default:
       DymxPusher_Reset();

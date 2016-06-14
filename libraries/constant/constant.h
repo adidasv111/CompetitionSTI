@@ -18,8 +18,8 @@
 #define DEPOSITION		3
 
 //--- Mapping ---
-#define HOME_X  1000
-#define HOME_Y  1000
+#define HOME_X  700
+#define HOME_Y  700
 
 #define EMPTY 0
 #define BOTTLE 1
